@@ -1,0 +1,886 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#faf9f5;color:#141413}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>เลือกสียางจัดฟัน</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Kanit:wght@500;600;700;800&family=Prompt:wght@400;500;600&display=swap">
+<style>
+/* Layout: one mobile column (max 480px) on a pastel-sky ground with soft blobs; sticky pill action bar at the bottom.
+   Single light look by design (Dentory poster palette), so colours are set explicitly for every host theme. */
+:root{
+  color-scheme:light;
+  --sky-100:#d6ebfc; --sky-200:#b0defc; --surface:#ffffff; --lilac-100:#e2e2fc; --pink-100:#f8d0e4;
+  --ink:#0b1677; --ink-muted:#4a5394; --pink-500:#fc5490; --pink-400:#fc66a2; --pink-600:#d42f70;
+  --blue-300:#56aafc; --blue-600:#0b5ffc; --violet-500:#7a30f8; --violet-400:#9a40f8;
+  --coral:#f86048; --title-blue:#40a8f8; --line-green:#06c755; --gold:#fed34b;
+  --field:#f4f9fe; --rule:#c9c3f0; --num:#8a90b8;
+  --shadow-card:0 8px 24px rgba(43,123,248,.14); --shadow-pink:0 8px 20px rgba(252,84,144,.32);
+  --font-display:Kanit,Prompt,"Noto Sans Thai",system-ui,sans-serif;
+  --font-body:Prompt,Kanit,"Noto Sans Thai",system-ui,sans-serif;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html{background:var(--sky-100)}
+body{margin:0;background:var(--sky-100);color:var(--ink);font-family:var(--font-body);font-size:16px;line-height:1.5;overflow-x:hidden}
+button,input,select,textarea{font:inherit;color:inherit}
+button{cursor:pointer}
+:focus-visible{outline:3px solid var(--violet-500);outline-offset:2px}
+h1,h2,h3{text-wrap:balance}
+.blobs{position:fixed;inset:0;pointer-events:none;overflow:hidden;z-index:0}
+.blobs i{position:absolute;border-radius:50%}
+.blobs i:nth-child(1){top:-90px;right:-110px;width:300px;height:300px;background:var(--sky-200)}
+.blobs i:nth-child(2){top:300px;left:-140px;width:260px;height:260px;background:var(--lilac-100);opacity:.7}
+.blobs i:nth-child(3){bottom:-120px;right:-80px;width:280px;height:280px;background:var(--pink-100);opacity:.6}
+#app{position:relative;z-index:1;max-width:480px;margin:0 auto;padding-inline:16px;padding-block:0 140px}
+.k{font-family:var(--font-display)}
+.muted{color:var(--ink-muted)}
+.heart{color:var(--pink-500)}
+.card{background:var(--surface);border-radius:28px;box-shadow:var(--shadow-card)}
+.sparkle{position:absolute;pointer-events:none}
+
+/* splash */
+.splash{position:relative;display:flex;flex-direction:column;align-items:center;gap:20px;padding-top:36px;text-align:center}
+.splash .logo{width:120px;height:auto;display:block}
+.tagrow{display:inline-flex;align-items:center;gap:8px;transform:rotate(-3deg)}
+.pill-explore{background:var(--pink-500);color:#fff;font-family:var(--font-display);font-weight:700;font-size:24px;line-height:1;padding:8px 18px;border-radius:9999px;box-shadow:var(--shadow-pink)}
+.tagrow .en{font-family:var(--font-display);font-weight:600;font-size:18px;color:var(--blue-600)}
+.rainbow{display:grid;margin-top:4px}
+.rainbow > *{grid-area:1/1;margin:0;font-family:var(--font-display);font-weight:800;font-size:60px;line-height:1.1}
+.rainbow .stroke{color:#fff;-webkit-text-stroke:12px #fff}
+.rainbow h1{background:linear-gradient(90deg,var(--coral) 0%,var(--pink-500) 35%,var(--violet-400) 68%,var(--title-blue) 100%);-webkit-background-clip:text;background-clip:text;color:transparent}
+.lead{margin:0;font-family:var(--font-display);font-weight:600;font-size:20px}
+.bubble{position:relative;padding:16px 20px;text-align:left;width:100%}
+.bubble p{margin:0;font-size:16px;line-height:1.6}
+.bubble::after{content:"";position:absolute;bottom:-10px;left:44px;width:22px;height:22px;background:var(--surface);transform:rotate(45deg);border-radius:4px}
+.twostep{width:100%;display:flex;flex-direction:column;gap:12px;margin-top:4px}
+.twostep > p{margin:0;font-family:var(--font-display);font-weight:700;font-size:28px;line-height:1.2}
+.twostep > p b{color:var(--pink-500);font-size:48px;vertical-align:-6px}
+.tiles{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.tile{padding:16px 12px;display:flex;flex-direction:column;align-items:center;gap:8px}
+.tile .n{width:56px;height:56px;border-radius:9999px;color:#fff;font-family:var(--font-display);font-weight:800;font-size:40px;line-height:56px;text-align:center}
+.tile .t{font-family:var(--font-display);font-weight:600;font-size:17px;line-height:1.3}
+.tile .d{font-size:14px;color:var(--ink-muted);line-height:1.4}
+.contacts{width:100%;display:flex;flex-direction:column;gap:10px}
+.contact{display:flex;align-items:center;gap:12px;min-height:52px;background:var(--surface);border-radius:9999px;padding:8px 18px 8px 8px;text-decoration:none;color:var(--blue-600);font-weight:600;font-size:16px;box-shadow:var(--shadow-card);text-align:left}
+.contact .ic{width:36px;height:36px;flex-shrink:0;border-radius:9999px;background:var(--blue-600);color:#fff;display:flex;align-items:center;justify-content:center}
+.contact .ic.line{background:var(--line-green)}
+.contact span:last-child{user-select:text}
+.qrcard{width:100%;padding:16px;display:flex;align-items:center;gap:16px;text-align:left}
+.qrcard img{width:104px;height:104px;flex-shrink:0;border-radius:16px;background:#fff;border:2px solid var(--sky-100)}
+.qrcard .t{font-family:var(--font-display);font-weight:600;font-size:18px;line-height:1.3}
+.qrcard .d{font-size:14px;color:var(--ink-muted);line-height:1.45}
+
+/* bottom bars */
+.bottom{position:fixed;left:0;right:0;bottom:0;z-index:30;padding:16px 16px calc(20px + env(safe-area-inset-bottom,0px));background:linear-gradient(to top,var(--sky-100) 65%,rgba(214,235,252,0))}
+.bottom > *{max-width:448px;margin:0 auto}
+.cta{width:100%;min-height:64px;display:flex;align-items:center;justify-content:center;gap:10px;border:none;border-radius:9999px;background:var(--pink-500);color:#fff;font-family:var(--font-display);font-weight:600;font-size:26px;box-shadow:var(--shadow-pink)}
+.cta:active,.submit:active{transform:scale(.98)}
+.pickbar{display:flex;align-items:center;gap:10px;background:var(--surface);border-radius:9999px;padding:8px;box-shadow:0 8px 24px rgba(43,123,248,.2)}
+.pickbar .used{display:flex;align-items:center;gap:8px;padding-left:10px}
+.pickbar .dots{display:flex}
+.pickbar .lbl{font-family:var(--font-display);font-weight:600;font-size:14px;white-space:nowrap}
+.submit{flex:1;min-height:52px;border:none;border-radius:9999px;background:var(--pink-500);color:#fff;font-family:var(--font-display);font-weight:600;font-size:24px;box-shadow:var(--shadow-pink);transition:opacity .15s ease}
+.submit.off{opacity:.45}
+
+/* topbar + steps */
+.topbar{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:18px 0 10px}
+.topbar .b{display:flex;align-items:center;gap:10px;min-width:0}
+.topbar img{height:40px;width:auto;display:block}
+.topbar .tt{display:flex;flex-direction:column;line-height:1.2}
+.topbar .tt b{font-family:var(--font-display);font-weight:700;font-size:18px}
+.topbar .tt span{font-size:12px;color:var(--ink-muted)}
+.lockpill{display:inline-flex;align-items:center;gap:6px;min-height:40px;padding:0 14px;border:none;border-radius:9999px;background:var(--surface);color:var(--ink-muted);font-size:13px;box-shadow:0 4px 12px rgba(43,123,248,.14);flex-shrink:0}
+.steps{display:flex;align-items:flex-start;justify-content:center;gap:4px;margin:6px 0 16px}
+.step{display:flex;flex-direction:column;align-items:center;gap:4px;width:78px}
+.step .dot{width:36px;height:36px;border-radius:9999px;display:flex;align-items:center;justify-content:center;font-family:var(--font-display);font-weight:700;font-size:16px;background:rgba(255,255,255,.55);color:var(--ink-muted);transition:transform .2s ease}
+.step.done .dot{background:#fff;color:var(--blue-600)}
+.step.active .dot{color:#fff;box-shadow:0 0 0 4px #fff,0 8px 20px rgba(252,84,144,.25);transform:scale(1.08)}
+.step .l{font-size:12px;white-space:nowrap;color:var(--ink-muted)}
+.step.active .l{font-family:var(--font-display);font-weight:600;color:var(--ink)}
+.stepline{width:22px;height:3px;border-radius:3px;background:var(--sky-200);margin-top:16px}
+
+/* mouth */
+.mouth{padding:16px;display:flex;flex-direction:column;gap:10px}
+.mouth .head{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.mouth .head b{font-family:var(--font-display);font-weight:600;font-size:18px}
+.btn-soft{min-height:36px;padding:0 12px;border:none;border-radius:9999px;background:var(--pink-100);color:var(--pink-600);font-weight:600;font-size:13px}
+.fillall{display:flex;align-items:center;justify-content:center;gap:10px;min-height:48px;border:2px dashed var(--pink-400);border-radius:9999px;background:#fff5fa;color:var(--pink-600);font-family:var(--font-display);font-weight:600;font-size:15px;padding:0 12px}
+.archlbl{font-size:13px;color:var(--ink-muted);padding-left:6px}
+.arch{display:flex;justify-content:center;gap:2px;padding:12px 6px 18px}
+.arch.up{background:linear-gradient(to bottom,#e9779f 0px,#f39bbd 14px,#f8d0e4 46px,#fde9f2 100%);border-radius:28px 28px 40px 40px;align-items:flex-start}
+.arch.lo{background:linear-gradient(to top,#e9779f 0px,#f39bbd 14px,#f8d0e4 46px,#fde9f2 100%);border-radius:40px 40px 28px 28px;padding:18px 6px 12px;align-items:flex-end}
+.tooth{position:relative;flex:0 1 35px;min-width:0;width:35px;height:44px;padding:0;background:transparent;border:none;transition:transform .12s ease}
+.arch.lo .tooth{height:42px}
+.tooth.ro{cursor:default}
+.tooth svg.en{position:absolute;inset:0;width:100%;height:100%;overflow:visible;filter:drop-shadow(0 3px 3px rgba(11,22,119,.18))}
+.tooth .gum{position:absolute;z-index:0;left:-2px;right:-2px;height:14px}
+.arch.up .gum{top:-6px;border-radius:0 0 50% 50%/0 0 100% 100%;background:linear-gradient(to bottom,#e9779f,#f39bbd);box-shadow:0 2px 3px rgba(185,40,100,.18)}
+.arch.lo .gum{bottom:-6px;border-radius:50% 50% 0 0/100% 100% 0 0;background:linear-gradient(to top,#e9779f,#f39bbd);box-shadow:0 -2px 3px rgba(185,40,100,.18)}
+.tooth .wire{position:absolute;z-index:1;left:-2px;right:-2px;top:calc(50% - 1.5px);height:3px;border-radius:2px;background:linear-gradient(to bottom,#d4d6dc,#868993)}
+.tooth .tie{position:absolute;z-index:2;left:50%;top:calc(50% - 11px);width:24px;height:22px;margin-left:-12px;border-radius:9px;border:5px solid;box-shadow:0 1px 2px rgba(0,0,0,.25),inset 0 1px 1px rgba(255,255,255,.45)}
+.tooth .br{position:absolute;z-index:3;left:50%;top:calc(50% - 7px);width:15px;height:14px;margin-left:-7.5px;border-radius:4px;border:1.5px solid #6e717b;background:linear-gradient(160deg,#fbfbfc 0%,#d7d8dd 45%,#a6a9b2 100%);box-shadow:0 1px 2px rgba(0,0,0,.25)}
+.tooth .br::after{content:"";position:absolute;left:2px;right:2px;top:50%;height:3px;margin-top:-1.5px;border-radius:1px;background:#8a8d96}
+.tooth .num{position:absolute;bottom:-7px;right:-4px;z-index:5;background:var(--ink);color:#fff;font-family:var(--font-display);font-size:10px;font-weight:600;line-height:15px;border-radius:9999px;padding:0 4px}
+.mouth .hint{margin:2px 0 0;font-size:13px;line-height:1.5;color:var(--ink-muted);text-align:center}
+
+/* palette */
+.pick{display:flex;flex-direction:column;gap:12px;margin-top:28px}
+.pick .hrow{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.pick h2{margin:0;font-family:var(--font-display);font-weight:700;font-size:24px;line-height:1.2}
+.sticker{background:var(--surface);font-family:var(--font-display);font-weight:600;font-size:13px;padding:6px 12px;border-radius:9999px;transform:rotate(3deg);box-shadow:0 4px 12px rgba(43,123,248,.14);white-space:nowrap}
+.hintbar{background:var(--lilac-100);border-radius:16px;padding:10px 14px;display:flex;align-items:center;gap:10px;font-size:14px;line-height:1.45}
+.themes{padding:14px 14px 16px;display:flex;flex-direction:column;gap:10px}
+.themes .tt{display:flex;flex-direction:column;gap:2px}
+.themes .tt b{font-family:var(--font-display);font-weight:700;font-size:16px;line-height:1.3}
+.themes .tt span{font-size:12px;color:var(--ink-muted)}
+.themehead{display:flex;align-items:center;gap:10px;width:100%;min-height:52px;padding:8px 14px;border:2px solid #fff;border-radius:18px;background:rgba(255,255,255,.7);text-align:left;transition:background .15s ease,box-shadow .15s ease}
+.themehead.open{border-color:var(--pink-600);background:#fff0f6;box-shadow:var(--shadow-pink)}
+.themehead .gdots{display:flex;flex-shrink:0}
+.themehead .gdots .gd{width:22px;height:22px;border-radius:9999px;border:2px solid #fff;box-shadow:0 2px 6px rgba(11,22,119,.18)}
+.themehead .gdots .gd + .gd{margin-left:-8px}
+.themehead .gname{flex:1;font-family:var(--font-display);font-weight:700;font-size:15px;color:var(--ink)}
+.themehead .gnew{display:inline-block;vertical-align:middle;margin-left:6px;padding:2px 8px;border-radius:9999px;background:var(--coral);color:#fff;font-family:var(--font-display);font-weight:700;font-size:10px;letter-spacing:.03em;box-shadow:0 2px 6px rgba(248,96,72,.35)}
+.themehead .gchev{flex-shrink:0;display:flex;transition:transform .2s ease}
+.themehead.open .gchev{transform:rotate(90deg)}
+@media (hover:hover){.themehead:not(.open):hover{background:#f6f8ff}}
+.themerow{display:flex;gap:10px;overflow-x:auto;margin:0 -8px;padding:2px 8px 4px;scrollbar-width:none}
+.themerow::-webkit-scrollbar{display:none}
+.theme{flex-shrink:0;display:flex;flex-direction:column;align-items:center;gap:6px;padding:10px 8px;border:2px solid #fff;border-radius:18px;background:rgba(255,255,255,.7);min-width:74px;transition:background .15s ease,box-shadow .15s ease,opacity .15s ease}
+.theme.active{border-color:var(--pink-600);background:#fff0f6;box-shadow:var(--shadow-pink)}
+.theme.locked{opacity:.35}
+.theme .duo{display:flex;align-items:center;min-height:22px}
+.theme .duo .md{flex-shrink:0;width:18px;height:18px;border-radius:9999px;border:2px solid #fff;box-shadow:0 2px 4px rgba(11,22,119,.18)}
+.theme .duo .mdmore{font-size:10px;font-weight:700;color:var(--ink-muted);margin-left:4px}
+.theme .tn{font-family:var(--font-display);font-weight:600;font-size:12px;white-space:nowrap}
+@media (hover:hover){.theme:not(.locked):not(.active):hover{background:#f6f8ff}}
+.chips{display:flex;gap:8px;overflow-x:auto;margin:0 -16px;padding:4px 16px 6px;scrollbar-width:none}
+.chips::-webkit-scrollbar{display:none}
+.chip{flex-shrink:0;min-height:40px;padding:0 16px;border-radius:9999px;font-family:var(--font-display);font-weight:600;font-size:14px;white-space:nowrap;border:2px solid #fff;background:rgba(255,255,255,.7);color:var(--ink)}
+.chip.on{border-color:var(--pink-600);background:var(--pink-600);color:#fff;box-shadow:var(--shadow-pink)}
+.err{margin:0;font-size:14px;color:var(--pink-600);font-weight:600}
+.swcard{padding:6px 8px 14px}
+.rule{height:1px;background:var(--rule);margin:12px 8px 8px}
+.rule.b{margin:10px 8px 0}
+.grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px 2px}
+.sw{position:relative;display:flex;flex-direction:column;align-items:center;gap:5px;min-width:0;padding:10px 2px 8px;border:none;border-radius:16px;background:transparent;touch-action:pan-y;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none;transition:background .15s ease,box-shadow .15s ease,opacity .15s ease}
+.sw .no{font-size:11px;letter-spacing:.14em;color:var(--num);line-height:1;font-variant-numeric:tabular-nums}
+.sw svg{display:block;overflow:visible;max-width:100%;height:auto}
+.sw .nm{max-width:100%;font-family:var(--font-display);font-weight:600;font-size:11px;letter-spacing:.08em;line-height:1.3;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sw.armed{background:#fff0f6;box-shadow:0 0 0 2px var(--pink-500),0 8px 20px rgba(252,84,144,.25)}
+.sw.editing{background:#f3eeff;box-shadow:0 0 0 2px var(--violet-500)}
+.sw.locked{opacity:.3;cursor:not-allowed}
+.sw .cnt,.sw .low,.sw .chg{position:absolute;top:2px;min-width:20px;height:20px;padding:0 4px;border-radius:9999px;font-family:var(--font-display);font-size:11px;font-weight:700;line-height:20px;text-align:center}
+.sw .cnt{right:4px;background:var(--pink-600);color:#fff;box-shadow:0 0 0 2px #fff}
+.sw .low{left:4px;background:var(--gold);color:var(--ink)}
+.sw .chg{right:4px;background:var(--violet-500);color:#fff;display:flex;align-items:center;justify-content:center;padding:0}
+.sw .oos{position:absolute;inset:0;border-radius:16px;background:rgba(255,255,255,.78);color:var(--pink-600);font-family:var(--font-display);font-size:12px;font-weight:600;display:flex;align-items:center;justify-content:center;text-align:center;line-height:1.2}
+@media (hover:hover){.sw:not(.locked):not(.armed):hover{background:#f6f8ff}}
+.charttoggle{display:flex;align-items:center;justify-content:center;gap:8px;min-height:48px;margin-top:8px;border:2px solid #fff;border-radius:9999px;background:rgba(255,255,255,.6);color:var(--blue-600);font-weight:600;font-size:15px;padding:0 14px}
+.chart img{width:100%;height:auto;display:block;border-radius:28px;border:6px solid #fff;box-shadow:var(--shadow-card)}
+.chart p{margin:8px 0 0;font-size:13px;color:var(--ink-muted);line-height:1.5}
+
+/* forms */
+.form{padding:24px 20px;display:flex;flex-direction:column;gap:16px;margin-top:16px}
+.fhead{display:flex;align-items:center;gap:10px}
+.disc{width:40px;height:40px;flex-shrink:0;border-radius:9999px;background:var(--lilac-100);color:var(--violet-500);display:flex;align-items:center;justify-content:center}
+.fhead .tt{display:flex;flex-direction:column;line-height:1.25}
+.fhead .tt b{font-family:var(--font-display);font-weight:600;font-size:20px}
+.fhead .tt span{font-size:13px;color:var(--ink-muted)}
+.field{display:flex;flex-direction:column;gap:6px}
+.field label{font-family:var(--font-display);font-weight:600;font-size:14px}
+.field label small{font-family:var(--font-body);font-weight:400;font-size:14px;color:var(--ink-muted)}
+.req{color:var(--pink-600)}
+.inp{height:50px;padding:0 18px;border:2px solid var(--sky-100);border-radius:9999px;background:var(--field);color:var(--ink);font-size:16px;width:100%;min-width:0}
+textarea.inp{height:auto;min-height:84px;padding:14px 18px;border-radius:24px;resize:vertical}
+select.inp{padding:0 16px}
+.inp:focus{outline:none;border-color:var(--blue-300);background:#fff}
+.ferr{font-size:13px;color:var(--pink-600);padding-left:12px}
+
+/* confirm */
+.done{position:relative;display:flex;flex-direction:column;align-items:center;gap:8px;text-align:center;padding:4px 0 18px}
+.done .badge{width:72px;height:72px;border-radius:9999px;background:var(--pink-500);color:#fff;display:flex;align-items:center;justify-content:center;box-shadow:var(--shadow-pink)}
+.done h2{margin:4px 0 0;font-family:var(--font-display);font-weight:700;font-size:30px;line-height:1.2}
+.done p{margin:0;color:var(--ink-muted)}
+.conf{display:flex;flex-direction:column;gap:14px;margin-top:16px}
+.summary{padding:16px 20px;display:flex;flex-direction:column;gap:10px}
+.summary .row{display:flex;align-items:center;gap:12px}
+.summary .row b{font-family:var(--font-display);font-weight:600;font-size:20px;font-variant-numeric:tabular-nums}
+.summary .appt{display:flex;align-items:center;gap:10px;padding-top:10px;border-top:2px dashed var(--sky-100)}
+.pinkbox{background:var(--pink-100);border-radius:28px;padding:18px 20px;display:flex;flex-direction:column;gap:14px}
+.pinkbox p{margin:0;font-size:15px;line-height:1.6}
+.linebtn{display:flex;align-items:center;justify-content:center;gap:10px;min-height:60px;border-radius:9999px;background:var(--line-green);color:#fff;text-decoration:none;font-family:var(--font-display);font-weight:700;font-size:24px;box-shadow:0 8px 20px rgba(6,199,85,.32);padding:0 16px;text-align:center}
+.two{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.btn-white{display:flex;align-items:center;justify-content:center;gap:8px;min-height:50px;border:none;border-radius:9999px;background:#fff;color:var(--blue-600);font-family:var(--font-display);font-weight:600;font-size:16px;box-shadow:var(--shadow-card);padding:0 14px}
+
+/* staff */
+.staff{display:flex;flex-direction:column;gap:14px;margin-top:8px}
+.staff .hrow{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.staff h2{margin:0;font-family:var(--font-display);font-weight:700;font-size:22px;line-height:1.2}
+.smallbtn{min-height:40px;padding:0 14px;border:none;border-radius:9999px;background:#fff;color:var(--blue-600);font-weight:600;font-size:14px;flex-shrink:0}
+.notice{padding:18px 20px;display:flex;flex-direction:column;gap:14px}
+.notice p{margin:0;font-size:15px;line-height:1.6}
+.rowbtn{display:flex;align-items:center;gap:14px;text-align:left;padding:16px 20px;border:none;border-radius:28px;background:#fff;color:var(--ink);box-shadow:var(--shadow-card);width:100%}
+.rowbtn .disc{width:48px;height:48px}
+.rowbtn .tt{display:flex;flex-direction:column;gap:2px;flex:1;min-width:0}
+.rowbtn .tt b{font-family:var(--font-display);font-weight:600;font-size:18px}
+.rowbtn .tt span{font-size:13px;color:var(--ink-muted)}
+.edit{padding:20px;display:flex;flex-direction:column;gap:14px}
+.edit .top{display:flex;align-items:center;gap:12px}
+.bigsw{width:56px;height:56px;flex-shrink:0;border-radius:16px;box-shadow:inset 0 0 0 1px rgba(11,22,119,.12),0 4px 10px rgba(43,123,248,.16)}
+.edit .top b{font-family:var(--font-display);font-weight:700;font-size:22px;display:block;line-height:1.25}
+.hexrow{display:flex;align-items:center;gap:10px}
+.hexrow input[type=color]{width:50px;height:50px;flex-shrink:0;border:none;border-radius:9999px;padding:0;background:none}
+.acts{display:flex;gap:8px}
+.btn-save{flex:1;min-height:50px;border:none;border-radius:9999px;background:var(--pink-600);color:#fff;font-family:var(--font-display);font-weight:600;font-size:17px;box-shadow:var(--shadow-pink)}
+.btn-lilac{min-height:50px;padding:0 16px;border:none;border-radius:9999px;background:var(--lilac-100);color:var(--ink);font-family:var(--font-display);font-weight:600;font-size:15px}
+.btn-x{width:50px;min-height:50px;border:none;border-radius:9999px;background:var(--field);color:var(--ink-muted);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.saved{font-size:14px;color:var(--violet-500);font-weight:600;margin:0}
+
+/* pin overlay */
+.overlay{position:fixed;inset:0;z-index:50;background:rgba(11,22,119,.45);display:flex;align-items:center;justify-content:center;padding:16px}
+.pin{width:100%;max-width:310px;padding:24px;display:flex;flex-direction:column;align-items:center;gap:12px;text-align:center}
+.pin .disc{width:52px;height:52px}
+.pin h3{margin:0;font-family:var(--font-display);font-weight:700;font-size:22px}
+.pin p{margin:0;font-size:14px;color:var(--ink-muted)}
+.pin .inp{height:56px;font-family:var(--font-display);font-size:26px;letter-spacing:.5em;text-align:center}
+.pin .acts{width:100%}
+.pin .acts button{flex:1;min-height:48px}
+
+@media (prefers-reduced-motion:no-preference){
+  ::view-transition-old(root){animation:fadeOut .16s ease both}
+  ::view-transition-new(root){animation:riseIn .3s cubic-bezier(.22,.61,.36,1) both}
+  .splash > *{animation:riseIn .45s cubic-bezier(.22,.61,.36,1) both}
+  .splash > *:nth-child(6){animation-delay:.05s}.splash > *:nth-child(7){animation-delay:.1s}.splash > *:nth-child(8){animation-delay:.15s}
+  .splash > *:nth-child(9){animation-delay:.2s}.splash > *:nth-child(10){animation-delay:.25s}.splash > *:nth-child(11){animation-delay:.3s}
+}
+@media (prefers-reduced-motion:reduce){
+  *,::view-transition-group(*),::view-transition-old(*),::view-transition-new(*){animation:none!important;transition:none!important}
+}
+@keyframes riseIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+@keyframes fadeOut{to{opacity:0}}
+@media (max-width:360px){
+  .rainbow > *{font-size:50px}
+  .tooth{width:31px}
+}
+</style>
+
+<div class="blobs" aria-hidden="true"><i></i><i></i><i></i></div>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+  <defs>
+    <linearGradient id="dtEnamel" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fafafc"/><stop offset="0.65" stop-color="#f1f1f5"/><stop offset="1" stop-color="#dfe0e7"/></linearGradient>
+    <linearGradient id="dtEnamelSide" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#dfe0e7" stop-opacity="0.7"/><stop offset="0.18" stop-color="#ffffff" stop-opacity="0"/><stop offset="0.82" stop-color="#ffffff" stop-opacity="0"/><stop offset="1" stop-color="#d6d7df" stop-opacity="0.8"/></linearGradient>
+  </defs>
+</svg>
+<main id="app"></main>
+
+<script>
+(function(){
+"use strict";
+var COLORS = {1:"#c3dfb0",2:"#9dc070",3:"#8fa988",4:"#427760",5:"#275337",6:"#25583c",7:"#327536",8:"#4b6e3a",9:"#6b8933",10:"#5dc5b2",11:"#4aa98a",12:"#84d48f",13:"#5dc03c",14:"#70be4c",15:"#a8e159",16:"#c9f5a2",17:"#d3ec49",18:"#c7df48",19:"#3c919f",20:"#215b7b",21:"#3771a3",22:"#2668a7",23:"#4eadcd",24:"#60bccb",25:"#8cd3d9",26:"#a6eadc",27:"#9bd2dd",28:"#20468f",29:"#031963",30:"#050b4b",31:"#0c2450",32:"#476a89",33:"#6aa4b6",34:"#6eb2df",35:"#81c2e7",36:"#87c5dc",37:"#356bd2",38:"#6f88cd",39:"#324389",40:"#8b7097",41:"#a689c3",42:"#b790d0",43:"#fa65b7",44:"#c45aa4",45:"#c76bc9",46:"#c63454",47:"#b72e24",48:"#b3251f",49:"#8a1b16",50:"#952040",51:"#622129",52:"#482140",53:"#3b3980",54:"#6b65ba",55:"#e9587d",56:"#f677ad",57:"#c78191",58:"#d3b1b2",59:"#ef8dc3",60:"#f495b5",61:"#efa9b4",62:"#f7bdb4",63:"#efb3b2",64:"#7e8384",65:"#9a9897",66:"#ead5a9",67:"#fcfe97",68:"#faac6d",69:"#fda235",70:"#ff6f44",71:"#df5b5e",72:"#efa9ac",73:"#010104",74:"#02095e",75:"#3f93d1",76:"#82fb49",77:"#fee148",78:"#ffb34a",79:"#fe7663",80:"#ff5883",81:"#e95896",82:"#eef1e6",83:"#1d030f",84:"#0f3462",85:"#1b41dc",86:"#071b16",87:"#53b732",88:"#ff6a34",89:"#ac252b",90:"#ff48aa",91:"#31305d",92:"#45296b",93:"#87376f",94:"#4b5b8e",95:"#123682",96:"#3d77a5",97:"#81b9e0",98:"#3c7980",99:"#69b5a7",100:"#e266a0",101:"#d55983",102:"#8b424f",103:"#692134",104:"#ba2e38",105:"#9a2517",106:"#fea180",107:"#9ae1cd",108:"#668a48"};
+var NAME_BASE = {"1":"เขียวอ่อน","2":"เขียว","3":"เขียว","4":"เขียว","5":"เขียวเข้ม","6":"เขียวเข้ม","7":"เขียว","8":"เขียว","9":"เขียว","10":"ฟ้าอมเขียว","11":"ฟ้าอมเขียว","12":"เขียว","13":"เขียว","14":"เขียว","15":"เขียว","16":"เขียวอ่อน","17":"เหลือง","18":"เหลือง","19":"ฟ้าอมเขียว","20":"ฟ้าเข้ม","21":"ฟ้า","22":"ฟ้า","23":"ฟ้า","24":"ฟ้าอมเขียว","25":"ฟ้าอมเขียวอ่อน","26":"ฟ้าอมเขียวอ่อน","27":"ฟ้าอมเขียวอ่อน","28":"ฟ้า","29":"ฟ้าเข้ม","30":"ฟ้าเข้ม","31":"ฟ้าเข้ม","32":"ฟ้า","33":"ฟ้าอมเขียว","34":"ฟ้า","35":"ฟ้าอ่อน","36":"ฟ้าอ่อน","37":"ฟ้า","38":"ฟ้า","39":"ฟ้า","40":"ม่วง","41":"น้ำเงิน","42":"ม่วงอ่อน","43":"ชมพูอ่อน","44":"ม่วง","45":"ม่วง","46":"แดง","47":"แดง","48":"แดง","49":"แดงเข้ม","50":"ชมพู","51":"แดงเข้ม","52":"ม่วงเข้ม","53":"ม่วง","54":"ม่วงอ่อน","55":"ชมพู","56":"ชมพูอ่อน","57":"ชมพูอ่อน","58":"แดงอ่อน","59":"ชมพูอ่อน","60":"ชมพูอ่อน","61":"โอรส","62":"ส้มพาสเทล","63":"แดงพาสเทล","64":"เทา","65":"เทาอ่อน","66":"สีไข่","67":"เหลืองอ่อน","68":"ส้มอ่อน","69":"ส้ม","70":"ส้ม","71":"ส้ม","72":"แดงอ่อน","73":"ดำ","74":"ฟ้าเข้ม","75":"ฟ้า","76":"เขียวเรืองแสง","77":"เหลือง","78":"ส้ม","79":"แดงอ่อน","80":"ชมพูเรืองแสง","81":"ชมพู","82":"ขาว","83":"ม่วงเข้มใส","84":"ฟ้าเข้มใส","85":"ฟ้า","86":"ฟ้าอมเขียวเข้ม","87":"เขียว","88":"ส้ม","89":"แดง","90":"ชมพู","91":"ฟ้าเข้ม","92":"น้ำเงินเข้ม","93":"ม่วง","94":"ฟ้า","95":"ฟ้าเข้ม","96":"ฟ้า","97":"ฟ้าอ่อน","98":"ฟ้าอมเขียว","99":"ฟ้าอมเขียว","100":"ชมพู","101":"ชมพู","102":"แดง","103":"ชมพูเข้ม","104":"แดง","105":"แดง","106":"ส้มอ่อน","107":"ฟ้าอมเขียวอ่อน","108":"เขียว"};
+var CATEGORY_BASE = {"1":"เขียว","2":"เขียว","3":"เขียว","4":"เขียว","5":"เขียว","6":"เขียว","7":"เขียว","8":"เขียว","9":"เขียว","10":"เขียว","11":"เขียว","12":"เขียว","13":"เขียว","14":"เขียว","15":"เขียว","16":"พาสเทล","17":"เขียว","18":"เขียว","19":"ฟ้า","20":"ฟ้า","21":"ฟ้า","22":"ฟ้า","23":"ฟ้าอมเขียว","25":"พาสเทล","26":"พาสเทล","27":"ฟ้าพาสเทล","28":"น้ำเงิน","29":"น้ำเงิน","30":"น้ำเงิน","31":"น้ำเงิน","35":"พาสเทล","42":"พาสเทล","53":"ม่วง","54":"ม่วง","57":"ชมพู","60":"พาสเทล","61":"ส้ม","62":"พาสเทล","63":"แดง","66":"เหลือง","67":"พาสเทล","70":"ส้ม","71":"ส้ม","72":"แดง","73":"ดำ","74":"น้ำเงิน","75":"ฟ้า","82":"ขาว","83":"สีใส","84":"สีใส","85":"สีใส","86":"สีใส","87":"สีใส","88":"สีใส","89":"สีใส","90":"สีใส","91":"กลิตเตอร์","92":"กลิตเตอร์","93":"กลิตเตอร์","94":"กลิตเตอร์","95":"กลิตเตอร์","96":"กลิตเตอร์","97":"กลิตเตอร์","98":"กลิตเตอร์","99":"กลิตเตอร์","100":"กลิตเตอร์","101":"กลิตเตอร์","102":"กลิตเตอร์","103":"กลิตเตอร์","104":"กลิตเตอร์","105":"กลิตเตอร์","106":"กลิตเตอร์","107":"กลิตเตอร์","108":"กลิตเตอร์"};
+var FAMILY_ORDER = ["เขียว","ฟ้าอมเขียว","ฟ้า","ฟ้าพาสเทล","น้ำเงิน","ม่วง","ชมพู","แดง","ส้ม","น้ำตาล","เหลือง","พาสเทล","สีใส","กลิตเตอร์","ทูโทน","เทา","ดำ","ขาว"];
+/* Two-tone elastics 109-120 (from the clinic's tray photo): [colour A, colour B, name] */
+var TWO_TONE = {
+  109:["#3b2a9e","#f2a6d6","ม่วงเข้ม/ชมพู"], 110:["#35209a","#b56ee0","น้ำเงิน/ม่วงอ่อน"], 111:["#1b1420","#d24fc6","ดำ/ชมพูม่วง"], 112:["#f27cc8","#8e90ef","ชมพู/ม่วงคราม"],
+  113:["#f5a8d5","#5db7ec","ชมพู/ฟ้า"], 114:["#f1ea98","#b98ae2","เหลือง/ม่วงอ่อน"], 115:["#e2352f","#2050c8","แดง/น้ำเงิน"], 116:["#ffc61c","#f0781e","เหลือง/ส้ม"],
+  117:["#e8642c","#2e9a5a","ส้ม/เขียว"], 118:["#c9ee32","#1d8fb5","เขียวมะนาว/ฟ้าเข้ม"], 119:["#6cc840","#1c6fc4","เขียว/น้ำเงิน"], 120:["#6fd46b","#cdb57e","เขียว/ใส"]
+};
+var TOTAL = 120;
+Object.keys(TWO_TONE).forEach(function(k){ COLORS[k]=TWO_TONE[k][0]; NAME_BASE[k]=TWO_TONE[k][2]; CATEGORY_BASE[k]="ทูโทน"; });
+var TEETH = 8, MAX_COLORS = 3, STAFF_PIN = "5555", LOW_STOCK = 5, IDLE_MS = 45000;
+var LINE_OA_ID = "@dentory", CLINIC = "Dentory Dental Clinic", STORE_KEY = "dentory-braces-overrides";
+var FB_URL = "https://www.facebook.com/dentoryclinic";
+/* Theme shortcuts: tap a group to open it, then tap a theme to lay its color numbers across every tooth in order (repeating from the start once the list runs out). */
+var THEMES = [
+  {name:"Ariel", colors:[19,49]},
+  {name:"Snow White", colors:[48,29]},
+  {name:"Jasmine", colors:[13,23]},
+  {name:"Cinderella", colors:[23,29]},
+  {name:"Anna", colors:[51,28]},
+  {name:"Belle", colors:[103,77]},
+  {name:"Merida", colors:[105,96]},
+  {name:"Rapunzel", colors:[54,43]}
+];
+var MULTI_THEMES = [
+  {name:"สีรุ้ง", colors:[49,70,77,6,29,30,53]},
+  {name:"สีรุ้งเมอร์เมด", colors:[77,14,10,23,25,28,54,60]},
+  {name:"สีรุ้งกลิตเตอร์", colors:[101,105,106,98,95,94,92]},
+  {name:"สียางยูนิคอร์น", colors:[53,54,56,23,27,29,30]},
+  {name:"สียางเรนโบว์", colors:[77,15,35,41,61,104,69]},
+  {name:"สียางไล่โทนฟ้าน้ำเงิน", colors:[30,29,22,23,35]},
+  {name:"สียางพาสเทลมาร์ชเมลโล่", colors:[60,67,35,45]},
+  {name:"สียางไล่โทนส้มเหลือง", colors:[70,78,77,67,66]},
+  {name:"สียางไล่โทนชมพูม่วง", colors:[56,55,42,54,53]},
+  {name:"สียางบาร์บี้", colors:[48,77,75]},
+  {name:"สียางสตอเบอรี่", colors:[58,61,57,71,89,51]},
+  {name:"สียางสะท้อนแสง", colors:[80,79,76]}
+];
+var HALLOWEEN_THEMES = [
+  {name:"No.47", colors:[47]},
+  {name:"No.77", colors:[77]},
+  {name:"No.54", colors:[54]},
+  {name:"No.13", colors:[13]},
+  {name:"No.49", colors:[49]},
+  {name:"No.73", colors:[73]},
+  {name:"No.88+73", colors:[88,73]},
+  {name:"No.92+88", colors:[92,88]},
+  {name:"No.54+73", colors:[54,73]},
+  {name:"No.88+76", colors:[88,76]},
+  {name:"No.92+76", colors:[92,76]},
+  {name:"No.73+49", colors:[73,49]},
+  {name:"No.77+47", colors:[77,47]},
+  {name:"No.73+82", colors:[73,82]}
+];
+var THEME_GROUPS = [
+  {key:"halloween", name:"ธีมฮัลโลวีน", items:HALLOWEEN_THEMES, isNew:true, refImgs:["halloween-ref.png","halloween-ref2.png"]},
+  {key:"princess", name:"ธีมเจ้าหญิง", items:THEMES},
+  {key:"multi", name:"ธีมหลายสี", items:MULTI_THEMES}
+];
+
+var I = {
+  phone:'<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.91.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92z"/></svg>',
+  line:function(s){return '<svg width="'+s+'" height="'+s+'" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 3C6.5 3 2 6.6 2 11c0 3.9 3.5 7.2 8.3 7.9-.1.5-.6 2-.6 2.3 0 .3.2.3.4.2.2-.1 2.9-1.9 4-2.7.6.1 1.3.2 1.9.2 5.5 0 10-3.6 10-8S17.5 3 12 3z"/></svg>';},
+  fb:'<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg>',
+  lock:function(s){return '<svg width="'+s+'" height="'+s+'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="11" width="16" height="10" rx="3"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>';},
+  user:'<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>',
+  img:'<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="4"/><circle cx="9" cy="9" r="2"/><path d="M21 15l-5-5L5 21"/></svg>',
+  cal:'<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#7a30f8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="18" rx="3"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>',
+  check:function(s,w){return '<svg width="'+s+'" height="'+s+'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="'+w+'" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>';},
+  arrow:'<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>',
+  redo:'<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/></svg>',
+  home:'<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 11l9-7 9 7"/><path d="M5 10v10h14V10"/></svg>',
+  palette:'<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3a9 9 0 1 0 0 18c1.1 0 1.8-.8 1.8-1.7 0-.5-.2-.9-.5-1.2-.3-.3-.5-.7-.5-1.2 0-1 .8-1.7 1.8-1.7H17a4 4 0 0 0 4-4c0-4.4-4-8.2-9-8.2z"/><circle cx="7.5" cy="11" r="1.2"/><circle cx="10" cy="7" r="1.2"/><circle cx="14.5" cy="7" r="1.2"/></svg>',
+  chev:'<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#0b5ffc" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg>',
+  x:'<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>',
+  star:function(s,css){return '<svg class="sparkle" width="'+s+'" height="'+s+'" viewBox="0 0 24 24" style="'+css+'" aria-hidden="true"><path d="M12 0C13 7 17 11 24 12C17 13 13 17 12 24C11 17 7 13 0 12C7 11 11 7 12 0Z" fill="#fed34b"/></svg>';},
+  heart:function(s,css,c){return '<svg class="sparkle" width="'+s+'" height="'+s+'" viewBox="0 0 24 24" style="'+css+'" aria-hidden="true"><path d="M12 21s-7.5-4.6-9.6-9.2C1 8.6 3 5 6.4 5c2.1 0 3.6 1.2 4.6 2.7C12 6.2 13.5 5 15.6 5 19 5 21 8.6 19.6 11.8 17.5 16.4 12 21 12 21z" fill="'+c+'"/></svg>';}
+};
+var ENAMEL = '<svg class="en" viewBox="0 0 40 48" preserveAspectRatio="none" aria-hidden="true"><path d="M12 0 H28 C36 0 40 4 40 12 V33 C40 43 34 48 25 48 H15 C6 48 0 43 0 33 V12 C0 4 4 0 12 0 Z" fill="url(#dtEnamel)" stroke="#d4d5de" stroke-width="1" vector-effect="non-scaling-stroke"/><path d="M12 0 H28 C36 0 40 4 40 12 V33 C40 43 34 48 25 48 H15 C6 48 0 43 0 33 V12 C0 4 4 0 12 0 Z" fill="url(#dtEnamelSide)"/><path d="M8 6 C14 3 24 3 31 5.5 C27 8 15 8.5 8 6 Z" fill="#ffffff"/></svg>';
+
+/* ---------- helpers ---------- */
+function esc(s){ return String(s == null ? "" : s).replace(/[&<>"']/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c];}); }
+function hexToHSL(hex){
+  var r=parseInt(hex.slice(1,3),16)/255,g=parseInt(hex.slice(3,5),16)/255,b=parseInt(hex.slice(5,7),16)/255;
+  var max=Math.max(r,g,b),min=Math.min(r,g,b),h=0,s=0,l=(max+min)/2;
+  if(max!==min){var d=max-min;s=l>.5?d/(2-max-min):d/(max+min);
+    if(max===r)h=(g-b)/d+(g<b?6:0);else if(max===g)h=(b-r)/d+2;else h=(r-g)/d+4;h*=60;}
+  return {h:h,s:s*100,l:l*100};
+}
+function familyParts(hex){
+  var p=hexToHSL(hex),h=p.h,s=p.s,l=p.l;
+  if(s<12){ if(l<22) return ["ดำ",""]; if(l>85) return ["ขาว",""]; return ["เทา",""]; }
+  var base;
+  if(h<15||h>=345)base="แดง";else if(h<45)base=(l<42&&s<60)?"น้ำตาล":"ส้ม";else if(h<70)base="เหลือง";
+  else if(h<160)base="เขียว";else if(h<195)base="ฟ้าอมเขียว";else if(h<250)base="ฟ้า";else if(h<275)base="น้ำเงิน";
+  else if(h<320)base="ม่วง";else base="ชมพู";
+  return [base,l<32?"เข้ม":(l>68?"อ่อน":"")];
+}
+function emptyArch(){ var a=[]; for(var i=0;i<TEETH;i++) a.push(null); return a; }
+function isHex(s){ return /^#[0-9a-fA-F]{6}$/.test(s); }
+function isThaiPhone(s){ return /^0[0-9]{8,9}$/.test(String(s||"").replace(/[^0-9]/g,"")); }
+function fmtDate(d){
+  if(!d) return "";
+  try{ var x=new Date(d+"T00:00:00"); if(isNaN(x.getTime())) return d;
+    return new Intl.DateTimeFormat("th-TH-u-ca-buddhist",{day:"numeric",month:"short",year:"numeric"}).format(x);}catch(e){ return d; }
+}
+function dot(hex,size,ring){
+  return "display:inline-block;flex-shrink:0;width:"+size+"px;height:"+size+"px;border-radius:9999px;box-sizing:border-box;border:"+Math.round(size/4)+"px solid;border-color:"+hex+";background:#ffffff;box-shadow:"+(ring?"0 0 0 2px #ffffff, ":"")+"0 2px 6px rgba(11,22,119,.18)";
+}
+var EMPTY_DOT = "display:inline-block;flex-shrink:0;width:28px;height:28px;border-radius:9999px;border:2px dashed #7a30f8;box-sizing:border-box";
+
+/* ---------- state ---------- */
+var S = {
+  view:"splash", upper:emptyArch(), lower:emptyArch(), armed:null, filter:"all", themeOpen:null,
+  name:"", phone:"", phoneError:"", apptDate:"", note:"", submitError:"", paletteError:"", chartOpen:false,
+  pinOpen:false, pinError:"",
+  ovColor:{}, ovColor2:{}, ovName:{}, ovCat:{}, stock:{},
+  edit:null, eError:"", eSaved:false
+};
+try{
+  var raw = localStorage.getItem(STORE_KEY);
+  if(raw){ var d = JSON.parse(raw); S.ovColor=d.ovColor||{}; S.ovColor2=d.ovColor2||{}; S.ovName=d.ovName||{}; S.ovCat=d.ovCat||{}; S.stock=d.stock||{}; }
+}catch(e){}
+function persist(){
+  try{ localStorage.setItem(STORE_KEY, JSON.stringify({ovColor:S.ovColor,ovColor2:S.ovColor2,ovName:S.ovName,ovCat:S.ovCat,stock:S.stock})); }catch(e){}
+}
+
+function col(n){ return S.ovColor[n] || COLORS[n]; }
+function col2(n){ return TWO_TONE[n] ? (S.ovColor2[n] || TWO_TONE[n][1]) : null; }
+function bc(n){ var b=col2(n); return b ? col(n)+" "+b+" "+b+" "+col(n) : col(n); }
+function fill(n){ var b=col2(n); return b ? "linear-gradient(135deg,"+col(n)+" 50%,"+b+" 50%)" : col(n); }
+function cname(n){ var o=S.ovName[n]; if(o&&String(o).trim()) return String(o).trim(); if(NAME_BASE[n]) return NAME_BASE[n]; var p=familyParts(col(n)); return p[0]+p[1]; }
+function cat(n){ var o=S.ovCat[n]; if(o&&String(o).trim()) return String(o).trim(); if(CATEGORY_BASE[n]) return CATEGORY_BASE[n]; return familyParts(col(n))[0]; }
+function stockOf(n){ var v=S.stock[n]; if(v===undefined||v===null||v==="") return null; var x=Number(v); return isNaN(x)?null:x; }
+function used(){ var out=[]; S.upper.concat(S.lower).forEach(function(v){ if(v!=null&&out.indexOf(v)===-1) out.push(v); }); return out; }
+function countOf(n){ return S.upper.concat(S.lower).filter(function(v){return v===n;}).length; }
+function inStock(n){ var x=stockOf(n); return x===null||x>0; }
+function canUse(n){ var u=used(); if(u.indexOf(n)!==-1) return true; return u.length<MAX_COLORS && inStock(n); }
+function categories(){
+  var list=[]; for(var n=1;n<=TOTAL;n++){ var c=cat(n); if(list.indexOf(c)===-1) list.push(c); }
+  return list.sort(function(a,b){ var ra=FAMILY_ORDER.indexOf(a),rb=FAMILY_ORDER.indexOf(b); if(ra<0)ra=999; if(rb<0)rb=999; return ra!==rb?ra-rb:a.localeCompare(b,"th"); });
+}
+function canSubmit(){ return used().length>0 && S.name.trim().length>0 && !S.phoneError; }
+function lockMsg(n){ return !inStock(n) ? "สีเบอร์ "+n+" หมดชั่วคราวค่ะ ลองเลือกสีอื่นนะคะ" : "เลือกได้สูงสุด "+MAX_COLORS+" สีค่ะ ลบสีเดิมออกก่อนนะ"; }
+function themeLocked(t){
+  for(var i=0;i<t.colors.length;i++){ if(!inStock(t.colors[i])) return true; }
+  return false;
+}
+function themeUnique(colors){
+  var out=[]; colors.forEach(function(c){ if(out.indexOf(c)===-1) out.push(c); });
+  return out.sort(function(a,b){return a-b;});
+}
+function themeActive(t){
+  var u = used().slice().sort(function(a,b){return a-b;});
+  var tc = themeUnique(t.colors);
+  if(u.length!==tc.length) return false;
+  for(var i=0;i<u.length;i++){ if(u[i]!==tc[i]) return false; }
+  return true;
+}
+function groupByKey(k){
+  for(var i=0;i<THEME_GROUPS.length;i++){ if(THEME_GROUPS[i].key===k) return THEME_GROUPS[i]; }
+  return null;
+}
+function applyTheme(gk, i){
+  var g = groupByKey(gk); if(!g) return;
+  var t = g.items[i]; if(!t) return;
+  for(var j=0;j<t.colors.length;j++){
+    if(!inStock(t.colors[j])){ S.paletteError=lockMsg(t.colors[j]); render(); return; }
+  }
+  var arr=[]; for(var k=0;k<TEETH;k++) arr.push(t.colors[k % t.colors.length]);
+  S.upper=arr.slice(); S.lower=arr.slice(); S.armed=null; S.paletteError="";
+  render();
+}
+
+/* ---------- render ---------- */
+var app = document.getElementById("app");
+var lastView = null;
+
+function render(){
+  var viewChanged = lastView !== S.view;
+  var doRender = function(){
+    var v = S.view, h = "";
+    if(v==="splash") h = renderSplash();
+    else {
+      h = renderTopbar();
+      if(v==="pick"||v==="confirm") h += renderSteps();
+      if(v==="confirm") h += renderDoneHead();
+      if(v==="pick"||v==="confirm") h += renderMouth();
+      if(v==="pick") h += renderPick();
+      if(v==="confirm") h += renderConfirm();
+      if(v==="staff") h += renderStaff();
+      if(v==="staffColors") h += renderStaffColors();
+    }
+    if(S.pinOpen) h += renderPin();
+    app.innerHTML = h;
+    document.body.setAttribute("data-view", v);
+    if(viewChanged) window.scrollTo(0,0);
+    lastView = v;
+    if(S.pinOpen){ var p=document.getElementById("pinBox"); if(p) p.focus(); }
+    resetIdle();
+  };
+  var reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  if(viewChanged && lastView !== null && document.startViewTransition && !reduce) document.startViewTransition(doRender);
+  else doRender();
+}
+
+function renderSplash(){
+  return '<section class="splash">' +
+    I.star(26,"top:40px;left:8px") + I.star(16,"top:84px;left:44px") +
+    I.heart(22,"top:120px;right:14px","#fc5490") + I.heart(14,"top:160px;right:46px","#fc66a2") +
+    '<img class="logo" src="logo.png" alt="Dentory Dental Clinic">' +
+    '<div style="display:flex;flex-direction:column;align-items:center;gap:6px">' +
+      '<div class="tagrow"><span class="pill-explore">Explore</span><span class="en">Braces Colours</span></div>' +
+      '<div class="rainbow"><span class="stroke" aria-hidden="true">สียางจัดฟัน</span><h1>สียางจัดฟัน</h1></div>' +
+      '<p class="lead">เลือกสีที่ใช่...ในสไตล์คุณ <span class="heart">♡</span></p>' +
+    '</div>' +
+    '<div class="card bubble"><p>สำหรับคนไข้ Dentory ของเรา ไม่ต้องกดดันมาเลือกสียางที่คลินิกนะคะ เลือกได้ชิล ๆ จากมือถือ สบายใจเลย <span class="heart">♥</span></p></div>' +
+    '<div class="twostep"><p>แค่ <b>2</b> ขั้นตอน</p><div class="tiles">' +
+      '<div class="card tile"><span class="n" style="background:#56aafc">1</span><span class="t">แตะสี แปะบนฟัน</span><span class="d">ลองได้ไม่จำกัด<br>ดูก่อนใส่จริง</span></div>' +
+      '<div class="card tile"><span class="n" style="background:#fc5490;box-shadow:var(--shadow-pink)">2</span><span class="t">ส่งให้คลินิกทาง LINE</span><span class="d">ประหยัดเวลา<br>ไม่ต้องเร่งรีบ</span></div>' +
+    '</div></div>' +
+    '<div class="contacts">' +
+      '<a class="contact" href="tel:0814536424"><span class="ic">'+I.phone+'</span><span>โทร 081-453-6424</span></a>' +
+      '<a class="contact" href="https://line.me/R/ti/p/'+encodeURIComponent(LINE_OA_ID)+'" target="_blank" rel="noopener"><span class="ic line">'+I.line(20)+'</span><span>LINE @dentory</span></a>' +
+      '<a class="contact" href="'+FB_URL+'" target="_blank" rel="noopener"><span class="ic">'+I.fb+'</span><span>Facebook: Dentory Clinic</span></a>' +
+    '</div>' +
+    '<div class="card qrcard"><img src="qr.svg" alt="QR Code เปิดหน้าเลือกสียางบนมือถือ"><div style="display:flex;flex-direction:column;gap:4px;min-width:0"><span class="t">สแกนเลือกบนมือถือตัวเอง</span><span class="d">เลือกที่บ้านก็ได้ ส่งมาทาง LINE ก่อนวันนัดได้เลยค่ะ</span></div></div>' +
+  '</section>' +
+  '<div class="bottom"><button type="button" class="cta" data-act="start">เริ่มเลือกสียาง '+I.arrow+'</button></div>';
+}
+
+function renderTopbar(){
+  var staff = S.view==="staff"||S.view==="staffColors";
+  return '<header class="topbar"><div class="b"><img src="logo.png" alt="Dentory"><div class="tt"><b>'+(staff?"หลังร้าน":"เลือกสียางจัดฟัน")+'</b><span>'+(staff?"สำหรับพนักงาน Dentory":"Dentory Dental Clinic")+'</span></div></div>' +
+    (S.view==="pick" ? '<button type="button" class="lockpill" data-act="openPin">'+I.lock(14)+' พนักงาน</button>' : '') +
+  '</header>';
+}
+
+function renderSteps(){
+  var filled = used().length>0;
+  var idx = S.view==="confirm" ? 3 : (filled ? 2 : 1);
+  var defs = [["เลือกสี","#56aafc"],["กรอกข้อมูล","#fc5490"],["เสร็จแล้ว","#7a30f8"]];
+  var h = '<ol class="steps" style="list-style:none;padding:0" aria-label="ขั้นตอน">';
+  defs.forEach(function(d,i){
+    var n=i+1, done=n<idx, active=n===idx;
+    h += '<li style="display:flex;align-items:flex-start;gap:4px"><div class="step'+(done?" done":"")+(active?" active":"")+'"'+(active?' aria-current="step"':'')+'><span class="dot"'+(active?' style="background:'+d[1]+'"':'')+'>'+(done?"✓":n)+'</span><span class="l">'+d[0]+'</span></div>' + (i<2?'<span class="stepline"></span>':'') + '</li>';
+  });
+  return h + '</ol>';
+}
+
+function renderTeeth(arch){
+  var interactive = S.view==="pick";
+  return S[arch].map(function(num,i){
+    var filled = num!=null;
+    var aria = "ฟัน"+(arch==="upper"?"บน":"ล่าง")+" ซี่ที่ "+(i+1)+(filled?" สีเบอร์ "+num:" ว่าง");
+    var inner = ENAMEL + '<span class="gum"></span><span class="wire"></span>' +
+      (filled ? '<span class="tie" style="border-color:'+bc(num)+'"></span>' : '') +
+      '<span class="br"></span>' +
+      (filled ? '<span class="num">'+num+'</span>' : '');
+    if(!interactive) return '<div class="tooth ro" role="img" aria-label="'+aria+'">'+inner+'</div>';
+    return '<button type="button" class="tooth" data-act="tooth" data-tooth="1" data-arch="'+arch+'" data-idx="'+i+'" aria-label="'+aria+'">'+inner+'</button>';
+  }).join("");
+}
+
+function renderMouth(){
+  var pick = S.view==="pick", filled = used().length>0;
+  return '<section class="card mouth" aria-label="ภาพฟันจำลอง">' +
+    '<div class="head"><b>'+(pick?"ลองแปะสียางบนฟัน":"สียางบนฟันของคุณ")+'</b>' + (pick&&filled?'<button type="button" class="btn-soft" data-act="clearAll">ล้างทั้งหมด</button>':'') + '</div>' +
+    (pick && S.armed!=null ? '<button type="button" class="fillall" data-act="fillAll"><span style="'+dot(bc(S.armed),28,false)+'"></span>ใส่สีเบอร์ '+S.armed+' ทั้งปากเลย (16 ซี่)</button>' : '') +
+    '<span class="archlbl">ฟันบน</span><div class="arch up">'+renderTeeth("upper")+'</div>' +
+    '<span class="archlbl">ฟันล่าง</span><div class="arch lo">'+renderTeeth("lower")+'</div>' +
+    (pick ? '<p class="hint">แตะสียางด้านล่าง แล้วแตะซี่ฟันที่อยากวาง · หรือกดปุ่ม "ทั้งปากเลย" เพื่อใส่สีเดียวกันครบทุกซี่ในคลิกเดียว · แตะซี่ที่มีสีอีกครั้งเพื่อลบ</p>' : '') +
+  '</section>';
+}
+
+function bandSvg(n){
+  var hex=col(n), h2=col2(n);
+  if(h2) return '<svg width="66" height="32" viewBox="0 0 66 32" aria-hidden="true">' +
+    '<path d="M15 20 L59 9" stroke="#0b1677" stroke-opacity="0.08" stroke-width="9" stroke-linecap="round"/>' +
+    '<path d="M14.6 18.3 L58.6 7.3" stroke="'+hex+'" stroke-opacity="0.8" stroke-width="3.6" stroke-linecap="round"/>' +
+    '<path d="M15.4 21.7 L59.4 10.7" stroke="'+h2+'" stroke-opacity="0.8" stroke-width="3.6" stroke-linecap="round"/>' +
+    '<circle cx="31" cy="21.5" r="1.7" fill="'+hex+'" fill-opacity="0.5"/><circle cx="37" cy="20" r="1.7" fill="'+h2+'" fill-opacity="0.5"/><circle cx="43" cy="18.5" r="1.7" fill="'+hex+'" fill-opacity="0.5"/>' +
+    '<circle cx="15" cy="20" r="8" fill="none" stroke="#0b1677" stroke-opacity="0.1" stroke-width="8"/>' +
+    '<path d="M7 20 A8 8 0 0 1 23 20" fill="none" stroke="'+hex+'" stroke-width="6"/><path d="M23 20 A8 8 0 0 1 7 20" fill="none" stroke="'+h2+'" stroke-width="6"/>' +
+    '<circle cx="15" cy="20" r="2.6" fill="#d0d1d8"/><path d="M5 30.5 H61" stroke="#c9cbd6" stroke-width="0.8"/></svg>';
+  return '<svg width="66" height="32" viewBox="0 0 66 32" aria-hidden="true">' +
+    '<path d="M15 20 L59 9" stroke="#0b1677" stroke-opacity="0.08" stroke-width="9" stroke-linecap="round"/>' +
+    '<path d="M15 20 L59 9" stroke="'+hex+'" stroke-opacity="0.75" stroke-width="7" stroke-linecap="round"/>' +
+    '<circle cx="31" cy="21.5" r="1.7" fill="'+hex+'" fill-opacity="0.45"/><circle cx="37" cy="20" r="1.7" fill="'+hex+'" fill-opacity="0.45"/><circle cx="43" cy="18.5" r="1.7" fill="'+hex+'" fill-opacity="0.45"/>' +
+    '<circle cx="15" cy="20" r="8" fill="none" stroke="#0b1677" stroke-opacity="0.1" stroke-width="8"/>' +
+    '<circle cx="15" cy="20" r="8" fill="none" stroke="'+hex+'" stroke-width="6"/>' +
+    '<circle cx="15" cy="20" r="2.6" fill="#d0d1d8"/><path d="M5 30.5 H61" stroke="#c9cbd6" stroke-width="0.8"/></svg>';
+}
+function pad(n){ return n<10?"0"+n:String(n); }
+
+function themeDots(colors){
+  var MAXSHOW = 5, show = colors.slice(0,MAXSHOW), extra = colors.length-show.length;
+  var out = show.map(function(c,i){ return '<span class="md" style="background:'+col(c)+(i>0?";margin-left:-7px":"")+'"></span>'; }).join("");
+  if(extra>0) out += '<span class="mdmore">+'+extra+'</span>';
+  return out;
+}
+function renderThemeGroup(g){
+  var open = S.themeOpen===g.key;
+  var preview = g.items.slice(0,3).map(function(t){ return '<span class="gd" style="background:'+col(t.colors[0])+'"></span>'; }).join("");
+  var head = '<button type="button" class="themehead'+(open?" open":"")+'" data-act="themeGroup" data-g="'+esc(g.key)+'" aria-expanded="'+open+'">' +
+      '<span class="gdots">'+preview+'</span>' +
+      '<span class="gname">'+esc(g.name)+(g.isNew?' <span class="gnew">ใหม่</span>':'')+'</span>' +
+      '<span class="gchev">'+I.chev+'</span>' +
+    '</button>';
+  var row = "";
+  if(open){
+    var cards = g.items.map(function(t,i){
+      var active = themeActive(t), locked = themeLocked(t);
+      return '<button type="button" class="theme'+(active?" active":"")+(locked?" locked":"")+'" data-act="theme" data-g="'+esc(g.key)+'" data-i="'+i+'" aria-pressed="'+active+'" aria-label="ธีม '+esc(t.name)+' ('+t.colors.length+' สี)'+(locked?" ของหมดชั่วคราว":" แตะใส่สีให้ทั้งปาก")+'">' +
+        '<span class="duo">'+themeDots(t.colors)+'</span>' +
+        '<span class="tn">'+esc(t.name)+'</span>' +
+      '</button>';
+    }).join("");
+    row = '<div class="themerow" role="toolbar" aria-label="'+esc(g.name)+'">'+cards+'</div>';
+    if(g.refImgs && g.refImgs.length){
+      var imgs = g.refImgs.map(function(src,i){ return '<img src="'+esc(src)+'" alt="โปสเตอร์'+esc(g.name)+'ต้นฉบับจากคลินิก '+(i+1)+'" loading="lazy"'+(i>0?' style="margin-top:10px"':'')+'>'; }).join("");
+      row += '<div class="chart" style="margin-top:10px">'+imgs+'<p>ภาพโปสเตอร์ต้นฉบับจากคลินิก Dentory ไว้เทียบเบอร์สีได้นะคะ</p></div>';
+    }
+  }
+  return head + row;
+}
+function renderThemes(){
+  var groups = THEME_GROUPS.map(renderThemeGroup).join("");
+  return '<section class="card themes">' +
+    '<div class="tt"><b>ธีมสุดฮิต <span class="heart">♡</span></b><span>เลือกกลุ่มธีม แล้วแตะสีที่ชอบ ใส่สีสลับให้ทั้งปากเลย</span></div>' +
+    groups +
+  '</section>';
+}
+
+function renderPick(){
+  var cats = categories();
+  var chips = ["all"].concat(cats).map(function(c){
+    var on = S.filter===c;
+    return '<button type="button" class="chip'+(on?" on":"")+'" data-act="filter" data-v="'+esc(c)+'" aria-pressed="'+on+'">'+(c==="all"?"ทั้งหมด":esc(c))+'</button>';
+  }).join("");
+  var sw = "";
+  for(var n=1;n<=TOTAL;n++){
+    if(S.filter!=="all" && cat(n)!==S.filter) continue;
+    var armed=S.armed===n, cnt=countOf(n), locked=!canUse(n), st=stockOf(n);
+    var oos = st!==null && st<=0, low = !oos && st!==null && st<=LOW_STOCK, nm=cname(n);
+    sw += '<button type="button" class="sw'+(armed?" armed":"")+(locked&&!oos?" locked":"")+'" data-swatch="'+n+'" aria-pressed="'+armed+'" aria-label="สียางเบอร์ '+n+' โทน'+esc(nm)+(oos?" (หมดชั่วคราว)":(locked?" (เลือกครบ "+MAX_COLORS+" สีแล้ว)":""))+'">' +
+      '<span class="no">'+pad(n)+'</span>'+bandSvg(n)+'<span class="nm">'+esc(nm)+'</span>' +
+      (cnt>0?'<span class="cnt">'+cnt+'</span>':'') + (oos?'<span class="oos">หมดชั่วคราว</span>':'') + (low?'<span class="low">'+st+'</span>':'') +
+    '</button>';
+  }
+  if(!sw) sw = '<p class="muted" style="grid-column:1/-1;text-align:center;margin:12px 0">ไม่มีสีในหมวดนี้</p>';
+  var u = used();
+  var DOTS_MAX = 4;
+  var dots;
+  if(!u.length){
+    dots = '<span style="display:inline-block;width:28px;height:28px;border-radius:9999px;border:2px dashed #b0defc;box-sizing:border-box"></span>';
+  }else{
+    var uShown = u.slice(0,DOTS_MAX);
+    dots = uShown.map(function(n,i){ return '<span style="'+dot(bc(n),28,i>0)+(i>0?";margin-left:-8px":"")+'"></span>'; }).join("");
+    if(u.length>DOTS_MAX) dots += '<span style="display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;border-radius:9999px;background:var(--ink);color:#fff;font-family:var(--font-display);font-weight:700;font-size:11px;margin-left:-8px;box-shadow:0 0 0 2px #fff">+'+(u.length-DOTS_MAX)+'</span>';
+  }
+  return '<section class="pick">' +
+    renderThemes() +
+    '<div class="hrow"><h2>Pick your vibe <span class="heart">♡</span></h2><span class="sticker">'+TOTAL+' สี · เลือกได้สูงสุด '+MAX_COLORS+' สี</span></div>' +
+    '<div class="hintbar" aria-live="polite"><span style="'+(S.armed!=null?dot(bc(S.armed),28,false):EMPTY_DOT)+'"></span><span>'+(S.armed!=null?"ถือสีเบอร์ "+S.armed+" ("+esc(cname(S.armed))+") อยู่ แตะซี่ฟันที่อยากวางได้เลย":"แตะสีเพื่อหยิบ แล้วแตะซี่ฟัน · ผสมได้หลายสีนะ")+'</span></div>' +
+    '<div class="chips" role="toolbar" aria-label="หมวดสี">'+chips+'</div>' +
+    (S.paletteError?'<p class="err" role="alert">'+esc(S.paletteError)+'</p>':'') +
+    '<div class="card swcard"><div class="rule"></div><div class="grid">'+sw+'</div><div class="rule b"></div></div>' +
+    '<button type="button" class="charttoggle" data-act="chart" aria-expanded="'+S.chartOpen+'">'+I.img+(S.chartOpen?"ซ่อนรูปชาร์ตสีจริง":"ดูรูปชาร์ตสีจริง (เทียบกับยางจริง)")+'</button>' +
+    (S.chartOpen?'<div class="chart"><img src="chart-ref.jpg" alt="รูปถ่ายชาร์ตสียาง 108 สี ต้นฉบับ" loading="lazy"><p>สีบนจออาจต่างจากยางจริงนิดหน่อยตามแต่ละเครื่อง รูปนี้คือชาร์ตจริงไว้เทียบเบอร์สีค่ะ</p></div>':'') +
+    '<form class="card form" id="infoForm" novalidate>' +
+      '<div class="fhead"><span class="disc">'+I.user+'</span><div class="tt"><b>บอกเราหน่อยว่าเป็นใคร</b><span>พนักงานจะได้เตรียมยางให้ถูกคน</span></div></div>' +
+      '<div class="field"><label for="fName">ชื่อ-นามสกุล <span class="req">*</span></label><input class="inp" id="fName" type="text" value="'+esc(S.name)+'" placeholder="เช่น สมชาย ใจดี" autocomplete="name"></div>' +
+      '<div class="field"><label for="fPhone">เบอร์โทร <small>(ถ้ามี)</small></label><input class="inp" id="fPhone" type="tel" inputmode="tel" value="'+esc(S.phone)+'" placeholder="08x-xxx-xxxx" autocomplete="tel">' + (S.phoneError?'<span class="ferr" id="phoneErr">'+esc(S.phoneError)+'</span>':'') + '</div>' +
+      '<div class="field"><label for="fDate">วันนัด <small>(ถ้ามี)</small></label><input class="inp" id="fDate" type="date" value="'+esc(S.apptDate)+'"></div>' +
+      '<div class="field"><label for="fNote">ฝากบอกพนักงาน <small>(ถ้ามี)</small></label><textarea class="inp" id="fNote" placeholder="เช่น อยากสลับลายสีทุกซี่">'+esc(S.note)+'</textarea></div>' +
+      (S.submitError?'<p class="err" role="alert">'+esc(S.submitError)+'</p>':'') +
+    '</form>' +
+  '</section>' +
+  '<div class="bottom"><div class="pickbar"><div class="used"><div class="dots">'+dots+'</div><span class="lbl">'+(u.length>MAX_COLORS?"ใช้ "+u.length+" สี":u.length+"/"+MAX_COLORS+" สี")+'</span></div>' +
+    '<button type="button" class="submit'+(canSubmit()?"":" off")+'" id="submitBtn" data-act="submit" aria-disabled="'+!canSubmit()+'">ยืนยันเลย</button></div></div>';
+}
+
+function renderDoneHead(){
+  return '<div class="done">' + I.star(22,"top:0;left:22%") + I.star(14,"top:46px;right:22%") +
+    '<span class="badge">'+I.check(36,3)+'</span><h2>เลือกสีเรียบร้อย!</h2><p>คุณ'+esc(S.name)+' เลือกไว้แบบนี้ <span class="heart">♡</span></p></div>';
+}
+
+function lineText(){
+  var u = used();
+  return [
+    "แจ้งเลือกสียางจัดฟัน ("+CLINIC+")",
+    "ชื่อ: "+S.name.trim(),
+    S.phone.trim()?"เบอร์: "+S.phone.trim():null,
+    S.apptDate?"วันนัด: "+fmtDate(S.apptDate):null,
+    "สีที่เลือก: "+(u.map(function(n){return "#"+n+" ("+cname(n)+(TWO_TONE[n]?" ทูโทน":"")+")";}).join(", ")||"-"),
+    "บน: "+S.upper.map(function(x){return x==null?"-":x;}).join(",")+" / ล่าง: "+S.lower.map(function(x){return x==null?"-":x;}).join(","),
+    S.note.trim()?"หมายเหตุ: "+S.note.trim():null
+  ].filter(function(l){return l!=null;}).join("\n");
+}
+
+function renderConfirm(){
+  var rows = used().map(function(n){
+    return '<div class="row"><span style="'+dot(bc(n),40,false)+'"></span><b>#'+n+'</b><span class="muted">'+esc(cname(n))+' · '+countOf(n)+' ซี่</span></div>';
+  }).join("");
+  var url = "https://line.me/R/oaMessage/"+encodeURIComponent(LINE_OA_ID)+"/?"+encodeURIComponent(lineText());
+  return '<section class="conf">' +
+    '<div class="card summary"><span class="k muted" style="font-weight:600">สีที่เลือก</span>'+rows +
+      (S.apptDate?'<div class="appt">'+I.cal+'<span>วันนัด <b class="k" style="font-weight:600">'+esc(fmtDate(S.apptDate))+'</b></span></div>':'') + '</div>' +
+    '<div class="pinkbox"><p>กดปุ่มด้านล่างเพื่อส่งรายการสีให้คลินิกทาง LINE ได้เลยค่ะ พนักงานจะเตรียมยางไว้ให้ (หรือโชว์หน้านี้ที่เคาน์เตอร์ก็ได้นะคะ) <span class="heart">♥</span></p>' +
+      '<a class="linebtn" href="'+esc(url)+'" target="_blank" rel="noopener">'+I.line(28)+'ส่งให้คลินิกทาง LINE</a></div>' +
+    '<div class="two"><button type="button" class="btn-white" data-act="redo">'+I.redo+'เลือกใหม่</button><button type="button" class="btn-white" data-act="home">'+I.home+'หน้าแรก</button></div>' +
+  '</section>';
+}
+
+function renderStaff(){
+  return '<section class="staff">' +
+    '<div class="hrow"><h2>รายการของคนไข้</h2><button type="button" class="smallbtn" data-act="backToPick">กลับหน้าเลือกสี</button></div>' +
+    '<div class="card notice"><p>แอปไม่ได้เก็บรายการไว้ในระบบนะคะ เมื่อคนไข้เลือกสีเสร็จ จะกดส่งสรุปเข้าแชท LINE ของคลินิก (@dentory) โดยตรง ดูรายการได้ที่แชท LINE เลยค่ะ</p>' +
+      '<a class="linebtn" style="min-height:56px" href="https://line.me/R/ti/p/'+encodeURIComponent(LINE_OA_ID)+'" target="_blank" rel="noopener">'+I.line(26)+'เปิดแชท LINE</a></div>' +
+    '<button type="button" class="rowbtn" data-act="openColors"><span class="disc">'+I.palette+'</span><span class="tt"><b>ปรับสี ชื่อ หมวด และสต็อก</b><span>แก้สีให้ตรงยางจริง · ตั้งของหมด</span></span>'+I.chev+'</button>' +
+  '</section>';
+}
+
+function renderStaffColors(){
+  var cats = categories(), editCard = "";
+  if(S.edit!=null){
+    var n=S.edit, st=stockOf(n), o=S.ovCat[n], curCat=(o&&String(o).trim())?String(o).trim():"";
+    var opts = '<option value=""'+(curCat?"":" selected")+'>อัตโนมัติ ('+esc(CATEGORY_BASE[n]||familyParts(col(n))[0])+')</option>' +
+      cats.map(function(c){ return '<option value="'+esc(c)+'"'+(c===curCat?" selected":"")+'>'+esc(c)+'</option>'; }).join("") +
+      '<option value="__custom__">+ เพิ่มหมวดใหม่...</option>';
+    editCard = '<div class="card edit" id="editCard">' +
+      '<div class="top"><span class="bigsw" id="bigSw" style="background:'+fill(n)+'"></span><div><b>สีเบอร์ '+n+'</b><span class="muted" style="font-size:13px">'+((S.ovColor[n]||S.ovColor2[n])?"ปรับสีแล้ว":"สีเดิมจากชาร์ต")+(TWO_TONE[n]?" · ทูโทน":"")+' · '+(st===null?"สต็อกไม่จำกัด":"เหลือ "+st)+'</span></div></div>' +
+      '<div class="field"><label for="eHex">'+(TWO_TONE[n]?"รหัสสีที่ 1":"รหัสสี")+'</label><div class="hexrow"><input type="color" id="ePicker" aria-label="เลือกสี" value="'+col(n)+'"><input class="inp" id="eHex" type="text" maxlength="7" value="'+col(n)+'" placeholder="#4d6542"></div></div>' +
+      (TWO_TONE[n]?'<div class="field"><label for="eHex2">รหัสสีที่ 2</label><div class="hexrow"><input type="color" id="ePicker2" aria-label="เลือกสีที่ 2" value="'+col2(n)+'"><input class="inp" id="eHex2" type="text" maxlength="7" value="'+col2(n)+'" placeholder="#4d6542"></div></div>':'') +
+      '<div class="field"><label for="eName">ชื่อสีบนสวอทช์</label><input class="inp" id="eName" type="text" maxlength="24" value="'+esc(cname(n))+'" placeholder="เช่น เขียวเข้ม"></div>' +
+      '<div class="field"><label for="eCat">หมวดหมู่ (ใช้กรองหน้าคนไข้)</label><select class="inp" id="eCat">'+opts+'</select>' +
+        '<input class="inp" id="eCatCustom" type="text" maxlength="24" aria-label="ชื่อหมวดใหม่" placeholder="พิมพ์ชื่อหมวดใหม่ เช่น ฟ้าพาสเทล" hidden></div>' +
+      '<div class="field"><label for="eStock">คงเหลือในสต็อก <small>(ว่าง = ไม่จำกัด)</small></label><input class="inp" id="eStock" type="number" min="0" step="1" inputmode="numeric" value="'+(st===null?"":st)+'" placeholder="ไม่จำกัด"></div>' +
+      (S.eError?'<p class="err" role="alert">'+esc(S.eError)+'</p>':'') +
+      (S.eSaved?'<p class="saved" role="status">บันทึกแล้ว</p>':'') +
+      '<div class="acts"><button type="button" class="btn-save" data-act="saveEdit">บันทึก</button><button type="button" class="btn-lilac" data-act="resetEdit">คืนค่าเดิม</button><button type="button" class="btn-x" data-act="closeEdit" aria-label="ปิด">'+I.x+'</button></div>' +
+    '</div>';
+  }
+  var sw = "";
+  for(var m=1;m<=TOTAL;m++){
+    var s2=stockOf(m), oos=s2!==null&&s2<=0, low=s2!==null&&s2>0&&s2<=LOW_STOCK, changed=!!(S.ovColor[m]||S.ovColor2[m]||S.ovName[m]||S.ovCat[m]);
+    sw += '<button type="button" class="sw'+(S.edit===m?" editing":"")+'" data-act="editColor" data-n="'+m+'" aria-label="แก้ไขสียางเบอร์ '+m+'">' +
+      '<span class="no">'+pad(m)+'</span>'+bandSvg(m)+'<span class="nm">'+esc(cat(m))+'</span>' +
+      (changed?'<span class="chg">'+I.check(12,3.5)+'</span>':'') + (oos?'<span class="oos">หมด</span>':'') + (low?'<span class="low">'+s2+'</span>':'') +
+    '</button>';
+  }
+  return '<section class="staff">' +
+    '<div class="hrow"><h2>ปรับสี · ชื่อ · หมวด · สต็อก</h2><button type="button" class="smallbtn" data-act="backToStaff">กลับ</button></div>' +
+    '<p class="muted" style="margin:0;font-size:13px;line-height:1.55">แตะสีเบอร์ที่ไม่ตรงกับยางจริง แล้วปรับให้ตรง ตั้งชื่อ หมวด หรือจำนวนคงเหลือ (สต็อกหมด = คนไข้เลือกไม่ได้) <b style="color:var(--ink)">ค่าที่ปรับจะเห็นเฉพาะเครื่องนี้</b></p>' +
+    editCard +
+    '<div class="card swcard"><div class="rule"></div><div class="grid">'+sw+'</div><div class="rule b"></div></div>' +
+  '</section>';
+}
+
+function renderPin(){
+  return '<div class="overlay" data-act="overlay"><div class="card pin" role="dialog" aria-modal="true" aria-labelledby="pinTitle">' +
+    '<span class="disc">'+I.lock(24)+'</span><h3 id="pinTitle">สำหรับพนักงาน</h3><p>ใส่รหัส 4 หลักเพื่อเข้าหน้าจัดการ</p>' +
+    '<input class="inp" id="pinBox" type="password" inputmode="numeric" maxlength="4" autocomplete="off" aria-label="รหัส 4 หลัก">' +
+    (S.pinError?'<span class="err" role="alert">'+esc(S.pinError)+'</span>':'') +
+    '<div class="acts"><button type="button" class="btn-lilac" data-act="cancelPin">ยกเลิก</button><button type="button" class="btn-save" data-act="submitPin">เข้าสู่ระบบ</button></div>' +
+  '</div></div>';
+}
+
+/* ---------- actions ---------- */
+function go(view, patch){ for(var k in patch||{}) S[k]=patch[k]; S.view=view; render(); }
+function goHome(){
+  go("splash",{upper:emptyArch(),lower:emptyArch(),armed:null,filter:"all",name:"",phone:"",phoneError:"",apptDate:"",note:"",submitError:"",paletteError:"",chartOpen:false,pinOpen:false,pinError:""});
+}
+function pickSwatch(n){
+  if(S.armed===n){ S.armed=null; S.paletteError=""; render(); return; }
+  if(!canUse(n)){ S.paletteError=lockMsg(n); render(); return; }
+  S.armed=n; S.paletteError=""; render();
+}
+function placeOn(arch,i,n){
+  if(!canUse(n)){ S.paletteError=lockMsg(n); return; }
+  S[arch][i]=n; S.paletteError="";
+}
+function tapTooth(arch,i){
+  var arr=S[arch];
+  if(S.armed!=null){ if(arr[i]===S.armed) arr[i]=null; else placeOn(arch,i,S.armed); }
+  else if(arr[i]!=null){ arr[i]=null; S.paletteError=""; }
+  else { S.paletteError="แตะเลือกสียางด้านล่างก่อนนะคะ แล้วค่อยแตะซี่ฟัน"; }
+  render();
+}
+function submit(){
+  if(!used().length){ S.submitError="ยังไม่ได้แปะสีบนฟันเลยนะคะ"; render(); return; }
+  if(!S.name.trim()){ S.submitError="ใส่ชื่อก่อนนะคะ พนักงานจะได้รู้ว่าเป็นของใคร"; render(); var f=document.getElementById("fName"); if(f){ f.focus(); } return; }
+  if(S.phone.trim() && !isThaiPhone(S.phone)){ S.phoneError="เบอร์ดูไม่ครบ ลองเช็กอีกทีนะคะ"; render(); return; }
+  var changed=false;
+  used().forEach(function(n){ var x=stockOf(n); if(x!==null){ S.stock[n]=Math.max(0,x-countOf(n)); changed=true; } });
+  if(changed) persist();
+  go("confirm",{submitError:"",armed:null,pinOpen:false});
+}
+function submitPin(){
+  var box=document.getElementById("pinBox"), v=box?box.value:"";
+  if(v===STAFF_PIN) go("staff",{pinOpen:false,pinError:""});
+  else { S.pinError="รหัสไม่ถูกต้อง ลองใหม่อีกครั้งค่ะ"; render(); }
+}
+function saveEdit(){
+  var n=S.edit; if(n==null) return;
+  var hex=String(document.getElementById("eHex").value||"").trim().toLowerCase();
+  if(hex && hex.charAt(0)!=="#") hex="#"+hex;
+  if(!isHex(hex)){ S.eError="รหัสสีต้องเป็นแบบ #a1b2c3 นะคะ"; S.eSaved=false; render(); return; }
+  var stockStr=String(document.getElementById("eStock").value).trim();
+  if(stockStr!=="" && (isNaN(Number(stockStr))||Number(stockStr)<0)){ S.eError="จำนวนสต็อกต้องเป็นเลข 0 ขึ้นไปค่ะ"; S.eSaved=false; render(); return; }
+  var catSel=document.getElementById("eCat").value, c=catSel==="__custom__"?String(document.getElementById("eCatCustom").value||"").trim():catSel;
+  if(catSel==="__custom__" && !c){ S.eError="พิมพ์ชื่อหมวดใหม่ หรือเลือกหมวดที่มีอยู่แล้วนะคะ"; S.eSaved=false; render(); return; }
+  var hex2=null, h2el=document.getElementById("eHex2");
+  if(h2el){ hex2=String(h2el.value||"").trim().toLowerCase(); if(hex2&&hex2.charAt(0)!=="#") hex2="#"+hex2;
+    if(!isHex(hex2)){ S.eError="รหัสสีที่ 2 ต้องเป็นแบบ #a1b2c3 นะคะ"; S.eSaved=false; render(); return; } }
+  if(hex!==COLORS[n]) S.ovColor[n]=hex; else delete S.ovColor[n];
+  if(hex2 && hex2!==TWO_TONE[n][1]) S.ovColor2[n]=hex2; else delete S.ovColor2[n];
+  var nm=String(document.getElementById("eName").value||"").trim();
+  var fp=familyParts(hex), autoName=NAME_BASE[n]||(fp[0]+fp[1]);
+  if(nm && nm!==autoName) S.ovName[n]=nm; else delete S.ovName[n];
+  if(c) S.ovCat[n]=c; else delete S.ovCat[n];
+  if(stockStr==="") delete S.stock[n]; else S.stock[n]=Math.floor(Number(stockStr));
+  persist(); S.eError=""; S.eSaved=true; render();
+}
+function resetEdit(){
+  var n=S.edit; if(n==null) return;
+  delete S.ovColor[n]; delete S.ovColor2[n]; delete S.ovName[n]; delete S.ovCat[n]; delete S.stock[n];
+  persist(); S.eError=""; S.eSaved=true; render();
+}
+
+/* ---------- events ---------- */
+app.addEventListener("click", function(e){
+  var sw = e.target.closest("[data-swatch]");
+  if(sw){ pickSwatch(parseInt(sw.getAttribute("data-swatch"),10)); return; }
+  var el = e.target.closest("[data-act]"); if(!el) return;
+  var a = el.getAttribute("data-act");
+  switch(a){
+    case "start": go("pick"); break;
+    case "tooth": tapTooth(el.getAttribute("data-arch"), parseInt(el.getAttribute("data-idx"),10)); break;
+    case "clearAll": S.upper=emptyArch(); S.lower=emptyArch(); S.paletteError=""; render(); break;
+    case "fillAll": if(S.armed!=null){ var arr=[]; for(var i=0;i<TEETH;i++) arr.push(S.armed); S.upper=arr.slice(); S.lower=arr.slice(); S.paletteError=""; render(); } break;
+    case "theme": applyTheme(el.getAttribute("data-g"), parseInt(el.getAttribute("data-i"),10)); break;
+    case "themeGroup": { var gk=el.getAttribute("data-g"); S.themeOpen = (S.themeOpen===gk?null:gk); render(); } break;
+    case "filter": S.filter=el.getAttribute("data-v"); render(); break;
+    case "chart": S.chartOpen=!S.chartOpen; render(); break;
+    case "submit": submit(); break;
+    case "redo": go("pick",{upper:emptyArch(),lower:emptyArch(),armed:null,submitError:"",paletteError:""}); break;
+    case "home": goHome(); break;
+    case "openPin": S.pinOpen=true; S.pinError=""; render(); break;
+    case "cancelPin": S.pinOpen=false; S.pinError=""; render(); break;
+    case "overlay": if(e.target===el){ S.pinOpen=false; S.pinError=""; render(); } break;
+    case "submitPin": submitPin(); break;
+    case "backToPick": go("pick"); break;
+    case "openColors": go("staffColors",{edit:null,eError:"",eSaved:false}); break;
+    case "backToStaff": go("staff",{edit:null}); break;
+    case "editColor": S.edit=parseInt(el.getAttribute("data-n"),10); S.eError=""; S.eSaved=false; render(); var ec=document.getElementById("editCard"); if(ec) ec.scrollIntoView({block:"start",behavior:"smooth"}); break;
+    case "saveEdit": saveEdit(); break;
+    case "resetEdit": resetEdit(); break;
+    case "closeEdit": S.edit=null; S.eError=""; render(); break;
+  }
+});
+app.addEventListener("input", function(e){
+  var t=e.target, id=t.id;
+  if(id==="fName"){ S.name=t.value; S.submitError=""; syncSubmit(); }
+  else if(id==="fPhone"){ S.phone=t.value; if(S.phoneError && (!t.value.trim()||isThaiPhone(t.value))){ S.phoneError=""; var pe=document.getElementById("phoneErr"); if(pe) pe.remove(); } syncSubmit(); }
+  else if(id==="fNote"){ S.note=t.value; }
+  else if(id==="fDate"){ S.apptDate=t.value; }
+  else if(id==="ePicker"||id==="ePicker2"){ document.getElementById(id==="ePicker"?"eHex":"eHex2").value=t.value; paintBig(); }
+  else if(id==="eHex"||id==="eHex2"){ var v=t.value.trim(); if(v&&v[0]!=="#") v="#"+v; if(isHex(v)){ document.getElementById(id==="eHex"?"ePicker":"ePicker2").value=v.toLowerCase(); paintBig(); } }
+});
+app.addEventListener("change", function(e){
+  var t=e.target;
+  if(t.id==="fDate") S.apptDate=t.value;
+  if(t.id==="eCat"){ var c=document.getElementById("eCatCustom"); c.hidden = t.value!=="__custom__"; if(!c.hidden) c.focus(); }
+});
+app.addEventListener("focusout", function(e){
+  if(e.target.id==="fPhone"){
+    var v=e.target.value, err=(v.trim()&&!isThaiPhone(v))?"เบอร์ดูไม่ครบ ลองเช็กอีกทีนะคะ":"";
+    if(err!==S.phoneError){ S.phoneError=err; var rel=e.relatedTarget; render(); if(rel&&rel.id){ var r=document.getElementById(rel.id); if(r) r.focus(); } }
+  }
+});
+app.addEventListener("keydown", function(e){
+  if(e.target.id==="pinBox" && e.key==="Enter"){ e.preventDefault(); submitPin(); }
+  if(e.key==="Escape" && S.pinOpen){ S.pinOpen=false; render(); }
+});
+app.addEventListener("submit", function(e){ e.preventDefault(); });
+function paintBig(){
+  var a=document.getElementById("ePicker"), b=document.getElementById("ePicker2"), big=document.getElementById("bigSw");
+  if(a&&big) big.style.background = b ? "linear-gradient(135deg,"+a.value+" 50%,"+b.value+" 50%)" : a.value;
+}
+function syncSubmit(){
+  var b=document.getElementById("submitBtn"); if(!b) return;
+  var ok=canSubmit(); b.classList.toggle("off",!ok); b.setAttribute("aria-disabled",String(!ok));
+}
+
+/* ---------- idle reset (kiosk): back to splash after 45 s on pick/confirm ---------- */
+var idleTimer = null;
+function resetIdle(){
+  if(idleTimer){ clearTimeout(idleTimer); idleTimer=null; }
+  if((S.view==="pick"||S.view==="confirm") && !S.pinOpen) idleTimer=setTimeout(goHome, IDLE_MS);
+}
+["pointerdown","keydown","input","scroll"].forEach(function(t){ document.addEventListener(t, resetIdle, {passive:true}); });
+
+render();
+})();
+</script>
+
+</body></html>
