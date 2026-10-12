@@ -77,7 +77,7 @@ h1,h2,h3{text-wrap:balance}
 .pickbar .dots{display:flex}
 .pickbar .lbl{font-family:var(--font-display);font-weight:600;font-size:14px;white-space:nowrap}
 .submit{flex:1;min-height:52px;border:none;border-radius:9999px;background:var(--pink-500);color:#fff;font-family:var(--font-display);font-weight:600;font-size:24px;box-shadow:var(--shadow-pink);transition:opacity .15s ease}
-.submit.off{opacity:.45}
+.submit.off{opacity:.8;background:var(--pink-400)}
 
 /* topbar + steps */
 .topbar{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:18px 0 10px}
@@ -206,6 +206,17 @@ select.inp{padding:0 16px}
 .pinkbox{background:var(--pink-100);border-radius:28px;padding:18px 20px;display:flex;flex-direction:column;gap:14px}
 .pinkbox p{margin:0;font-size:15px;line-height:1.6}
 .linebtn{display:flex;align-items:center;justify-content:center;gap:10px;min-height:60px;border-radius:9999px;background:var(--line-green);color:#fff;text-decoration:none;font-family:var(--font-display);font-weight:700;font-size:24px;box-shadow:0 8px 20px rgba(6,199,85,.32);padding:0 16px;text-align:center}
+.sendhead{display:flex;flex-direction:column;align-items:center;gap:6px;text-align:center;padding:4px 0 6px}
+.sendhead .badge{width:72px;height:72px;border-radius:9999px;background:var(--line-green);color:#fff;display:flex;align-items:center;justify-content:center;box-shadow:0 8px 20px rgba(6,199,85,.32)}
+.sendhead h2{margin:4px 0 0;font-family:var(--font-display);font-weight:700;font-size:30px;line-height:1.2}
+.sendhead p{margin:0;color:var(--ink-muted);font-size:15px}
+.howto{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:8px}
+.howto li{display:flex;align-items:flex-start;gap:10px;font-size:15px;line-height:1.5}
+.howto .hn{flex-shrink:0;width:26px;height:26px;border-radius:9999px;background:#fff;color:var(--pink-600);font-family:var(--font-display);font-weight:700;font-size:14px;line-height:26px;text-align:center}
+.howto li.on .hn{background:var(--line-green);color:#fff}
+.sentnote{margin:0;background:#fff;border-radius:18px;padding:12px 14px;font-size:14px;line-height:1.55;color:var(--ink)}
+@media (prefers-reduced-motion:no-preference){.linebtn.pulse{animation:pulse 1.6s ease-in-out infinite}}
+@keyframes pulse{0%,100%{box-shadow:0 8px 20px rgba(6,199,85,.32)}50%{box-shadow:0 0 0 8px rgba(6,199,85,.18),0 8px 20px rgba(6,199,85,.32)}}
 .two{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
 .btn-white{display:flex;align-items:center;justify-content:center;gap:8px;min-height:50px;border:none;border-radius:9999px;background:#fff;color:var(--blue-600);font-family:var(--font-display);font-weight:600;font-size:16px;box-shadow:var(--shadow-card);padding:0 14px}
 
@@ -285,7 +296,9 @@ var TWO_TONE = {
 };
 var TOTAL = 120;
 Object.keys(TWO_TONE).forEach(function(k){ COLORS[k]=TWO_TONE[k][0]; NAME_BASE[k]=TWO_TONE[k][2]; CATEGORY_BASE[k]="ทูโทน"; });
-var TEETH = 8, MAX_COLORS = 3, STAFF_PIN = "5555", LOW_STOCK = 5, IDLE_MS = 45000;
+var TEETH = 8, MAX_COLORS = 3, STAFF_PIN = "5555", LOW_STOCK = 5, IDLE_MS = 90000;
+/* Auto-reset only on the counter tablet: open the page with #kiosk at the end of the link. Patients' own phones never reset. */
+var KIOSK = false; try{ KIOSK = /kiosk/i.test(location.hash||"") || /kiosk/i.test(location.search||""); }catch(e){}
 var LINE_OA_ID = "@dentory", CLINIC = "Dentory Dental Clinic", STORE_KEY = "dentory-braces-overrides";
 var FB_URL = "https://www.facebook.com/dentoryclinic";
 /* Theme shortcuts: tap a group to open it, then tap a theme to lay its color numbers across every tooth in order (repeating from the start once the list runs out). */
@@ -390,7 +403,7 @@ var EMPTY_DOT = "display:inline-block;flex-shrink:0;width:28px;height:28px;borde
 var S = {
   view:"splash", upper:emptyArch(), lower:emptyArch(), armed:null, filter:"all", themeOpen:null,
   name:"", phone:"", phoneError:"", apptDate:"", note:"", submitError:"", paletteError:"", chartOpen:false,
-  pinOpen:false, pinError:"",
+  pinOpen:false, pinError:"", lineTapped:false,
   ovColor:{}, ovColor2:{}, ovName:{}, ovCat:{}, stock:{},
   edit:null, eError:"", eSaved:false
 };
@@ -417,6 +430,7 @@ function categories(){
   var list=[]; for(var n=1;n<=TOTAL;n++){ var c=cat(n); if(list.indexOf(c)===-1) list.push(c); }
   return list.sort(function(a,b){ var ra=FAMILY_ORDER.indexOf(a),rb=FAMILY_ORDER.indexOf(b); if(ra<0)ra=999; if(rb<0)rb=999; return ra!==rb?ra-rb:a.localeCompare(b,"th"); });
 }
+function submitLabel(){ if(!used().length) return "เลือกสีก่อนนะ"; if(!S.name.trim()) return "ใส่ชื่อ ↓"; return "ถัดไป: ส่ง LINE"; }
 function canSubmit(){ return used().length>0 && S.name.trim().length>0 && !S.phoneError; }
 function lockMsg(n){ return !inStock(n) ? "สีเบอร์ "+n+" หมดชั่วคราวค่ะ ลองเลือกสีอื่นนะคะ" : "เลือกได้สูงสุด "+MAX_COLORS+" สีค่ะ ลบสีเดิมออกก่อนนะ"; }
 function themeLocked(t){
@@ -461,7 +475,7 @@ function render(){
     else {
       h = renderTopbar();
       if(v==="pick"||v==="confirm") h += renderSteps();
-      if(v==="confirm") h += renderDoneHead();
+      if(v==="confirm") h += renderDoneHead() + renderSendBox();
       if(v==="pick"||v==="confirm") h += renderMouth();
       if(v==="pick") h += renderPick();
       if(v==="confirm") h += renderConfirm();
@@ -516,7 +530,7 @@ function renderTopbar(){
 function renderSteps(){
   var filled = used().length>0;
   var idx = S.view==="confirm" ? 3 : (filled ? 2 : 1);
-  var defs = [["เลือกสี","#56aafc"],["กรอกข้อมูล","#fc5490"],["เสร็จแล้ว","#7a30f8"]];
+  var defs = [["เลือกสี","#56aafc"],["กรอกข้อมูล","#fc5490"],["ส่ง LINE","#06c755"]];
   var h = '<ol class="steps" style="list-style:none;padding:0" aria-label="ขั้นตอน">';
   defs.forEach(function(d,i){
     var n=i+1, done=n<idx, active=n===idx;
@@ -655,12 +669,24 @@ function renderPick(){
     '</form>' +
   '</section>' +
   '<div class="bottom"><div class="pickbar"><div class="used"><div class="dots">'+dots+'</div><span class="lbl">'+(u.length>MAX_COLORS?"ใช้ "+u.length+" สี":u.length+"/"+MAX_COLORS+" สี")+'</span></div>' +
-    '<button type="button" class="submit'+(canSubmit()?"":" off")+'" id="submitBtn" data-act="submit" aria-disabled="'+!canSubmit()+'">ยืนยันเลย</button></div></div>';
+    '<button type="button" class="submit'+(canSubmit()?"":" off")+'" id="submitBtn" data-act="submit" aria-disabled="'+!canSubmit()+'">'+submitLabel()+'</button></div></div>';
 }
 
 function renderDoneHead(){
-  return '<div class="done">' + I.star(22,"top:0;left:22%") + I.star(14,"top:46px;right:22%") +
-    '<span class="badge">'+I.check(36,3)+'</span><h2>เลือกสีเรียบร้อย!</h2><p>คุณ'+esc(S.name)+' เลือกไว้แบบนี้ <span class="heart">♡</span></p></div>';
+  return '<div class="sendhead"><span class="badge">'+I.line(40)+'</span><h2>'+(S.lineTapped?"กดส่งในแชทแล้วหรือยัง?":"อีกขั้นเดียว!")+'</h2><p>คุณ'+esc(S.name)+' ยังต้องส่งรายการสีทาง LINE คลินิกถึงจะได้รับนะคะ</p></div>';
+}
+function lineUrl(){ return "https://line.me/R/oaMessage/"+encodeURIComponent(LINE_OA_ID)+"/?"+encodeURIComponent(lineText()); }
+function renderSendBox(){
+  var t=S.lineTapped;
+  return '<div class="pinkbox" style="margin:8px 0 16px">' +
+    '<ol class="howto">' +
+      '<li class="'+(t?"on":"")+'"><span class="hn">'+(t?"✓":"1")+'</span><span>กดปุ่มเขียว <b>ส่งให้คลินิกทาง LINE</b></span></li>' +
+      '<li><span class="hn">2</span><span>แอป LINE จะเปิดแชท @dentory พร้อมข้อความที่พิมพ์ไว้ให้แล้ว</span></li>' +
+      '<li><span class="hn">3</span><span>กดปุ่ม <b>ส่ง</b> (ลูกศร) ในแชท LINE เป็นอันเสร็จ <span class="heart">♥</span></span></li>' +
+    '</ol>' +
+    (t?'<p class="sentnote">ถ้ายังไม่ได้กดส่งในแชท กลับไปที่แอป LINE แล้วกดส่งได้เลยค่ะ ถ้า LINE ไม่เปิด กดปุ่มเขียวอีกครั้ง หรือแคปหน้าจอนี้ส่งในแชท @dentory ก็ได้นะคะ</p>':'') +
+    '<a class="linebtn'+(t?"":" pulse")+'" data-act="lineTap" href="'+esc(lineUrl())+'" target="_blank" rel="noopener">'+I.line(28)+'ส่งให้คลินิกทาง LINE</a>' +
+  '</div>';
 }
 
 function lineText(){
@@ -680,14 +706,12 @@ function renderConfirm(){
   var rows = used().map(function(n){
     return '<div class="row"><span style="'+dot(bc(n),40,false)+'"></span><b>#'+n+'</b><span class="muted">'+esc(cname(n))+' · '+countOf(n)+' ซี่</span></div>';
   }).join("");
-  var url = "https://line.me/R/oaMessage/"+encodeURIComponent(LINE_OA_ID)+"/?"+encodeURIComponent(lineText());
   return '<section class="conf">' +
     '<div class="card summary"><span class="k muted" style="font-weight:600">สีที่เลือก</span>'+rows +
       (S.apptDate?'<div class="appt">'+I.cal+'<span>วันนัด <b class="k" style="font-weight:600">'+esc(fmtDate(S.apptDate))+'</b></span></div>':'') + '</div>' +
-    '<div class="pinkbox"><p>กดปุ่มด้านล่างเพื่อส่งรายการสีให้คลินิกทาง LINE ได้เลยค่ะ พนักงานจะเตรียมยางไว้ให้ (หรือโชว์หน้านี้ที่เคาน์เตอร์ก็ได้นะคะ) <span class="heart">♥</span></p>' +
-      '<a class="linebtn" href="'+esc(url)+'" target="_blank" rel="noopener">'+I.line(28)+'ส่งให้คลินิกทาง LINE</a></div>' +
     '<div class="two"><button type="button" class="btn-white" data-act="redo">'+I.redo+'เลือกใหม่</button><button type="button" class="btn-white" data-act="home">'+I.home+'หน้าแรก</button></div>' +
-  '</section>';
+  '</section>' +
+  '<div class="bottom"><a class="linebtn" data-act="lineTap" href="'+esc(lineUrl())+'" target="_blank" rel="noopener">'+I.line(28)+'ส่งให้คลินิกทาง LINE</a></div>';
 }
 
 function renderStaff(){
@@ -767,12 +791,12 @@ function tapTooth(arch,i){
 }
 function submit(){
   if(!used().length){ S.submitError="ยังไม่ได้แปะสีบนฟันเลยนะคะ"; render(); return; }
-  if(!S.name.trim()){ S.submitError="ใส่ชื่อก่อนนะคะ พนักงานจะได้รู้ว่าเป็นของใคร"; render(); var f=document.getElementById("fName"); if(f){ f.focus(); } return; }
+  if(!S.name.trim()){ S.submitError="ใส่ชื่อก่อนนะคะ พนักงานจะได้รู้ว่าเป็นของใคร"; render(); var f=document.getElementById("fName"); if(f){ try{ f.scrollIntoView({block:"center",behavior:"smooth"}); }catch(e){} try{ f.focus({preventScroll:true}); }catch(e){ f.focus(); } } return; }
   if(S.phone.trim() && !isThaiPhone(S.phone)){ S.phoneError="เบอร์ดูไม่ครบ ลองเช็กอีกทีนะคะ"; render(); return; }
   var changed=false;
   used().forEach(function(n){ var x=stockOf(n); if(x!==null){ S.stock[n]=Math.max(0,x-countOf(n)); changed=true; } });
   if(changed) persist();
-  go("confirm",{submitError:"",armed:null,pinOpen:false});
+  go("confirm",{submitError:"",armed:null,pinOpen:false,lineTapped:false});
 }
 function submitPin(){
   var box=document.getElementById("pinBox"), v=box?box.value:"";
@@ -822,6 +846,7 @@ app.addEventListener("click", function(e){
     case "filter": S.filter=el.getAttribute("data-v"); render(); break;
     case "chart": S.chartOpen=!S.chartOpen; render(); break;
     case "submit": submit(); break;
+    case "lineTap": setTimeout(function(){ S.lineTapped=true; render(); }, 400); break;
     case "redo": go("pick",{upper:emptyArch(),lower:emptyArch(),armed:null,submitError:"",paletteError:""}); break;
     case "home": goHome(); break;
     case "openPin": S.pinOpen=true; S.pinError=""; render(); break;
@@ -868,14 +893,14 @@ function paintBig(){
 }
 function syncSubmit(){
   var b=document.getElementById("submitBtn"); if(!b) return;
-  var ok=canSubmit(); b.classList.toggle("off",!ok); b.setAttribute("aria-disabled",String(!ok));
+  var ok=canSubmit(); b.classList.toggle("off",!ok); b.setAttribute("aria-disabled",String(!ok)); b.textContent=submitLabel();
 }
 
-/* ---------- idle reset (kiosk): back to splash after 45 s on pick/confirm ---------- */
+/* ---------- idle reset (kiosk only, #kiosk): back to splash after 90 s on pick/confirm ---------- */
 var idleTimer = null;
 function resetIdle(){
   if(idleTimer){ clearTimeout(idleTimer); idleTimer=null; }
-  if((S.view==="pick"||S.view==="confirm") && !S.pinOpen) idleTimer=setTimeout(goHome, IDLE_MS);
+  if(KIOSK && (S.view==="pick"||S.view==="confirm") && !S.pinOpen) idleTimer=setTimeout(goHome, IDLE_MS);
 }
 ["pointerdown","keydown","input","scroll"].forEach(function(t){ document.addEventListener(t, resetIdle, {passive:true}); });
 
