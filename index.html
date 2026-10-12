@@ -1,4 +1,4 @@
-<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#faf9f5;color:#141413}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data:; connect-src 'none'; form-action 'none'; base-uri 'none'; object-src 'none'"><meta name="referrer" content="no-referrer"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#faf9f5;color:#141413}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
 <title>เลือกสียางจัดฟัน</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Kanit:wght@500;600;700;800&family=Prompt:wght@400;500;600&display=swap">
@@ -296,7 +296,7 @@ var TWO_TONE = {
 };
 var TOTAL = 120;
 Object.keys(TWO_TONE).forEach(function(k){ COLORS[k]=TWO_TONE[k][0]; NAME_BASE[k]=TWO_TONE[k][2]; CATEGORY_BASE[k]="ทูโทน"; });
-var TEETH = 8, MAX_COLORS = 3, STAFF_PIN = "5555", LOW_STOCK = 5, IDLE_MS = 90000;
+var TEETH = 8, MAX_COLORS = 3, STAFF_PIN_SHA256 = "c1f330d0aff31c1c87403f1e4347bcc21aff7c179908723535f2b31723702525", LOW_STOCK = 5, IDLE_MS = 90000;
 /* Auto-reset only on the counter tablet: open the page with #kiosk at the end of the link. Patients' own phones never reset. */
 var KIOSK = false; try{ KIOSK = /kiosk/i.test(location.hash||"") || /kiosk/i.test(location.search||""); }catch(e){}
 var LINE_OA_ID = "@dentory", CLINIC = "Dentory Dental Clinic", STORE_KEY = "dentory-braces-overrides";
@@ -661,10 +661,11 @@ function renderPick(){
     (S.chartOpen?'<div class="chart"><img src="chart-ref.jpg" alt="รูปถ่ายชาร์ตสียาง 108 สี ต้นฉบับ" loading="lazy"><p>สีบนจออาจต่างจากยางจริงนิดหน่อยตามแต่ละเครื่อง รูปนี้คือชาร์ตจริงไว้เทียบเบอร์สีค่ะ</p></div>':'') +
     '<form class="card form" id="infoForm" novalidate>' +
       '<div class="fhead"><span class="disc">'+I.user+'</span><div class="tt"><b>บอกเราหน่อยว่าเป็นใคร</b><span>พนักงานจะได้เตรียมยางให้ถูกคน</span></div></div>' +
-      '<div class="field"><label for="fName">ชื่อ-นามสกุล <span class="req">*</span></label><input class="inp" id="fName" type="text" value="'+esc(S.name)+'" placeholder="เช่น สมชาย ใจดี" autocomplete="name"></div>' +
-      '<div class="field"><label for="fPhone">เบอร์โทร <small>(ถ้ามี)</small></label><input class="inp" id="fPhone" type="tel" inputmode="tel" value="'+esc(S.phone)+'" placeholder="08x-xxx-xxxx" autocomplete="tel">' + (S.phoneError?'<span class="ferr" id="phoneErr">'+esc(S.phoneError)+'</span>':'') + '</div>' +
+      '<div class="field"><label for="fName">ชื่อ-นามสกุล <span class="req">*</span></label><input class="inp" id="fName" type="text" maxlength="60" value="'+esc(S.name)+'" placeholder="เช่น สมชาย ใจดี" autocomplete="name"></div>' +
+      '<div class="field"><label for="fPhone">เบอร์โทร <small>(ถ้ามี)</small></label><input class="inp" id="fPhone" type="tel" maxlength="15" inputmode="tel" value="'+esc(S.phone)+'" placeholder="08x-xxx-xxxx" autocomplete="tel">' + (S.phoneError?'<span class="ferr" id="phoneErr">'+esc(S.phoneError)+'</span>':'') + '</div>' +
       '<div class="field"><label for="fDate">วันนัด <small>(ถ้ามี)</small></label><input class="inp" id="fDate" type="date" value="'+esc(S.apptDate)+'"></div>' +
-      '<div class="field"><label for="fNote">ฝากบอกพนักงาน <small>(ถ้ามี)</small></label><textarea class="inp" id="fNote" placeholder="เช่น อยากสลับลายสีทุกซี่">'+esc(S.note)+'</textarea></div>' +
+      '<div class="field"><label for="fNote">ฝากบอกพนักงาน <small>(ถ้ามี)</small></label><textarea class="inp" id="fNote" maxlength="200" placeholder="เช่น อยากสลับลายสีทุกซี่">'+esc(S.note)+'</textarea></div>' +
+      '<p class="muted" style="margin:0;font-size:13px;line-height:1.55">🔒 เว็บนี้ไม่ได้เก็บชื่อหรือเบอร์โทรของคุณไว้ที่ไหนเลย ข้อมูลจะถึงคลินิกเฉพาะเมื่อคุณกดส่งในแชท LINE @dentory เท่านั้น และใช้เพื่อเตรียมยางในวันนัดเท่านั้นค่ะ</p>' +
       (S.submitError?'<p class="err" role="alert">'+esc(S.submitError)+'</p>':'') +
     '</form>' +
   '</section>' +
@@ -798,10 +799,24 @@ function submit(){
   if(changed) persist();
   go("confirm",{submitError:"",armed:null,pinOpen:false,lineTapped:false});
 }
+var pinFails = 0, pinLockUntil = 0;
+function sha256hex(str){
+  if(!(window.crypto && crypto.subtle && window.TextEncoder)) return Promise.reject(new Error("no-crypto"));
+  return crypto.subtle.digest("SHA-256", new TextEncoder().encode(str)).then(function(buf){
+    return Array.prototype.map.call(new Uint8Array(buf), function(b){ return ("0"+b.toString(16)).slice(-2); }).join("");
+  });
+}
 function submitPin(){
   var box=document.getElementById("pinBox"), v=box?box.value:"";
-  if(v===STAFF_PIN) go("staff",{pinOpen:false,pinError:""});
-  else { S.pinError="รหัสไม่ถูกต้อง ลองใหม่อีกครั้งค่ะ"; render(); }
+  var now=Date.now();
+  if(now<pinLockUntil){ S.pinError="ใส่ผิดหลายครั้ง รออีก "+Math.ceil((pinLockUntil-now)/1000)+" วินาทีค่ะ"; render(); return; }
+  sha256hex(v).then(function(h){
+    if(h===STAFF_PIN_SHA256){ pinFails=0; go("staff",{pinOpen:false,pinError:""}); return; }
+    pinFails++;
+    if(pinFails>=5){ pinFails=0; pinLockUntil=Date.now()+60000; S.pinError="ใส่ผิด 5 ครั้ง ล็อก 1 นาทีค่ะ"; }
+    else S.pinError="รหัสไม่ถูกต้อง ลองใหม่อีกครั้งค่ะ";
+    render();
+  }, function(){ S.pinError="เครื่องนี้เปิดหน้าพนักงานไม่ได้ ลองใช้เบราว์เซอร์อื่นค่ะ"; render(); });
 }
 function saveEdit(){
   var n=S.edit; if(n==null) return;
