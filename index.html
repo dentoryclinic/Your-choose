@@ -665,7 +665,7 @@ function renderPick(){
       '<div class="field"><label for="fPhone">เบอร์โทร <small>(ถ้ามี)</small></label><input class="inp" id="fPhone" type="tel" maxlength="15" inputmode="tel" value="'+esc(S.phone)+'" placeholder="08x-xxx-xxxx" autocomplete="tel">' + (S.phoneError?'<span class="ferr" id="phoneErr">'+esc(S.phoneError)+'</span>':'') + '</div>' +
       '<div class="field"><label for="fDate">วันนัด <small>(ถ้ามี)</small></label><input class="inp" id="fDate" type="date" value="'+esc(S.apptDate)+'"></div>' +
       '<div class="field"><label for="fNote">ฝากบอกพนักงาน <small>(ถ้ามี)</small></label><textarea class="inp" id="fNote" maxlength="200" placeholder="เช่น อยากสลับลายสีทุกซี่">'+esc(S.note)+'</textarea></div>' +
-      '<p class="muted" style="margin:0;font-size:13px;line-height:1.55">🔒 เว็บนี้ไม่ได้เก็บชื่อหรือเบอร์โทรของคุณไว้ที่ไหนเลย ข้อมูลจะถึงคลินิกเฉพาะเมื่อคุณกดส่งในแชท LINE @dentory เท่านั้น และใช้เพื่อเตรียมยางในวันนัดเท่านั้นค่ะ</p>' +
+      '<p class="muted" style="margin:0;font-size:13px;line-height:1.55">เว็บนี้ไม่ได้เก็บชื่อหรือเบอร์โทรของคุณไว้ที่ไหนเลย ข้อมูลจะถึงคลินิกเฉพาะเมื่อคุณกดส่งในแชท LINE @dentory เท่านั้น และใช้เพื่อเตรียมยางในวันนัดเท่านั้นค่ะ</p>' +
       (S.submitError?'<p class="err" role="alert">'+esc(S.submitError)+'</p>':'') +
     '</form>' +
   '</section>' +
