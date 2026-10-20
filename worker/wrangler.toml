@@ -1,0 +1,7 @@
+name = "dentory-color-notify"
+main = "worker.js"
+compatibility_date = "2024-11-01"
+
+[vars]
+# Origin of the website (no path, no trailing slash)
+ALLOWED_ORIGIN = "https://dentoryclinic.github.io"

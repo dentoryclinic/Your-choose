@@ -300,7 +300,7 @@ Object.keys(TWO_TONE).forEach(function(k){ COLORS[k]=TWO_TONE[k][0]; NAME_BASE[k
 var TEETH = 8, MAX_COLORS = 3, STAFF_PIN_SHA256 = "c1f330d0aff31c1c87403f1e4347bcc21aff7c179908723535f2b31723702525", LOW_STOCK = 5, IDLE_MS = 90000;
 /* Auto-reset only on the counter tablet: open the page with #kiosk at the end of the link. Patients' own phones never reset. */
 var KIOSK = false; try{ KIOSK = /kiosk/i.test(location.hash||"") || /kiosk/i.test(location.search||""); }catch(e){}
-var LIFF_ID = "2012114486-7F7j6zEN", LIFF_NAME = "", LIFF_READY = false, LINE_OA_ID = "@dentory", CLINIC = "Dentory Dental Clinic", STORE_KEY = "dentory-braces-overrides";
+var NOTIFY_URL = "", LIFF_ID = "2012114486-7F7j6zEN", LIFF_NAME = "", LIFF_READY = false, LINE_OA_ID = "@dentory", CLINIC = "Dentory Dental Clinic", STORE_KEY = "dentory-braces-overrides";
 var FB_URL = "https://www.facebook.com/dentoryclinic";
 /* Theme shortcuts: tap a group to open it, then tap a theme to lay its color numbers across every tooth in order (repeating from the start once the list runs out). */
 var THEMES = [
@@ -803,6 +803,15 @@ function submit(){
   sendViaLiff();
 }
 function sendViaLiff(){
+  if(NOTIFY_URL){
+    fetch(NOTIFY_URL,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({text:lineText()})})
+      .then(function(r){ if(r.ok){ S.sent=true; render(); } else throw 0; })
+      .catch(function(){ sendViaLiffChat(); });
+    return;
+  }
+  sendViaLiffChat();
+}
+function sendViaLiffChat(){
   if(!LIFF_READY || !window.liff || !liff.isInClient()) return;
   liff.sendMessages([{type:"text",text:lineText()}]).then(function(){ S.sent=true; render(); }).catch(function(){});
 }
