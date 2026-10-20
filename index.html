@@ -431,8 +431,8 @@ function categories(){
   var list=[]; for(var n=1;n<=TOTAL;n++){ var c=cat(n); if(list.indexOf(c)===-1) list.push(c); }
   return list.sort(function(a,b){ var ra=FAMILY_ORDER.indexOf(a),rb=FAMILY_ORDER.indexOf(b); if(ra<0)ra=999; if(rb<0)rb=999; return ra!==rb?ra-rb:a.localeCompare(b,"th"); });
 }
-function submitLabel(){ if(!used().length) return "เลือกสีก่อนนะ"; if(!S.name.trim()) return "ใส่ชื่อ ↓"; return "ถัดไป: ส่ง LINE"; }
-function canSubmit(){ return used().length>0 && S.name.trim().length>0 && !S.phoneError; }
+function submitLabel(){ if(!used().length) return "เลือกสีก่อนนะ"; return "ถัดไป: ส่ง LINE"; }
+function canSubmit(){ return used().length>0 && !S.phoneError; }
 function lockMsg(n){ return !inStock(n) ? "สีเบอร์ "+n+" หมดชั่วคราวค่ะ ลองเลือกสีอื่นนะคะ" : "เลือกได้สูงสุด "+MAX_COLORS+" สีค่ะ ลบสีเดิมออกก่อนนะ"; }
 function themeLocked(t){
   for(var i=0;i<t.colors.length;i++){ if(!inStock(t.colors[i])) return true; }
@@ -662,7 +662,6 @@ function renderPick(){
     (S.chartOpen?'<div class="chart"><img src="chart-ref.jpg" alt="รูปถ่ายชาร์ตสียาง 108 สี ต้นฉบับ" loading="lazy"><p>สีบนจออาจต่างจากยางจริงนิดหน่อยตามแต่ละเครื่อง รูปนี้คือชาร์ตจริงไว้เทียบเบอร์สีค่ะ</p></div>':'') +
     '<form class="card form" id="infoForm" novalidate>' +
       '<div class="fhead"><span class="disc">'+I.user+'</span><div class="tt"><b>บอกเราหน่อยว่าเป็นใคร</b><span>พนักงานจะได้เตรียมยางให้ถูกคน</span></div></div>' +
-      (LIFF_NAME?'':'<div class="field"><label for="fName">ชื่อ-นามสกุล <span class="req">*</span></label><input class="inp" id="fName" type="text" maxlength="60" value="'+esc(S.name)+'" placeholder="เช่น สมชาย ใจดี" autocomplete="name"></div>') +
       '<div class="field"><label for="fPhone">เบอร์โทร <small>(ถ้ามี)</small></label><input class="inp" id="fPhone" type="tel" maxlength="15" inputmode="tel" value="'+esc(S.phone)+'" placeholder="08x-xxx-xxxx" autocomplete="tel">' + (S.phoneError?'<span class="ferr" id="phoneErr">'+esc(S.phoneError)+'</span>':'') + '</div>' +
       '<div class="field"><label for="fDate">วันนัด <small>(ถ้ามี)</small></label><input class="inp" id="fDate" type="date" value="'+esc(S.apptDate)+'"></div>' +
       '<div class="field"><label for="fNote">ฝากบอกพนักงาน <small>(ถ้ามี)</small></label><textarea class="inp" id="fNote" maxlength="200" placeholder="เช่น อยากสลับลายสีทุกซี่">'+esc(S.note)+'</textarea></div>' +
@@ -675,7 +674,7 @@ function renderPick(){
 }
 
 function renderDoneHead(){
-  return '<div class="sendhead"><span class="badge">'+I.line(40)+'</span><h2>'+(S.sent?"ส่งให้คลินิกเรียบร้อย ✓":S.lineTapped?"กดส่งในแชทแล้วหรือยัง?":"อีกขั้นเดียว!")+'</h2><p>'+(S.sent?'คลินิกได้รับรายการสีของคุณ'+esc(S.name)+'แล้วค่ะ':'คุณ'+esc(S.name)+' ยังต้องส่งรายการสีทาง LINE คลินิกถึงจะได้รับนะคะ')+'</p></div>';
+  return '<div class="sendhead"><span class="badge">'+I.line(40)+'</span><h2>'+(S.sent?"ส่งให้คลินิกเรียบร้อย ✓":S.lineTapped?"กดส่งในแชทแล้วหรือยัง?":"อีกขั้นเดียว!")+'</h2><p>'+(S.sent?'คลินิกได้รับรายการสีของ'+(S.name?'คุณ'+esc(S.name):'คุณ')+'แล้วค่ะ':(S.name?'คุณ'+esc(S.name)+' ':'')+'ยังต้องส่งรายการสีทาง LINE คลินิกถึงจะได้รับนะคะ')+'</p></div>';
 }
 function lineUrl(){ return "https://line.me/R/oaMessage/"+encodeURIComponent(LINE_OA_ID)+"/?"+encodeURIComponent(lineText()); }
 function renderSendBox(){
@@ -696,7 +695,7 @@ function lineText(){
   var u = used();
   return [
     "แจ้งเลือกสียางจัดฟัน ("+CLINIC+")",
-    "ชื่อ: "+(S.name.trim()||LIFF_NAME||"-"),
+    (S.name.trim()||LIFF_NAME)?"ชื่อ: "+(S.name.trim()||LIFF_NAME):null,
     S.phone.trim()?"เบอร์: "+S.phone.trim():null,
     S.apptDate?"วันนัด: "+fmtDate(S.apptDate):null,
     "สีที่เลือก: "+(u.map(function(n){return "#"+n+" ("+cname(n)+(TWO_TONE[n]?" ทูโทน":"")+")";}).join(", ")||"-"),
@@ -794,7 +793,6 @@ function tapTooth(arch,i){
 }
 function submit(){
   if(!used().length){ S.submitError="ยังไม่ได้แปะสีบนฟันเลยนะคะ"; render(); return; }
-  if(!S.name.trim() && !LIFF_NAME){ S.submitError="ใส่ชื่อก่อนนะคะ พนักงานจะได้รู้ว่าเป็นของใคร"; render(); var f=document.getElementById("fName"); if(f){ try{ f.scrollIntoView({block:"center",behavior:"smooth"}); }catch(e){} try{ f.focus({preventScroll:true}); }catch(e){ f.focus(); } } return; }
   if(S.phone.trim() && !isThaiPhone(S.phone)){ S.phoneError="เบอร์ดูไม่ครบ ลองเช็กอีกทีนะคะ"; render(); return; }
   var changed=false;
   used().forEach(function(n){ var x=stockOf(n); if(x!==null){ S.stock[n]=Math.max(0,x-countOf(n)); changed=true; } });
