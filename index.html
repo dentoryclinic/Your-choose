@@ -662,6 +662,7 @@ function renderPick(){
     (S.chartOpen?'<div class="chart"><img src="chart-ref.jpg" alt="รูปถ่ายชาร์ตสียาง 108 สี ต้นฉบับ" loading="lazy"><p>สีบนจออาจต่างจากยางจริงนิดหน่อยตามแต่ละเครื่อง รูปนี้คือชาร์ตจริงไว้เทียบเบอร์สีค่ะ</p></div>':'') +
     '<form class="card form" id="infoForm" novalidate>' +
       '<div class="fhead"><span class="disc">'+I.user+'</span><div class="tt"><b>บอกเราหน่อยว่าเป็นใคร</b><span>พนักงานจะได้เตรียมยางให้ถูกคน</span></div></div>' +
+      '<div class="field"><label for="fName">ชื่อ-นามสกุล <small>(ถ้าไม่ใส่ จะใช้ชื่อ LINE)</small></label><input class="inp" id="fName" type="text" maxlength="60" value="'+esc(S.name)+'" placeholder="เช่น สมชาย ใจดี" autocomplete="name"></div>' +
       '<div class="field"><label for="fPhone">เบอร์โทร <small>(ถ้ามี)</small></label><input class="inp" id="fPhone" type="tel" maxlength="15" inputmode="tel" value="'+esc(S.phone)+'" placeholder="08x-xxx-xxxx" autocomplete="tel">' + (S.phoneError?'<span class="ferr" id="phoneErr">'+esc(S.phoneError)+'</span>':'') + '</div>' +
       '<div class="field"><label for="fDate">วันนัด <small>(ถ้ามี)</small></label><input class="inp" id="fDate" type="date" value="'+esc(S.apptDate)+'"></div>' +
       '<div class="field"><label for="fNote">ฝากบอกพนักงาน <small>(ถ้ามี)</small></label><textarea class="inp" id="fNote" maxlength="200" placeholder="เช่น อยากสลับลายสีทุกซี่">'+esc(S.note)+'</textarea></div>' +
