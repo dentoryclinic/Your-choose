@@ -869,8 +869,8 @@ function renderStaffColors(){
 
 function renderPin(){
   return '<div class="overlay" data-act="overlay"><div class="card pin" role="dialog" aria-modal="true" aria-labelledby="pinTitle">' +
-    '<span class="disc">'+I.lock(24)+'</span><h3 id="pinTitle">สำหรับพนักงาน</h3><p>ใส่รหัส 4 หลักเพื่อเข้าหน้าจัดการ</p>' +
-    '<input class="inp" id="pinBox" type="password" inputmode="numeric" maxlength="4" autocomplete="off" aria-label="รหัส 4 หลัก">' +
+    '<span class="disc">'+I.lock(24)+'</span><h3 id="pinTitle">สำหรับพนักงาน</h3><p>ใส่รหัสพนักงานเพื่อเข้าหน้าจัดการ</p>' +
+    '<input class="inp" id="pinBox" type="password" inputmode="numeric" maxlength="20" autocomplete="off" aria-label="รหัสพนักงาน">' +
     (S.pinError?'<span class="err" role="alert">'+esc(S.pinError)+'</span>':'') +
     '<div class="acts"><button type="button" class="btn-lilac" data-act="cancelPin">ยกเลิก</button><button type="button" class="btn-save" data-act="submitPin">เข้าสู่ระบบ</button></div>' +
   '</div></div>';
@@ -963,7 +963,7 @@ function sha256hex(str){
   });
 }
 function submitPin(){
-  var box=document.getElementById("pinBox"), v=box?box.value:"";
+  var box=document.getElementById("pinBox"), v=box?String(box.value).trim():"";
   var now=Date.now();
   if(now<pinLockUntil){ S.pinError="ใส่ผิดหลายครั้ง รออีก "+Math.ceil((pinLockUntil-now)/1000)+" วินาทีค่ะ"; render(); return; }
   if(HISTORY_ON){
