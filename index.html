@@ -1,4 +1,4 @@
-<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://static.line-scdn.net; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: https://*.line-scdn.net https://*.line-apps.com; connect-src https://api.line.me https://*.line.me https://*.line-scdn.net; form-action 'none'; base-uri 'none'; object-src 'none'"><meta name="referrer" content="no-referrer"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#faf9f5;color:#141413}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://static.line-scdn.net; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: https://*.line-scdn.net https://*.line-apps.com; connect-src https://api.line.me https://*.line.me https://*.line-scdn.net https://script.google.com https://script.googleusercontent.com; form-action 'none'; base-uri 'none'; object-src 'none'"><meta name="referrer" content="no-referrer"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#faf9f5;color:#141413}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
 <title>เลือกสียางจัดฟัน</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Kanit:wght@500;600;700;800&family=Prompt:wght@400;500;600&display=swap">
@@ -217,6 +217,32 @@ select.inp{padding:0 16px}
 .sentnote{margin:0;background:#fff;border-radius:18px;padding:12px 14px;font-size:14px;line-height:1.55;color:var(--ink)}
 @media (prefers-reduced-motion:no-preference){.linebtn.pulse{animation:pulse 1.6s ease-in-out infinite}}
 @keyframes pulse{0%,100%{box-shadow:0 8px 20px rgba(6,199,85,.32)}50%{box-shadow:0 0 0 8px rgba(6,199,85,.18),0 8px 20px rgba(6,199,85,.32)}}
+.histcard{background:#fff;border:2px solid var(--pink-500);border-radius:24px;padding:14px 16px;display:flex;flex-direction:column;gap:10px;box-shadow:var(--shadow-pink)}
+.histcard .hh{font-family:var(--font-display);font-weight:600;font-size:16px}
+.hrow2{display:flex;align-items:center;gap:8px;font-size:15px;min-width:0}
+.hrow2 .dd{margin-left:auto;color:var(--ink-muted);font-size:13px;white-space:nowrap}
+.hrow2 b{font-family:var(--font-display);font-variant-numeric:tabular-nums}
+.btn-pink{display:flex;align-items:center;justify-content:center;gap:8px;min-height:48px;border:none;border-radius:9999px;background:var(--pink-500);color:#fff;font-family:var(--font-display);font-weight:600;font-size:17px;box-shadow:var(--shadow-pink);padding:0 14px;width:100%}
+.linkbtn{border:none;background:none;color:var(--blue-600);font-weight:600;font-size:14px;padding:6px;min-height:36px}
+.pills{display:flex;gap:6px;flex-wrap:wrap}
+.pill{display:inline-flex;align-items:center;min-height:28px;font-size:13px;padding:0 12px;border-radius:9999px;background:var(--pink-100);color:var(--pink-600);font-weight:600}
+.pill.w{background:#fff;color:var(--ink-muted)}
+.visits{display:flex;flex-direction:column}
+.visit{display:flex;align-items:center;gap:10px;padding:10px 4px;border:none;border-top:1px dashed var(--sky-200);background:none;text-align:left;width:100%;font-size:14px;color:var(--ink);border-radius:12px}
+.visit:first-child{border-top:none}
+.visit.sel{background:#fff0f6}
+.visit .dt{width:96px;flex-shrink:0;color:var(--ink-muted);font-size:13px;font-variant-numeric:tabular-nums}
+.visit .cs{display:flex;align-items:center;gap:2px;min-width:0}
+.visit .cs b{font-family:var(--font-display);margin-left:6px;font-variant-numeric:tabular-nums}
+.tag{margin-left:auto;flex-shrink:0;font-size:11px;font-weight:700;padding:2px 8px;border-radius:9999px;background:var(--lilac-100);color:var(--violet-500)}
+.tag.g{background:#dcf8e8;color:#058a3b}
+.ptcard{padding:16px;display:flex;flex-direction:column;gap:6px}
+.ptcard .pn{font-family:var(--font-display);font-weight:600;font-size:18px;overflow-wrap:anywhere}
+.ptcard .pp{font-size:13px;color:var(--ink-muted);overflow-wrap:anywhere}
+.searchrow{display:flex;gap:8px}
+.searchrow .inp{flex:1}
+.searchrow button{flex-shrink:0;min-height:50px;padding:0 18px;border:none;border-radius:9999px;background:var(--pink-600);color:#fff;font-family:var(--font-display);font-weight:600;font-size:16px}
+.savebadge{background:var(--line-green)!important;box-shadow:0 8px 20px rgba(6,199,85,.32)!important}
 .two{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
 .btn-white{display:flex;align-items:center;justify-content:center;gap:8px;min-height:50px;border:none;border-radius:9999px;background:#fff;color:var(--blue-600);font-family:var(--font-display);font-weight:600;font-size:16px;box-shadow:var(--shadow-card);padding:0 14px}
 
@@ -302,6 +328,9 @@ var TEETH = 8, MAX_COLORS = 3, STAFF_PIN_SHA256 = "c1f330d0aff31c1c87403f1e4347b
 var KIOSK = false; try{ KIOSK = /kiosk/i.test(location.hash||"") || /kiosk/i.test(location.search||""); }catch(e){}
 var LIFF_ID = "2012114486-7F7j6zEN", LIFF_NAME = "", LIFF_READY = false, LINE_OA_ID = "@dentory", CLINIC = "Dentory Dental Clinic", STORE_KEY = "dentory-braces-overrides";
 var FB_URL = "https://www.facebook.com/dentoryclinic";
+/* Google Apps Script web app URL (ประวัติสียาง). Empty = history features off, page works as before. */
+var SCRIPT_URL = "";
+var HISTORY_ON = /^https:\/\/script\.google\.com\/macros\/s\//.test(SCRIPT_URL);
 /* Theme shortcuts: tap a group to open it, then tap a theme to lay its color numbers across every tooth in order (repeating from the start once the list runs out). */
 var THEMES = [
   {name:"Ariel", colors:[19,49]},
@@ -404,7 +433,8 @@ var EMPTY_DOT = "display:inline-block;flex-shrink:0;width:28px;height:28px;borde
 var S = {
   view:"splash", upper:emptyArch(), lower:emptyArch(), armed:null, filter:"all", themeOpen:null,
   name:"", phone:"", phoneError:"", apptDate:"", note:"", submitError:"", paletteError:"", chartOpen:false,
-  pinOpen:false, pinError:"", lineTapped:false,
+  pinOpen:false, pinError:"", lineTapped:false, saveState:"", idToken:"", history:null, histSel:0,
+  staffPin:"", staffQ:"", staffData:null, staffBusy:false, staffError:"",
   ovColor:{}, ovColor2:{}, ovName:{}, ovCat:{}, stock:{},
   edit:null, eError:"", eSaved:false
 };
@@ -431,7 +461,7 @@ function categories(){
   var list=[]; for(var n=1;n<=TOTAL;n++){ var c=cat(n); if(list.indexOf(c)===-1) list.push(c); }
   return list.sort(function(a,b){ var ra=FAMILY_ORDER.indexOf(a),rb=FAMILY_ORDER.indexOf(b); if(ra<0)ra=999; if(rb<0)rb=999; return ra!==rb?ra-rb:a.localeCompare(b,"th"); });
 }
-function submitLabel(){ if(!used().length) return "เลือกสีก่อนนะ"; return "ถัดไป: ส่ง LINE"; }
+function submitLabel(){ if(!used().length) return "เลือกสีก่อนนะ"; return HISTORY_ON?"ส่งให้คลินิก":"ถัดไป: ส่ง LINE"; }
 function canSubmit(){ return used().length>0 && !S.phoneError; }
 function lockMsg(n){ return !inStock(n) ? "สีเบอร์ "+n+" หมดชั่วคราวค่ะ ลองเลือกสีอื่นนะคะ" : "เลือกได้สูงสุด "+MAX_COLORS+" สีค่ะ ลบสีเดิมออกก่อนนะ"; }
 function themeLocked(t){
@@ -476,12 +506,14 @@ function render(){
     else {
       h = renderTopbar();
       if(v==="pick"||v==="confirm") h += renderSteps();
+      if(v==="pick" && S.history && S.history.length) h += '<div style="margin-bottom:16px">'+renderHistBanner()+'</div>';
       if(v==="confirm") h += renderDoneHead() + renderSendBox();
       if(v==="pick"||v==="confirm") h += renderMouth();
       if(v==="pick") h += renderPick();
       if(v==="confirm") h += renderConfirm();
       if(v==="staff") h += renderStaff();
       if(v==="staffColors") h += renderStaffColors();
+      if(v==="myhist") h += renderMyHist();
     }
     if(S.pinOpen) h += renderPin();
     app.innerHTML = h;
@@ -522,8 +554,8 @@ function renderSplash(){
 }
 
 function renderTopbar(){
-  var staff = S.view==="staff"||S.view==="staffColors";
-  return '<header class="topbar"><div class="b"><img src="logo.png" alt="Dentory"><div class="tt"><b>'+(staff?"หลังร้าน":"เลือกสียางจัดฟัน")+'</b><span>'+(staff?"สำหรับพนักงาน Dentory":"Dentory Dental Clinic")+'</span></div></div>' +
+  var staff = S.view==="staff"||S.view==="staffColors", mh = S.view==="myhist";
+  return '<header class="topbar"><div class="b"><img src="logo.png" alt="Dentory"><div class="tt"><b>'+(staff?"หลังร้าน":mh?"ประวัติสียางของฉัน":"เลือกสียางจัดฟัน")+'</b><span>'+(staff?"สำหรับพนักงาน Dentory":mh?(LIFF_NAME?"คุณ"+esc(LIFF_NAME)+" · เข้าด้วย LINE":"เข้าด้วย LINE"):"Dentory Dental Clinic")+'</span></div></div>' +
     (S.view==="pick" ? '<button type="button" class="lockpill" data-act="openPin">'+I.lock(14)+' พนักงาน</button>' : '') +
   '</header>';
 }
@@ -531,7 +563,7 @@ function renderTopbar(){
 function renderSteps(){
   var filled = used().length>0;
   var idx = S.view==="confirm" ? 3 : (filled ? 2 : 1);
-  var defs = [["เลือกสี","#56aafc"],["กรอกข้อมูล","#fc5490"],["ส่ง LINE","#06c755"]];
+  var defs = [["เลือกสี","#56aafc"],["กรอกข้อมูล","#fc5490"],[HISTORY_ON?"ส่งแล้ว":"ส่ง LINE","#06c755"]];
   var h = '<ol class="steps" style="list-style:none;padding:0" aria-label="ขั้นตอน">';
   defs.forEach(function(d,i){
     var n=i+1, done=n<idx, active=n===idx;
@@ -666,7 +698,7 @@ function renderPick(){
       '<div class="field"><label for="fPhone">เบอร์โทร <small>(ถ้ามี)</small></label><input class="inp" id="fPhone" type="tel" maxlength="15" inputmode="tel" value="'+esc(S.phone)+'" placeholder="08x-xxx-xxxx" autocomplete="tel">' + (S.phoneError?'<span class="ferr" id="phoneErr">'+esc(S.phoneError)+'</span>':'') + '</div>' +
       '<div class="field"><label for="fDate">วันนัด <small>(ถ้ามี)</small></label><input class="inp" id="fDate" type="date" value="'+esc(S.apptDate)+'"></div>' +
       '<div class="field"><label for="fNote">ฝากบอกพนักงาน <small>(ถ้ามี)</small></label><textarea class="inp" id="fNote" maxlength="200" placeholder="เช่น อยากสลับลายสีทุกซี่">'+esc(S.note)+'</textarea></div>' +
-      '<p class="muted" style="margin:0;font-size:13px;line-height:1.55">เว็บนี้ไม่ได้เก็บชื่อหรือเบอร์โทรของคุณไว้ที่ไหนเลย ข้อมูลจะถึงคลินิกเฉพาะเมื่อคุณกดส่งในแชท LINE @dentory เท่านั้น และใช้เพื่อเตรียมยางในวันนัดเท่านั้นค่ะ</p>' +
+      '<p class="muted" style="margin:0;font-size:13px;line-height:1.55">'+(HISTORY_ON?"เมื่อกดยืนยัน ชื่อ เบอร์ วันนัด สีที่เลือก และชื่อบัญชี LINE (ถ้าเปิดจาก LINE) จะถูกบันทึกไว้ที่คลินิก Dentory เพื่อเตรียมยางในวันนัดและเก็บเป็นประวัติการเลือกสีของคุณ คลินิกไม่เปิดเผยข้อมูลนี้ให้ผู้อื่นค่ะ":"เว็บนี้ไม่ได้เก็บชื่อหรือเบอร์โทรของคุณไว้ที่ไหนเลย ข้อมูลจะถึงคลินิกเฉพาะเมื่อคุณกดส่งในแชท LINE @dentory เท่านั้น และใช้เพื่อเตรียมยางในวันนัดเท่านั้นค่ะ")+'</p>' +
       (S.submitError?'<p class="err" role="alert">'+esc(S.submitError)+'</p>':'') +
     '</form>' +
   '</section>' +
@@ -675,11 +707,16 @@ function renderPick(){
 }
 
 function renderDoneHead(){
+  if(S.saveState==="saved") return '<div class="sendhead"><span class="badge savebadge">'+I.check(40,3)+'</span><h2>ส่งถึงคลินิกแล้ว!</h2><p>'+(S.name.trim()?'คุณ'+esc(S.name.trim())+' ':'')+'เลือกสีไว้แบบนี้ พนักงานจะเตรียมยางไว้ให้ในวันนัดค่ะ</p></div>';
+  if(S.saveState==="saving") return '<div class="sendhead"><span class="badge savebadge">'+I.line(40)+'</span><h2>กำลังส่งให้คลินิก...</h2><p>รอสักครู่นะคะ</p></div>';
   return '<div class="sendhead"><span class="badge">'+I.line(40)+'</span><h2>'+(S.sent?"ส่งให้คลินิกเรียบร้อย ✓":S.lineTapped?"กดส่งในแชทแล้วหรือยัง?":"อีกขั้นเดียว!")+'</h2><p>'+(S.sent?'คลินิกได้รับรายการสีของ'+(S.name?'คุณ'+esc(S.name):'คุณ')+'แล้วค่ะ':(S.name?'คุณ'+esc(S.name)+' ':'')+'ยังต้องส่งรายการสีทาง LINE คลินิกถึงจะได้รับนะคะ')+'</p></div>';
 }
 function lineUrl(){ return "https://line.me/R/oaMessage/"+encodeURIComponent(LINE_OA_ID)+"/?"+encodeURIComponent(lineText()); }
 function renderSendBox(){
   var t=S.lineTapped;
+  if(S.saveState==="saved") return '<div class="pinkbox" style="margin:8px 0 16px"><p class="sentnote">บันทึกไว้ในประวัติแล้ว ไม่ต้องทำอะไรเพิ่มค่ะ <span class="heart">♥</span>'+(S.idToken?' ครั้งหน้าเปิดจาก LINE จะเห็นสีที่เคยเลือก':'')+'</p></div>';
+  if(S.saveState==="saving") return '';
+  
   if(S.sent) return '<div class="pinkbox" style="margin:8px 0 16px"><p class="sentnote">ส่งเข้าแชท LINE ของคลินิกให้แล้วค่ะ ไม่ต้องทำอะไรเพิ่ม <span class="heart">♥</span> ถ้าอยากส่งซ้ำ กดปุ่มด้านล่างได้เลย</p><a class="linebtn" data-act="lineTap" href="'+esc(lineUrl())+'" target="_blank" rel="noopener">'+I.line(28)+'ส่งซ้ำทาง LINE</a></div>';
   return '<div class="pinkbox" style="margin:8px 0 16px">' +
     '<ol class="howto">' +
@@ -687,6 +724,7 @@ function renderSendBox(){
       '<li><span class="hn">2</span><span>แอป LINE จะเปิดแชท @dentory พร้อมข้อความที่พิมพ์ไว้ให้แล้ว</span></li>' +
       '<li><span class="hn">3</span><span>กดปุ่ม <b>ส่ง</b> (ลูกศร) ในแชท LINE เป็นอันเสร็จ <span class="heart">♥</span></span></li>' +
     '</ol>' +
+    (S.saveState==="failed"?'<p class="sentnote">ส่งอัตโนมัติไม่สำเร็จ (อินเทอร์เน็ตอาจหลุด) กดส่งทาง LINE แทนได้เลยค่ะ</p>':'') +
     (t?'<p class="sentnote">ถ้ายังไม่ได้กดส่งในแชท กลับไปที่แอป LINE แล้วกดส่งได้เลยค่ะ ถ้า LINE ไม่เปิด กดปุ่มเขียวอีกครั้ง หรือแคปหน้าจอนี้ส่งในแชท @dentory ก็ได้นะคะ</p>':'') +
     '<a class="linebtn'+(t?"":" pulse")+'" data-act="lineTap" href="'+esc(lineUrl())+'" target="_blank" rel="noopener">'+I.line(28)+'ส่งให้คลินิกทาง LINE</a>' +
   '</div>';
@@ -714,14 +752,81 @@ function renderConfirm(){
       (S.apptDate?'<div class="appt">'+I.cal+'<span>วันนัด <b class="k" style="font-weight:600">'+esc(fmtDate(S.apptDate))+'</b></span></div>':'') + '</div>' +
     '<div class="two"><button type="button" class="btn-white" data-act="redo">'+I.redo+'เลือกใหม่</button><button type="button" class="btn-white" data-act="home">'+I.home+'หน้าแรก</button></div>' +
   '</section>' +
-  '<div class="bottom"><a class="linebtn" data-act="lineTap" href="'+esc(lineUrl())+'" target="_blank" rel="noopener">'+I.line(28)+'ส่งให้คลินิกทาง LINE</a></div>';
+  (S.saveState==="saving"?'':'<div class="bottom">'+(S.saveState==="saved"
+    ? '<a class="linebtn" style="background:#fff;color:var(--line-green);font-size:20px" href="https://line.me/R/ti/p/'+encodeURIComponent(LINE_OA_ID)+'" target="_blank" rel="noopener">'+I.line(26)+'ทักแชท LINE @dentory</a>'
+    : '<a class="linebtn" data-act="lineTap" href="'+esc(lineUrl())+'" target="_blank" rel="noopener">'+I.line(28)+'ส่งให้คลินิกทาง LINE</a>')+'</div>');
 }
 
 function renderStaff(){
+  if(HISTORY_ON) return renderStaffHistory();
   return '<section class="staff">' +
     '<div class="hrow"><h2>รายการของคนไข้</h2><button type="button" class="smallbtn" data-act="backToPick">กลับหน้าเลือกสี</button></div>' +
     '<div class="card notice"><p>แอปไม่ได้เก็บรายการไว้ในระบบนะคะ เมื่อคนไข้เลือกสีเสร็จ จะกดส่งสรุปเข้าแชท LINE ของคลินิก (@dentory) โดยตรง ดูรายการได้ที่แชท LINE เลยค่ะ</p>' +
       '<a class="linebtn" style="min-height:56px" href="https://line.me/R/ti/p/'+encodeURIComponent(LINE_OA_ID)+'" target="_blank" rel="noopener">'+I.line(26)+'เปิดแชท LINE</a></div>' +
+    '<button type="button" class="rowbtn" data-act="openColors"><span class="disc">'+I.palette+'</span><span class="tt"><b>ปรับสี ชื่อ หมวด และสต็อก</b><span>แก้สีให้ตรงยางจริง · ตั้งของหมด</span></span>'+I.chev+'</button>' +
+  '</section>';
+}
+
+function histDots(colors){
+  return colors.slice(0,4).map(function(n,i){ return '<span style="'+dot(COLORS[n]?bc(n):"#ccc",26,i>0)+(i>0?";margin-left:-8px":"")+'"></span>'; }).join("");
+}
+function renderHistBanner(){
+  if(!HISTORY_ON || !S.history || !S.history.length) return "";
+  var last=S.history[0];
+  var rows=S.history.slice(0,2).map(function(v){
+    return '<div class="hrow2">'+histDots(v.colors)+'<b>#'+v.colors.join(" + #")+'</b><span class="dd">'+esc(v.date.split(" ")[0])+'</span></div>';
+  }).join("");
+  return '<div class="histcard"><span class="hh">'+(LIFF_NAME?'สวัสดีค่ะ คุณ'+esc(LIFF_NAME)+' <span class="heart">♡</span> ':'')+'ครั้งก่อนคุณเลือก</span>'+rows+
+    '<button type="button" class="btn-pink" data-act="useHist" data-i="0">ใช้สีเดิม #'+last.colors.join(" + #")+'</button>'+
+    '<button type="button" class="linkbtn" data-act="myHist">ดูประวัติทั้งหมด ('+S.history.length+' ครั้ง)</button></div>';
+}
+function favColor(){
+  var c={},best=null; (S.history||[]).forEach(function(v){ v.colors.forEach(function(n){ c[n]=(c[n]||0)+1; if(best===null||c[n]>c[best]) best=n; }); });
+  return best;
+}
+function archRO(arr){
+  return arr.map(function(num,i){
+    var filled=num!=null;
+    return '<div class="tooth ro" role="img" aria-label="ซี่ที่ '+(i+1)+(filled?" สีเบอร์ "+num:" ว่าง")+'">'+ENAMEL+'<span class="gum"></span><span class="wire"></span>'+(filled&&COLORS[num]?'<span class="tie" style="border-color:'+bc(num)+'"></span>':'')+'<span class="br"></span>'+(filled?'<span class="num">'+num+'</span>':'')+'</div>';
+  }).join("");
+}
+function renderMyHist(){
+  var h=S.history||[];
+  if(!h.length) return '<section class="staff"><div class="card notice"><p>ยังไม่มีประวัติการเลือกสีค่ะ เลือกสีครั้งแรกแล้วกดส่ง ครั้งหน้าจะเห็นที่หน้านี้นะคะ</p><button type="button" class="btn-pink" data-act="backToPick">เลือกสียาง</button></div></section>';
+  var sel=h[Math.min(S.histSel,h.length-1)], fav=favColor();
+  var list=h.map(function(v,i){
+    return '<button type="button" class="visit'+(i===S.histSel?" sel":"")+'" data-act="histSel" data-i="'+i+'" aria-pressed="'+(i===S.histSel)+'"><span class="dt">'+esc(v.date.split(" ")[0])+'</span><span class="cs">'+histDots(v.colors)+'<b>'+v.colors.join("+")+'</b></span>'+(i===0?'<span class="tag g">ล่าสุด</span>':'')+'</button>';
+  }).join("");
+  return '<section class="staff">' +
+    '<div class="pills"><span class="pill">เลือกมาแล้ว '+h.length+' ครั้ง</span>'+(fav?'<span class="pill w">สีที่เลือกบ่อยสุด #'+fav+'</span>':'')+'</div>' +
+    '<div class="card ptcard"><div class="visits">'+list+'</div></div>' +
+    '<section class="card mouth" aria-label="ภาพฟันครั้งที่เลือก"><div class="head"><b>สีเมื่อ '+esc(sel.date.split(" ")[0])+'</b></div>' +
+      '<span class="archlbl">ฟันบน</span><div class="arch up">'+archRO(sel.upper)+'</div><span class="archlbl">ฟันล่าง</span><div class="arch lo">'+archRO(sel.lower)+'</div></section>' +
+    '<button type="button" class="btn-pink" data-act="useHist" data-i="'+S.histSel+'">ใช้สีชุดนี้อีกครั้ง</button>' +
+    '<button type="button" class="btn-white" data-act="backToPick">เลือกสีใหม่</button>' +
+  '</section>';
+}
+function renderStaffHistory(){
+  var d=S.staffData, body="";
+  if(S.staffBusy && !d) body='<p class="muted">กำลังโหลด...</p>';
+  else if(d){
+    var cards=(d.patients||[]).map(function(p){
+      var vs=p.visits.map(function(v){
+        var tag = v.appt && v.appt===d.today ? '<span class="tag g">นัดวันนี้</span>' : '';
+        return '<div class="visit"><span class="dt">'+esc(v.date.split(" ")[0])+'</span><span class="cs">'+histDots(v.colors)+'<b>'+v.colors.join("+")+'</b></span>'+tag+'</div>'+(v.note?'<div class="muted" style="font-size:13px;padding:0 4px 8px 110px">'+esc(v.note)+'</div>':'');
+      }).join("");
+      var sub=[p.phone, p.lineName?"LINE: "+p.lineName:""].filter(Boolean).join(" · ");
+      return '<div class="card ptcard"><span class="pn">'+esc(p.name||p.lineName||"ไม่ระบุชื่อ")+'</span>'+(sub?'<span class="pp">'+esc(sub)+'</span>':'')+'<div class="visits">'+vs+'</div></div>';
+    }).join("");
+    body='<div class="pills"><span class="pill">วันนี้ '+d.todayCount+' คน</span><span class="pill w">บันทึกทั้งหมด '+d.totalCount+' ครั้ง</span></div>' +
+      (S.staffQ?'<p class="muted" style="margin:0;font-size:14px">ผลค้นหา "'+esc(S.staffQ)+'" · '+(d.patients||[]).length+' คน</p>':'<p class="muted" style="margin:0;font-size:14px">รายการวันนี้ / นัดวันนี้</p>') +
+      (cards||'<div class="card notice"><p>ไม่พบรายการค่ะ</p></div>');
+  }
+  return '<section class="staff">' +
+    '<div class="hrow"><h2>ประวัติสียาง</h2><button type="button" class="smallbtn" data-act="backToPick">กลับหน้าเลือกสี</button></div>' +
+    '<div class="searchrow"><input class="inp" id="staffQ" type="search" maxlength="40" placeholder="ค้นชื่อ หรือเบอร์โทร" value="'+esc(S.staffQ)+'" aria-label="ค้นชื่อหรือเบอร์โทร"><button type="button" data-act="staffSearch">ค้นหา</button></div>' +
+    (S.staffError?'<p class="err" role="alert">'+esc(S.staffError)+'</p>':'') +
+    body +
     '<button type="button" class="rowbtn" data-act="openColors"><span class="disc">'+I.palette+'</span><span class="tt"><b>ปรับสี ชื่อ หมวด และสต็อก</b><span>แก้สีให้ตรงยางจริง · ตั้งของหมด</span></span>'+I.chev+'</button>' +
   '</section>';
 }
@@ -774,7 +879,7 @@ function renderPin(){
 /* ---------- actions ---------- */
 function go(view, patch){ for(var k in patch||{}) S[k]=patch[k]; S.view=view; render(); }
 function goHome(){
-  go("splash",{upper:emptyArch(),lower:emptyArch(),armed:null,filter:"all",name:LIFF_NAME,phone:"",phoneError:"",apptDate:"",note:"",submitError:"",paletteError:"",chartOpen:false,pinOpen:false,pinError:""});
+  go("splash",{saveState:"",staffPin:"",staffData:null,staffQ:"",upper:emptyArch(),lower:emptyArch(),armed:null,filter:"all",name:LIFF_NAME,phone:"",phoneError:"",apptDate:"",note:"",submitError:"",paletteError:"",chartOpen:false,pinOpen:false,pinError:""});
 }
 function pickSwatch(n){
   if(S.armed===n){ S.armed=null; S.paletteError=""; render(); return; }
@@ -799,8 +904,52 @@ function submit(){
   used().forEach(function(n){ var x=stockOf(n); if(x!==null){ S.stock[n]=Math.max(0,x-countOf(n)); changed=true; } });
   if(changed) persist();
   S.sent=false;
-  go("confirm",{submitError:"",armed:null,pinOpen:false,lineTapped:false});
-  sendViaLiff();
+  go("confirm",{submitError:"",armed:null,pinOpen:false,lineTapped:false,saveState:HISTORY_ON?"saving":""});
+  if(HISTORY_ON) saveToClinic(); else sendViaLiff();
+}
+function api(action, data){
+  var body={action:action}; for(var k in data) body[k]=data[k];
+  var ctl = window.AbortController ? new AbortController() : null;
+  var tm = ctl ? setTimeout(function(){ ctl.abort(); }, 15000) : null;
+  return fetch(SCRIPT_URL,{method:"POST",headers:{"Content-Type":"text/plain;charset=utf-8"},body:JSON.stringify(body),signal:ctl?ctl.signal:undefined,redirect:"follow"})
+    .then(function(r){ if(tm) clearTimeout(tm); return r.json(); });
+}
+function saveToClinic(){
+  var u=used();
+  api("save",{name:S.name.trim()||LIFF_NAME,phone:S.phone.trim(),apptDate:S.apptDate,note:S.note.trim(),
+    upper:S.upper,lower:S.lower,colorNames:u.map(function(n){return cname(n);}),idToken:S.idToken})
+    .then(function(r){
+      if(!r||!r.ok) throw new Error(r&&r.error||"fail");
+      S.saveState="saved";
+      var v={date:"วันนี้",colors:u.slice(),upper:S.upper.slice(),lower:S.lower.slice()};
+      if(S.idToken){ S.history=[v].concat(S.history||[]); }
+      render();
+    }).catch(function(){ S.saveState="failed"; render(); sendViaLiff(); });
+}
+function loadMyHistory(){
+  if(!HISTORY_ON || !S.idToken) return;
+  api("mine",{idToken:S.idToken}).then(function(r){
+    if(r&&r.ok){ S.history=r.visits||[]; if(S.view==="pick"||S.view==="splash"||S.view==="myhist") render(); }
+  }).catch(function(){});
+}
+function useHist(i){
+  var v=(S.history||[])[i]; if(!v) return;
+  var up=[],lo=[];
+  for(var k=0;k<TEETH;k++){ var a=v.upper[k], b=v.lower[k]; up.push(a&&COLORS[a]?a:null); lo.push(b&&COLORS[b]?b:null); }
+  var miss=v.colors.filter(function(n){ return !inStock(n); });
+  go("pick",{upper:up,lower:lo,armed:null,paletteError:miss.length?"สีเบอร์ "+miss.join(", ")+" หมดชั่วคราว ลองเปลี่ยนเป็นสีอื่นนะคะ":"",saveState:""});
+}
+function staffLoad(q){
+  S.staffBusy=true; S.staffError=""; S.staffQ=q||""; render();
+  api("staff",{pin:S.staffPin,q:S.staffQ}).then(function(r){
+    S.staffBusy=false;
+    if(r&&r.ok){ S.staffData=r; }
+    else if(r&&r.error==="bad_pin"){ S.staffError="รหัสพนักงานไม่ตรงกับที่ตั้งไว้ใน Google Sheet"; }
+    else if(r&&r.error==="locked"){ S.staffError="ใส่รหัสผิดหลายครั้ง ระบบล็อกไว้ 10 นาทีค่ะ"; }
+    else if(r&&r.error==="no_pin_set"){ S.staffError="ยังไม่ได้ตั้ง STAFF_PIN ใน Apps Script"; }
+    else S.staffError="โหลดประวัติไม่สำเร็จ ลองใหม่อีกครั้งค่ะ";
+    render();
+  }).catch(function(){ S.staffBusy=false; S.staffError="เชื่อมต่อไม่ได้ ตรวจอินเทอร์เน็ตแล้วลองใหม่ค่ะ"; render(); });
 }
 function sendViaLiff(){
   if(!LIFF_READY || !window.liff || !liff.isInClient()) return;
@@ -817,6 +966,21 @@ function submitPin(){
   var box=document.getElementById("pinBox"), v=box?box.value:"";
   var now=Date.now();
   if(now<pinLockUntil){ S.pinError="ใส่ผิดหลายครั้ง รออีก "+Math.ceil((pinLockUntil-now)/1000)+" วินาทีค่ะ"; render(); return; }
+  if(HISTORY_ON){
+    S.pinError="กำลังตรวจรหัส..."; render();
+    api("staff",{pin:v,q:""}).then(function(r){
+      if(r&&r.ok){ pinFails=0; S.staffPin=v; S.staffData=r; go("staff",{pinOpen:false,pinError:"",staffQ:"",staffError:""}); return; }
+      if(r&&r.error==="locked"){ S.pinError="ใส่ผิดหลายครั้ง ระบบล็อกไว้ 10 นาทีค่ะ"; render(); return; }
+      if(r&&r.error==="no_pin_set"){ S.pinError="ยังไม่ได้ตั้ง STAFF_PIN ใน Apps Script"; render(); return; }
+      S.pinError="รหัสไม่ถูกต้อง ลองใหม่อีกครั้งค่ะ"; render();
+    }).catch(function(){
+      sha256hex(v).then(function(h){
+        if(h===STAFF_PIN_SHA256){ S.staffPin=v; go("staff",{pinOpen:false,pinError:"",staffError:"เชื่อมต่อ Google Sheet ไม่ได้ ตอนนี้ดูประวัติไม่ได้ค่ะ"}); }
+        else { S.pinError="รหัสไม่ถูกต้อง ลองใหม่อีกครั้งค่ะ"; render(); }
+      }, function(){ S.pinError="เชื่อมต่อไม่ได้ ลองใหม่ค่ะ"; render(); });
+    });
+    return;
+  }
   sha256hex(v).then(function(h){
     if(h===STAFF_PIN_SHA256){ pinFails=0; go("staff",{pinOpen:false,pinError:""}); return; }
     pinFails++;
@@ -868,6 +1032,10 @@ app.addEventListener("click", function(e){
     case "filter": S.filter=el.getAttribute("data-v"); render(); break;
     case "chart": S.chartOpen=!S.chartOpen; render(); break;
     case "submit": submit(); break;
+    case "useHist": useHist(parseInt(el.getAttribute("data-i"),10)); break;
+    case "myHist": go("myhist",{histSel:0}); break;
+    case "histSel": S.histSel=parseInt(el.getAttribute("data-i"),10); render(); break;
+    case "staffSearch": { var qq=document.getElementById("staffQ"); staffLoad(qq?qq.value.trim():""); } break;
     case "lineTap": setTimeout(function(){ S.lineTapped=true; render(); }, 400); break;
     case "redo": go("pick",{upper:emptyArch(),lower:emptyArch(),armed:null,submitError:"",paletteError:""}); break;
     case "home": goHome(); break;
@@ -906,6 +1074,7 @@ app.addEventListener("focusout", function(e){
 });
 app.addEventListener("keydown", function(e){
   if(e.target.id==="pinBox" && e.key==="Enter"){ e.preventDefault(); submitPin(); }
+  if(e.target.id==="staffQ" && e.key==="Enter"){ e.preventDefault(); staffLoad(e.target.value.trim()); }
   if(e.key==="Escape" && S.pinOpen){ S.pinOpen=false; render(); }
 });
 app.addEventListener("submit", function(e){ e.preventDefault(); });
@@ -930,11 +1099,15 @@ render();
 if(window.liff){
   liff.init({liffId:LIFF_ID}).then(function(){
     LIFF_READY=true;
-    if(liff.isLoggedIn()) return liff.getProfile().then(function(p){
-      LIFF_NAME=p.displayName||"";
-      if(!S.name.trim()) S.name=LIFF_NAME;
-      render();
-    });
+    if(liff.isLoggedIn()){
+      try{ S.idToken = liff.getIDToken() || ""; }catch(e){ S.idToken=""; }
+      loadMyHistory();
+      return liff.getProfile().then(function(p){
+        LIFF_NAME=p.displayName||"";
+        if(!S.name.trim()) S.name=LIFF_NAME;
+        render();
+      });
+    }
   }).catch(function(){});
 }
 })();
