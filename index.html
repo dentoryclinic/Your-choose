@@ -714,7 +714,7 @@ function renderDoneHead(){
 function lineUrl(){ return "https://line.me/R/oaMessage/"+encodeURIComponent(LINE_OA_ID)+"/?"+encodeURIComponent(lineText()); }
 function renderSendBox(){
   var t=S.lineTapped;
-  if(S.saveState==="saved") return '<div class="pinkbox" style="margin:8px 0 16px"><p class="sentnote">บันทึกไว้ในประวัติแล้ว'+(S.sent?' และส่งเข้าแชท LINE @dentory ให้แล้ว':'')+' ไม่ต้องทำอะไรเพิ่มค่ะ <span class="heart">♥</span>'+(S.idToken?' ครั้งหน้าเปิดจาก LINE จะเห็นสีที่เคยเลือก':'')+'</p></div>';
+  if(S.saveState==="saved") return '<div class="pinkbox" style="margin:8px 0 16px"><p class="sentnote">บันทึกไว้ในประวัติแล้ว'+(S.sent?' และส่งเข้าแชท LINE @dentory ให้แล้ว'+(S.closing?' กำลังพากลับไปที่แชท...':''):'')+' ไม่ต้องทำอะไรเพิ่มค่ะ <span class="heart">♥</span>'+(S.idToken?' ครั้งหน้าเปิดจาก LINE จะเห็นสีที่เคยเลือก':'')+'</p></div>';
   if(S.saveState==="saving") return '';
   
   if(S.sent) return '<div class="pinkbox" style="margin:8px 0 16px"><p class="sentnote">ส่งเข้าแชท LINE ของคลินิกให้แล้วค่ะ ไม่ต้องทำอะไรเพิ่ม <span class="heart">♥</span> ถ้าอยากส่งซ้ำ กดปุ่มด้านล่างได้เลย</p><a class="linebtn" data-act="lineTap" href="'+esc(lineUrl())+'" target="_blank" rel="noopener">'+I.line(28)+'ส่งซ้ำทาง LINE</a></div>';
@@ -954,7 +954,11 @@ function staffLoad(q){
 }
 function sendViaLiff(){
   if(!LIFF_READY || !window.liff || !liff.isInClient()) return;
-  liff.sendMessages([{type:"text",text:lineText()}]).then(function(){ S.sent=true; render(); }).catch(function(){});
+  liff.sendMessages([{type:"text",text:lineText()}]).then(function(){
+    S.sent=true; S.closing=true; render();
+    /* show the success screen briefly, then close the web view so the patient lands back in the @dentory chat */
+    setTimeout(function(){ try{ liff.closeWindow(); }catch(e){} }, 2500);
+  }).catch(function(){});
 }
 var pinFails = 0, pinLockUntil = 0;
 function sha256hex(str){
