@@ -272,6 +272,17 @@ select.inp{padding:0 16px}
 
 /* pin overlay */
 .overlay{position:fixed;inset:0;z-index:50;background:rgba(11,22,119,.45);display:flex;align-items:center;justify-content:center;padding:16px}
+.ask{width:100%;max-width:400px;max-height:calc(100% - 8px);overflow-y:auto;padding:22px 18px 18px;display:flex;flex-direction:column;gap:12px}
+.ask h3{margin:0;text-align:center;font-family:var(--font-display);font-weight:700;font-size:22px;line-height:1.3}
+.ask .sub{margin:0;text-align:center;font-size:14px;color:var(--ink-muted)}
+.ask .arch{padding:10px 4px 14px}
+.ask .arch.lo{padding:14px 4px 10px}
+.ask .rows{display:flex;flex-direction:column;gap:6px;padding:4px 6px}
+.ask .rows .r{display:flex;align-items:center;gap:10px;font-size:15px}
+.ask .rows .r b{font-family:var(--font-display);font-size:18px;font-variant-numeric:tabular-nums}
+.ask .meta{font-size:14px;color:var(--ink-muted);padding:0 6px;overflow-wrap:anywhere}
+.ask .acts{display:flex;gap:8px;margin-top:4px}
+.ask .acts .btn-lilac{flex:0 0 auto}
 .pin{width:100%;max-width:310px;padding:24px;display:flex;flex-direction:column;align-items:center;gap:12px;text-align:center}
 .pin .disc{width:52px;height:52px}
 .pin h3{margin:0;font-family:var(--font-display);font-weight:700;font-size:22px}
@@ -433,7 +444,7 @@ var EMPTY_DOT = "display:inline-block;flex-shrink:0;width:28px;height:28px;borde
 var S = {
   view:"splash", upper:emptyArch(), lower:emptyArch(), armed:null, filter:"all", themeOpen:null,
   name:"", phone:"", phoneError:"", apptDate:"", note:"", submitError:"", paletteError:"", chartOpen:false,
-  pinOpen:false, pinError:"", lineTapped:false, saveState:"", idToken:"", history:null, histSel:0,
+  pinOpen:false, pinError:"", askOpen:false, lineTapped:false, saveState:"", idToken:"", history:null, histSel:0,
   staffPin:"", staffQ:"", staffData:null, staffBusy:false, staffError:"",
   ovColor:{}, ovColor2:{}, ovName:{}, ovCat:{}, stock:{},
   edit:null, eError:"", eSaved:false
@@ -516,6 +527,7 @@ function render(){
       if(v==="myhist") h += renderMyHist();
     }
     if(S.pinOpen) h += renderPin();
+    if(S.askOpen) h += renderAsk();
     app.innerHTML = h;
     document.body.setAttribute("data-view", v);
     if(viewChanged) window.scrollTo(0,0);
@@ -867,6 +879,18 @@ function renderStaffColors(){
   '</section>';
 }
 
+function renderAsk(){
+  var rows=used().map(function(n){ return '<div class="r"><span style="'+dot(bc(n),30,false)+'"></span><b>#'+n+'</b><span class="muted">'+esc(cname(n))+(TWO_TONE[n]?" ทูโทน":"")+' · '+countOf(n)+' ซี่</span></div>'; }).join("");
+  var nm=S.name.trim()||LIFF_NAME, meta=[nm?"ชื่อ: "+nm:"", S.apptDate?"วันนัด: "+fmtDate(S.apptDate):"", S.note.trim()?"หมายเหตุ: "+S.note.trim():""].filter(Boolean);
+  return '<div class="overlay" data-act="askOverlay"><div class="card ask" role="dialog" aria-modal="true" aria-labelledby="askTitle">' +
+    '<h3 id="askTitle">ยืนยันสียางชุดนี้ใช่ไหม?</h3><p class="sub">กดส่งแล้วคลินิกจะเตรียมยางตามนี้ค่ะ</p>' +
+    '<span class="archlbl">ฟันบน</span><div class="arch up">'+archRO(S.upper)+'</div>' +
+    '<span class="archlbl">ฟันล่าง</span><div class="arch lo">'+archRO(S.lower)+'</div>' +
+    '<div class="rows">'+rows+'</div>' +
+    (meta.length?'<div class="meta">'+meta.map(esc).join("<br>")+'</div>':'') +
+    '<div class="acts"><button type="button" class="btn-lilac" data-act="askCancel">กลับไปแก้</button><button type="button" class="btn-save" id="askOk" data-act="askOk">ยืนยัน ส่งเลย</button></div>' +
+  '</div></div>';
+}
 function renderPin(){
   return '<div class="overlay" data-act="overlay"><div class="card pin" role="dialog" aria-modal="true" aria-labelledby="pinTitle">' +
     '<span class="disc">'+I.lock(24)+'</span><h3 id="pinTitle">สำหรับพนักงาน</h3><p>ใส่รหัสพนักงานเพื่อเข้าหน้าจัดการ</p>' +
@@ -879,7 +903,7 @@ function renderPin(){
 /* ---------- actions ---------- */
 function go(view, patch){ for(var k in patch||{}) S[k]=patch[k]; S.view=view; render(); }
 function goHome(){
-  go("splash",{saveState:"",staffPin:"",staffData:null,staffQ:"",upper:emptyArch(),lower:emptyArch(),armed:null,filter:"all",name:LIFF_NAME,phone:"",phoneError:"",apptDate:"",note:"",submitError:"",paletteError:"",chartOpen:false,pinOpen:false,pinError:""});
+  go("splash",{askOpen:false,saveState:"",staffPin:"",staffData:null,staffQ:"",upper:emptyArch(),lower:emptyArch(),armed:null,filter:"all",name:LIFF_NAME,phone:"",phoneError:"",apptDate:"",note:"",submitError:"",paletteError:"",chartOpen:false,pinOpen:false,pinError:""});
 }
 function pickSwatch(n){
   if(S.armed===n){ S.armed=null; S.paletteError=""; render(); return; }
@@ -900,6 +924,11 @@ function tapTooth(arch,i){
 function submit(){
   if(!used().length){ S.submitError="ยังไม่ได้แปะสีบนฟันเลยนะคะ"; render(); return; }
   if(S.phone.trim() && !isThaiPhone(S.phone)){ S.phoneError="เบอร์ดูไม่ครบ ลองเช็กอีกทีนะคะ"; render(); return; }
+  S.askOpen=true; S.armed=null; render();
+  var ok=document.getElementById("askOk"); if(ok){ try{ ok.focus({preventScroll:true}); }catch(e){} }
+}
+function doSubmit(){
+  S.askOpen=false;
   var changed=false;
   used().forEach(function(n){ var x=stockOf(n); if(x!==null){ S.stock[n]=Math.max(0,x-countOf(n)); changed=true; } });
   if(changed) persist();
@@ -1047,6 +1076,9 @@ app.addEventListener("click", function(e){
     case "openPin": S.pinOpen=true; S.pinError=""; render(); break;
     case "cancelPin": S.pinOpen=false; S.pinError=""; render(); break;
     case "overlay": if(e.target===el){ S.pinOpen=false; S.pinError=""; render(); } break;
+    case "askOverlay": if(e.target===el){ S.askOpen=false; render(); } break;
+    case "askCancel": S.askOpen=false; render(); break;
+    case "askOk": doSubmit(); break;
     case "submitPin": submitPin(); break;
     case "backToPick": go("pick"); break;
     case "openColors": go("staffColors",{edit:null,eError:"",eSaved:false}); break;
@@ -1081,6 +1113,7 @@ app.addEventListener("keydown", function(e){
   if(e.target.id==="pinBox" && e.key==="Enter"){ e.preventDefault(); submitPin(); }
   if(e.target.id==="staffQ" && e.key==="Enter"){ e.preventDefault(); staffLoad(e.target.value.trim()); }
   if(e.key==="Escape" && S.pinOpen){ S.pinOpen=false; render(); }
+  if(e.key==="Escape" && S.askOpen){ S.askOpen=false; render(); }
 });
 app.addEventListener("submit", function(e){ e.preventDefault(); });
 function paintBig(){
