@@ -8,6 +8,11 @@
  *   save  — บันทึกรายการเมื่อคนไข้กดยืนยัน
  *   mine  — คนไข้ดูประวัติของตัวเอง (ยืนยันตัวตนกับ LINE ทุกครั้ง)
  *   staff — พนักงานค้นประวัติ (ต้องใช้รหัสพนักงาน)
+ *   member — เช็กว่าบัญชี LINE นี้เป็นสมาชิกแล้วหรือยัง
+ *   link   — คนไข้ใส่เบอร์โทรเพื่อเข้าใช้ (ผูกกับบัญชี LINE ครั้งแรก)
+ *
+ * สมาชิก: พนักงานลงชื่อ + เบอร์โทรคนไข้ในแท็บ "สมาชิก"
+ * ถ้าแท็บสมาชิกยังว่าง ระบบเปิดให้ทุกคนเลือกสีได้เหมือนเดิม
  */
 
 var SHEET_NAME = 'ประวัติสียาง';
@@ -15,10 +20,15 @@ var LINE_CHANNEL_ID = '2012114486';   // LINE Login channel ID (ตัวเล�
 var TZ = 'Asia/Bangkok';
 var HEADERS = ['วันที่บันทึก', 'ชื่อ', 'เบอร์', 'ชื่อ LINE', 'LINE userId', 'วันนัด',
                'เบอร์สี', 'สีที่เลือก', 'ฟันบน', 'ฟันล่าง', 'หมายเหตุ', 'ช่องทาง'];
+var MEMBER_SHEET = 'สมาชิก';
+var MEMBER_HEADERS = ['ชื่อ', 'เบอร์โทร', 'ชื่อ LINE', 'ผูก LINE เมื่อ', 'หมายเหตุ', 'LINE userId'];
+var MC = { name: 0, phone: 1, lineName: 2, linkedAt: 3, note: 4, uid: 5 };
 var COL = { ts: 0, name: 1, phone: 2, lineName: 3, uid: 4, appt: 5, colors: 6, colorText: 7, upper: 8, lower: 9, note: 10, src: 11 };
 
 /** รันครั้งเดียวตอนตั้งค่า: สร้างแท็บและหัวตาราง */
 function setup() {
+  var ms = getMemberSheet_();
+  Logger.log('แท็บ "' + MEMBER_SHEET + '" มีสมาชิก ' + Math.max(0, ms.getLastRow() - 1) + ' คน');
   var sh = getSheet_();
   Logger.log('พร้อมใช้งาน: แท็บ "' + SHEET_NAME + '" ' + (sh.getLastRow() - 1) + ' แถว');
   if (!PropertiesService.getScriptProperties().getProperty('STAFF_PIN')) {
@@ -38,6 +48,8 @@ function doPost(e) {
     if (req.action === 'save') return out_(save_(req));
     if (req.action === 'mine') return out_(mine_(req));
     if (req.action === 'staff') return out_(staff_(req));
+    if (req.action === 'member') return out_(member_(req));
+    if (req.action === 'link') return out_(link_(req));
     return out_({ ok: false, error: 'unknown_action' });
   } catch (err) {
     console.error(err);
@@ -53,12 +65,17 @@ function save_(req) {
   var colors = uniq_(upper.concat(lower).filter(function (x) { return x != null; }));
   if (!colors.length) return { ok: false, error: 'no_colors' };
   var user = verifyLine_(req.idToken);
+  var mem = null;
+  if (membersActive_()) {
+    mem = (user && findMember_({ uid: user.sub })) || findMember_({ phone: req.phone });
+    if (!mem) return { ok: false, error: 'not_member' };
+  }
   var names = Array.isArray(req.colorNames) ? req.colorNames : [];
   var colorText = colors.map(function (n, i) { return '#' + n + (names[i] ? ' ' + clean_(names[i], 20) : ''); }).join(', ');
   var row = [
     nowBE_(),
-    cell_(req.name, 60) || (user ? user.name : ''),
-    cell_(String(req.phone || '').replace(/[^0-9]/g, ''), 15),
+    cell_(req.name, 60) || (mem ? mem.name : '') || (user ? user.name : ''),
+    cell_(mem ? mem.phone : String(req.phone || '').replace(/[^0-9]/g, ''), 15),
     user ? cell_(user.name, 60) : '',
     user ? user.sub : '',
     isoToBE_(req.apptDate),
@@ -131,6 +148,90 @@ function staff_(req) {
     totalCount: all.length,
     patients: order.slice(0, 30).map(function (k) { var g = groups[k]; delete g.uid; return g; })
   };
+}
+
+/* ---------- members ---------- */
+
+function member_(req) {
+  if (!membersActive_()) return { ok: true, open: true };
+  var user = verifyLine_(req.idToken);
+  if (!user) return { ok: true, member: false };
+  var m = findMember_({ uid: user.sub });
+  return m ? { ok: true, member: true, name: m.name, phone: m.phone } : { ok: true, member: false };
+}
+
+function link_(req) {
+  if (!membersActive_()) return { ok: true, open: true };
+  var phone = phone_(req.phone);
+  if (phone.length < 9) return { ok: false, error: 'bad_phone' };
+  var user = verifyLine_(req.idToken);
+  var cache = CacheService.getScriptCache();
+  var who = user ? 'u_' + user.sub : 'anon';
+  var fails = Number(cache.get('linkfail_' + who) || 0);
+  if (fails >= (user ? 5 : 30)) return { ok: false, error: 'locked' };
+  var m = findMember_({ phone: phone });
+  if (!m) {
+    cache.put('linkfail_' + who, String(fails + 1), 600);
+    return { ok: false, error: 'not_found' };
+  }
+  if (user) {
+    if (m.uid && m.uid !== user.sub) return { ok: false, error: 'taken' };
+    if (!m.uid) {
+      var lock = LockService.getScriptLock();
+      lock.waitLock(10000);
+      try {
+        var sh = getMemberSheet_();
+        sh.getRange(m.row, MC.lineName + 1).setValue(cell_(user.name, 60));
+        sh.getRange(m.row, MC.linkedAt + 1).setValue(nowBE_());
+        sh.getRange(m.row, MC.uid + 1).setValue(user.sub);
+      } finally { lock.releaseLock(); }
+    }
+  }
+  return { ok: true, member: true, linked: !!user, name: m.name, phone: m.phone };
+}
+
+function membersActive_() {
+  return readMembers_().length > 0;
+}
+
+function findMember_(by) {
+  var list = readMembers_();
+  for (var i = 0; i < list.length; i++) {
+    var m = list[i];
+    if (by.uid && m.uid === by.uid) return m;
+    if (by.phone && phone_(by.phone).length >= 9 && m.phone === phone_(by.phone)) return m;
+  }
+  return null;
+}
+
+function readMembers_() {
+  var sh = getMemberSheet_();
+  var n = sh.getLastRow() - 1;
+  if (n < 1) return [];
+  return sh.getRange(2, 1, n, MEMBER_HEADERS.length).getDisplayValues().map(function (r, i) {
+    return { row: i + 2, name: String(r[MC.name]).trim(), phone: phone_(r[MC.phone]), uid: String(r[MC.uid]).trim() };
+  }).filter(function (m) { return m.phone.length >= 9; });
+}
+
+function getMemberSheet_() {
+  var ss = SpreadsheetApp.getActiveSpreadsheet();
+  var sh = ss.getSheetByName(MEMBER_SHEET);
+  if (!sh) {
+    sh = ss.insertSheet(MEMBER_SHEET);
+    sh.getRange(1, 1, 1, MEMBER_HEADERS.length).setValues([MEMBER_HEADERS]).setFontWeight('bold').setBackground('#f1f3f6');
+    sh.setFrozenRows(1);
+    sh.getRange('A:F').setNumberFormat('@');  // เบอร์ขึ้นต้น 0 ไม่หาย
+    sh.hideColumns(MC.uid + 1);
+  }
+  return sh;
+}
+
+// เบอร์ไทย: เก็บเฉพาะตัวเลข และแปลง +66 / 66 นำหน้าเป็น 0
+function phone_(v) {
+  var d = String(v == null ? '' : v).replace(/[^0-9]/g, '');
+  if (/^66\d{8,9}$/.test(d)) d = '0' + d.slice(2);
+  if (/^\d{8,9}$/.test(d) && d.charAt(0) !== '0') d = '0' + d; // Sheet ตัด 0 หน้าทิ้ง
+  return d;
 }
 
 /* ---------- LINE ID token check ---------- */

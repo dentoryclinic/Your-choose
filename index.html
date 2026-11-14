@@ -243,6 +243,13 @@ select.inp{padding:0 16px}
 .searchrow .inp{flex:1}
 .searchrow button{flex-shrink:0;min-height:50px;padding:0 18px;border:none;border-radius:9999px;background:var(--pink-600);color:#fff;font-family:var(--font-display);font-weight:600;font-size:16px}
 .savebadge{background:var(--line-green)!important;box-shadow:0 8px 20px rgba(6,199,85,.32)!important}
+.login{padding:24px 20px;display:flex;flex-direction:column;gap:14px;margin-top:8px}
+.login h2{margin:0;font-family:var(--font-display);font-weight:700;font-size:26px;line-height:1.25}
+.login p{margin:0;font-size:15px;line-height:1.6;color:var(--ink-muted)}
+.login .inp{height:58px;font-family:var(--font-display);font-size:24px;letter-spacing:.06em;text-align:center}
+.login .help{font-size:14px;text-align:center}
+.login .help a{color:var(--line-green);font-weight:600}
+.memberline{display:flex;align-items:center;gap:8px;font-size:14px;color:var(--ink-muted);padding-left:6px}
 .two{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
 .btn-white{display:flex;align-items:center;justify-content:center;gap:8px;min-height:50px;border:none;border-radius:9999px;background:#fff;color:var(--blue-600);font-family:var(--font-display);font-weight:600;font-size:16px;box-shadow:var(--shadow-card);padding:0 14px}
 
@@ -454,6 +461,7 @@ var S = {
   name:"", phone:"", phoneError:"", apptDate:"", note:"", submitError:"", paletteError:"", chartOpen:false,
   pinOpen:false, pinError:"", askOpen:false, lineTapped:false, saveState:"", idToken:"", history:null, histSel:0,
   staffPin:"", staffQ:"", staffData:null, staffBusy:false, staffError:"",
+  member:null, memberState:HISTORY_ON?"checking":"open", loginError:"", loginBusy:false, loginPhone:"",
   ovColor:{}, ovColor2:{}, ovName:{}, ovCat:{}, stock:{},
   edit:null, eError:"", eSaved:false
 };
@@ -533,6 +541,7 @@ function render(){
       if(v==="staff") h += renderStaff();
       if(v==="staffColors") h += renderStaffColors();
       if(v==="myhist") h += renderMyHist();
+      if(v==="login") h += renderLogin();
     }
     if(S.pinOpen) h += renderPin();
     if(S.askOpen) h += renderAsk();
@@ -541,6 +550,7 @@ function render(){
     if(viewChanged) window.scrollTo(0,0);
     lastView = v;
     if(S.pinOpen){ var p=document.getElementById("pinBox"); if(p) p.focus(); }
+    else if(v==="login" && viewChanged){ var lp=document.getElementById("loginPhone"); if(lp && S.memberState!=="checking") try{ lp.focus({preventScroll:true}); }catch(e){} }
     resetIdle();
   };
   var reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -576,7 +586,7 @@ function renderSplash(){
 function renderTopbar(){
   var staff = S.view==="staff"||S.view==="staffColors", mh = S.view==="myhist";
   return '<header class="topbar"><div class="b"><img src="logo.png" alt="Dentory"><div class="tt"><b>'+(staff?"หลังร้าน":mh?"ประวัติสียางของฉัน":"เลือกสียางจัดฟัน")+'</b><span>'+(staff?"สำหรับพนักงาน Dentory":mh?(LIFF_NAME?"คุณ"+esc(LIFF_NAME)+" · เข้าด้วย LINE":"เข้าด้วย LINE"):"Dentory Dental Clinic")+'</span></div></div>' +
-    (S.view==="pick" ? '<button type="button" class="lockpill" data-act="openPin">'+I.lock(14)+' พนักงาน</button>' : '') +
+    ((S.view==="pick"||S.view==="login") ? '<button type="button" class="lockpill" data-act="openPin">'+I.lock(14)+' พนักงาน</button>' : '') +
   '</header>';
 }
 
@@ -715,7 +725,7 @@ function renderPick(){
     '<form class="card form" id="infoForm" novalidate>' +
       '<div class="fhead"><span class="disc">'+I.user+'</span><div class="tt"><b>บอกเราหน่อยว่าเป็นใคร</b><span>พนักงานจะได้เตรียมยางให้ถูกคน</span></div></div>' +
       '<div class="field"><label for="fName">ชื่อ-นามสกุล <small>(ถ้าไม่ใส่ จะใช้ชื่อ LINE)</small></label><input class="inp" id="fName" type="text" maxlength="60" value="'+esc(S.name)+'" placeholder="เช่น สมชาย ใจดี" autocomplete="name"></div>' +
-      '<div class="field"><label for="fPhone">เบอร์โทร <small>(ถ้ามี)</small></label><input class="inp" id="fPhone" type="tel" maxlength="15" inputmode="tel" value="'+esc(S.phone)+'" placeholder="08x-xxx-xxxx" autocomplete="tel">' + (S.phoneError?'<span class="ferr" id="phoneErr">'+esc(S.phoneError)+'</span>':'') + '</div>' +
+      (S.member ? '<div class="memberline">'+I.user+'<span>สมาชิก: '+esc(S.member.name||"")+' · '+esc(fmtPhone(S.member.phone))+'</span></div>' : '<div class="field"><label for="fPhone">เบอร์โทร <small>(ถ้ามี)</small></label><input class="inp" id="fPhone" type="tel" maxlength="15" inputmode="tel" value="'+esc(S.phone)+'" placeholder="08x-xxx-xxxx" autocomplete="tel">' + (S.phoneError?'<span class="ferr" id="phoneErr">'+esc(S.phoneError)+'</span>':'') + '</div>') +
       '<div class="field"><label for="fDate">วันนัด <small>(ถ้ามี)</small></label><input class="inp" id="fDate" type="date" value="'+esc(S.apptDate)+'"></div>' +
       '<div class="field"><label for="fNote">ฝากบอกพนักงาน <small>(ถ้ามี)</small></label><textarea class="inp" id="fNote" maxlength="200" placeholder="เช่น อยากสลับลายสีทุกซี่">'+esc(S.note)+'</textarea></div>' +
       '<p class="muted" style="margin:0;font-size:13px;line-height:1.55">'+(HISTORY_ON?"เมื่อกดยืนยัน ชื่อ เบอร์ วันนัด สีที่เลือก และชื่อบัญชี LINE (ถ้าเปิดจาก LINE) จะถูกบันทึกไว้ที่คลินิก Dentory เพื่อเตรียมยางในวันนัดและเก็บเป็นประวัติการเลือกสีของคุณ คลินิกไม่เปิดเผยข้อมูลนี้ให้ผู้อื่นค่ะ":"เว็บนี้ไม่ได้เก็บชื่อหรือเบอร์โทรของคุณไว้ที่ไหนเลย ข้อมูลจะถึงคลินิกเฉพาะเมื่อคุณกดส่งในแชท LINE @dentory เท่านั้น และใช้เพื่อเตรียมยางในวันนัดเท่านั้นค่ะ")+'</p>' +
@@ -887,6 +897,21 @@ function renderStaffColors(){
   '</section>';
 }
 
+function fmtPhone(p){ p=String(p||""); return p.length===10 ? p.slice(0,3)+"-"+p.slice(3,6)+"-"+p.slice(6) : p; }
+function renderLogin(){
+  var checking = S.memberState==="checking";
+  var inLine = !!S.idToken;
+  return '<section class="card login" aria-labelledby="loginTitle">' +
+    '<div class="fhead"><span class="disc">'+I.lock(20)+'</span><div class="tt"><b id="loginTitle">เข้าสู่ระบบด้วยเบอร์โทร</b><span>สำหรับคนไข้จัดฟัน Dentory</span></div></div>' +
+    (checking ? '<p>กำลังตรวจสอบสมาชิก...</p>' :
+      '<p>'+(inLine?'ใส่เบอร์โทรที่ให้ไว้กับคลินิก ใส่ครั้งแรกครั้งเดียว ครั้งต่อไปเปิดจาก LINE แล้วเข้าได้เลยค่ะ':'ใส่เบอร์โทรที่ให้ไว้กับคลินิก (ถ้าเปิดจากแอป LINE จะใส่แค่ครั้งแรกครั้งเดียว)')+'</p>' +
+      '<input class="inp" id="loginPhone" type="tel" inputmode="numeric" maxlength="15" autocomplete="tel" placeholder="08x-xxx-xxxx" aria-label="เบอร์โทร" value="'+esc(S.loginPhone)+'">' +
+      (S.loginError?'<p class="err" role="alert">'+esc(S.loginError)+'</p>':'') +
+      '<button type="button" class="btn-pink" data-act="login"'+(S.loginBusy?' disabled':'')+'>'+(S.loginBusy?'กำลังตรวจสอบ...':'เข้าสู่ระบบ')+'</button>' +
+      '<p class="help">ยังไม่ได้ลงทะเบียน หรือเปลี่ยนเบอร์? <a href="https://line.me/R/ti/p/'+encodeURIComponent(LINE_OA_ID)+'" target="_blank" rel="noopener">ทัก LINE @dentory</a></p>') +
+    '<button type="button" class="btn-white" data-act="home">'+I.home+'กลับหน้าแรก</button>' +
+  '</section>';
+}
 function renderAsk(){
   var rows=used().map(function(n){ return '<div class="r"><span style="'+dot(bc(n),30,false)+'"></span><b>#'+n+'</b><span class="muted">'+esc(cname(n))+(TWO_TONE[n]?" ทูโทน":"")+' · '+countOf(n)+' ซี่</span></div>'; }).join("");
   var nm=S.name.trim()||LIFF_NAME, meta=[nm?"ชื่อ: "+nm:"", S.apptDate?"วันนัด: "+fmtDate(S.apptDate):"", S.note.trim()?"หมายเหตุ: "+S.note.trim():""].filter(Boolean);
@@ -911,7 +936,9 @@ function renderPin(){
 /* ---------- actions ---------- */
 function go(view, patch){ for(var k in patch||{}) S[k]=patch[k]; S.view=view; render(); }
 function goHome(){
-  go("splash",{askOpen:false,saveState:"",staffPin:"",staffData:null,staffQ:"",upper:emptyArch(),lower:emptyArch(),armed:null,filter:"all",name:LIFF_NAME,phone:"",phoneError:"",apptDate:"",note:"",submitError:"",paletteError:"",chartOpen:false,pinOpen:false,pinError:""});
+  if(S.member && !S.member.linked){ S.member=null; if(S.memberState==="ok") S.memberState="none"; }
+  S.loginPhone=""; S.loginError="";
+  go("splash",{askOpen:false,saveState:"",staffPin:"",staffData:null,staffQ:"",upper:emptyArch(),lower:emptyArch(),armed:null,filter:"all",name:(S.member&&S.member.name)||LIFF_NAME,phone:S.member?S.member.phone:"",phoneError:"",apptDate:"",note:"",submitError:"",paletteError:"",chartOpen:false,pinOpen:false,pinError:""});
 }
 function pickSwatch(n){
   if(S.armed===n){ S.armed=null; S.paletteError=""; render(); return; }
@@ -953,7 +980,7 @@ function api(action, data){
 }
 function saveToClinic(){
   var u=used();
-  api("save",{name:S.name.trim()||LIFF_NAME,phone:S.phone.trim(),apptDate:S.apptDate,note:S.note.trim(),
+  api("save",{name:S.name.trim()||LIFF_NAME,phone:S.member?S.member.phone:S.phone.trim(),apptDate:S.apptDate,note:S.note.trim(),
     upper:S.upper,lower:S.lower,colorNames:u.map(function(n){return cname(n);}),idToken:S.idToken})
     .then(function(r){
       if(!r||!r.ok) throw new Error(r&&r.error||"fail");
@@ -962,7 +989,51 @@ function saveToClinic(){
       var v={date:"วันนี้",colors:u.slice(),upper:S.upper.slice(),lower:S.lower.slice()};
       if(S.idToken){ S.history=[v].concat(S.history||[]); }
       render();
-    }).catch(function(){ S.saveState="failed"; render(); sendViaLiff(); });
+    }).catch(function(err){
+      if(err && err.message==="not_member"){ S.member=null; S.memberState="none"; go("login",{saveState:"",loginError:"ต้องเข้าสู่ระบบด้วยเบอร์โทรก่อนส่งให้คลินิกค่ะ"}); return; }
+      S.saveState="failed"; render(); sendViaLiff();
+    });
+}
+function setMember(m){
+  S.member={name:m.name||"",phone:m.phone||"",linked:!!m.linked};
+  S.memberState="ok";
+  if(!S.name.trim() || S.name===LIFF_NAME) S.name = S.member.name || S.name;
+  S.phone = S.member.phone; S.phoneError="";
+}
+function checkMember(){
+  if(!HISTORY_ON){ S.memberState="open"; return; }
+  S.memberState="checking";
+  api("member",{idToken:S.idToken}).then(function(r){
+    if(r && r.ok && r.open) S.memberState="open";
+    else if(r && !r.ok && r.error==="unknown_action") S.memberState="open"; // Apps Script not updated yet
+    else if(r && r.ok && r.member) setMember({name:r.name,phone:r.phone,linked:true});
+    else S.memberState="none";
+    if(S.view==="login" && (S.memberState==="open"||S.memberState==="ok")) go("pick",{loginError:""}); else render();
+  }).catch(function(){ S.memberState="error"; render(); });
+}
+function doLogin(){
+  var el=document.getElementById("loginPhone"), v=el?String(el.value).trim():"";
+  S.loginPhone=v;
+  var d=v.replace(/[^0-9]/g,"");
+  if(d.length<9){ S.loginError="ใส่เบอร์โทรให้ครบ 10 หลักนะคะ"; render(); return; }
+  S.loginBusy=true; S.loginError=""; render();
+  api("link",{phone:d,idToken:S.idToken}).then(function(r){
+    S.loginBusy=false;
+    if(r && r.ok && r.open){ S.memberState="open"; go("pick",{loginError:""}); return; }
+    if(r && !r.ok && r.error==="unknown_action"){ S.memberState="open"; go("pick",{loginError:""}); return; }
+    if(r && r.ok && r.member){ setMember(r); go("pick",{loginError:""}); return; }
+    var e=r&&r.error;
+    S.loginError = e==="not_found" ? "ไม่พบเบอร์นี้ในรายชื่อคนไข้จัดฟันของคลินิก เช็กเบอร์อีกครั้ง หรือทัก LINE @dentory เพื่อลงทะเบียนนะคะ"
+      : e==="taken" ? "เบอร์นี้ใช้กับบัญชี LINE อื่นไปแล้ว ทัก LINE @dentory ให้พนักงานช่วยดูนะคะ"
+      : e==="locked" ? "ลองหลายครั้งเกินไป รอประมาณ 10 นาทีแล้วลองใหม่นะคะ"
+      : e==="bad_phone" ? "ใส่เบอร์โทรให้ครบ 10 หลักนะคะ"
+      : "ตรวจสอบไม่สำเร็จ ลองใหม่อีกครั้งค่ะ";
+    render();
+  }).catch(function(){ S.loginBusy=false; S.loginError="เชื่อมต่อไม่ได้ ตรวจอินเทอร์เน็ตแล้วลองใหม่ค่ะ"; render(); });
+}
+function startPick(){
+  if(S.memberState==="open"||S.memberState==="ok") go("pick");
+  else { go("login",{loginError:""}); if(S.memberState==="error") checkMember(); }
 }
 function loadMyHistory(){
   if(!HISTORY_ON || !S.idToken) return;
@@ -1065,7 +1136,8 @@ app.addEventListener("click", function(e){
   var el = e.target.closest("[data-act]"); if(!el) return;
   var a = el.getAttribute("data-act");
   switch(a){
-    case "start": go("pick"); break;
+    case "start": startPick(); break;
+    case "login": doLogin(); break;
     case "tooth": tapTooth(el.getAttribute("data-arch"), parseInt(el.getAttribute("data-idx"),10)); break;
     case "clearAll": S.upper=emptyArch(); S.lower=emptyArch(); S.paletteError=""; render(); break;
     case "fillAll": if(S.armed!=null){ var arr=[]; for(var i=0;i<TEETH;i++) arr.push(S.armed); S.upper=arr.slice(); S.lower=arr.slice(); S.paletteError=""; render(); } break;
@@ -1119,6 +1191,7 @@ app.addEventListener("focusout", function(e){
 });
 app.addEventListener("keydown", function(e){
   if(e.target.id==="pinBox" && e.key==="Enter"){ e.preventDefault(); submitPin(); }
+  if(e.target.id==="loginPhone" && e.key==="Enter"){ e.preventDefault(); doLogin(); }
   if(e.target.id==="staffQ" && e.key==="Enter"){ e.preventDefault(); staffLoad(e.target.value.trim()); }
   if(e.key==="Escape" && S.pinOpen){ S.pinOpen=false; render(); }
   if(e.key==="Escape" && S.askOpen){ S.askOpen=false; render(); }
@@ -1137,7 +1210,7 @@ function syncSubmit(){
 var idleTimer = null;
 function resetIdle(){
   if(idleTimer){ clearTimeout(idleTimer); idleTimer=null; }
-  if(KIOSK && (S.view==="pick"||S.view==="confirm") && !S.pinOpen) idleTimer=setTimeout(goHome, IDLE_MS);
+  if(KIOSK && (S.view==="pick"||S.view==="confirm"||S.view==="login") && !S.pinOpen) idleTimer=setTimeout(goHome, IDLE_MS);
 }
 ["pointerdown","keydown","input","scroll"].forEach(function(t){ document.addEventListener(t, resetIdle, {passive:true}); });
 
@@ -1147,6 +1220,7 @@ if(window.liff){
     LIFF_READY=true;
     if(liff.isLoggedIn()){
       try{ S.idToken = liff.getIDToken() || ""; }catch(e){ S.idToken=""; }
+      checkMember();
       loadMyHistory();
       return liff.getProfile().then(function(p){
         LIFF_NAME=p.displayName||"";
@@ -1154,8 +1228,9 @@ if(window.liff){
         render();
       });
     }
-  }).catch(function(){});
-}
+    checkMember();
+  }).catch(function(){ checkMember(); });
+} else checkMember();
 })();
 </script>
 
