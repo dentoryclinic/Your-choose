@@ -169,6 +169,7 @@ h1,h2,h3{text-wrap:balance}
 .sw .cnt,.sw .low,.sw .chg{position:absolute;top:2px;min-width:20px;height:20px;padding:0 4px;border-radius:9999px;font-family:var(--font-display);font-size:11px;font-weight:700;line-height:20px;text-align:center}
 .sw .cnt{right:4px;background:var(--pink-600);color:#fff;box-shadow:0 0 0 2px #fff}
 .sw .low{left:4px;background:var(--gold);color:var(--ink)}
+.sw .new{position:absolute;top:-10px;left:50%;transform:translateX(-50%);z-index:2;white-space:nowrap;height:20px;padding:0 6px;border-radius:9999px;background:var(--coral);color:#fff;font-family:var(--font-display);font-size:10px;font-weight:700;line-height:20px;letter-spacing:.03em;box-shadow:0 2px 6px rgba(248,96,72,.35)}
 .sw .chg{right:4px;background:var(--violet-500);color:#fff;display:flex;align-items:center;justify-content:center;padding:0}
 .sw .oos{position:absolute;inset:0;border-radius:16px;background:rgba(255,255,255,.78);color:var(--pink-600);font-family:var(--font-display);font-size:12px;font-weight:600;display:flex;align-items:center;justify-content:center;text-align:center;line-height:1.2}
 @media (hover:hover){.sw:not(.locked):not(.armed):hover{background:#f6f8ff}}
@@ -339,7 +340,10 @@ var TWO_TONE = {
   113:["#f5a8d5","#5db7ec","ชมพู/ฟ้า"], 114:["#f1ea98","#b98ae2","เหลือง/ม่วงอ่อน"], 115:["#e2352f","#2050c8","แดง/น้ำเงิน"], 116:["#ffc61c","#f0781e","เหลือง/ส้ม"],
   117:["#e8642c","#2e9a5a","ส้ม/เขียว"], 118:["#c9ee32","#1d8fb5","เขียวมะนาว/ฟ้าเข้ม"], 119:["#6cc840","#1c6fc4","เขียว/น้ำเงิน"], 120:["#6fd46b","#cdb57e","เขียว/ใส"]
 };
-var TOTAL = 120;
+/* 121: clear elastic (added 19 Nov 2026). Drawn as a pale blue-grey so it shows on the white tooth. */
+COLORS[121]="#cfdde3"; NAME_BASE[121]="ใส"; CATEGORY_BASE[121]="สีใส";
+var NEW_COLORS = [121];
+var TOTAL = 121;
 Object.keys(TWO_TONE).forEach(function(k){ COLORS[k]=TWO_TONE[k][0]; NAME_BASE[k]=TWO_TONE[k][2]; CATEGORY_BASE[k]="ทูโทน"; });
 var TEETH = 8, MAX_COLORS = 3, STAFF_PIN_SHA256 = "c1f330d0aff31c1c87403f1e4347bcc21aff7c179908723535f2b31723702525", LOW_STOCK = 5, IDLE_MS = 90000;
 /* Auto-reset only on the counter tablet: open the page with #kiosk at the end of the link. Patients' own phones never reset. */
@@ -699,7 +703,7 @@ function renderPick(){
     var oos = st!==null && st<=0, low = !oos && st!==null && st<=LOW_STOCK, nm=cname(n);
     sw += '<button type="button" class="sw'+(armed?" armed":"")+(locked&&!oos?" locked":"")+'" data-swatch="'+n+'" aria-pressed="'+armed+'" aria-label="สียางเบอร์ '+n+' โทน'+esc(nm)+(oos?" (หมดชั่วคราว)":(locked?" (เลือกครบ "+MAX_COLORS+" สีแล้ว)":""))+'">' +
       '<span class="no">'+pad(n)+'</span>'+bandSvg(n)+'<span class="nm">'+esc(nm)+'</span>' +
-      (cnt>0?'<span class="cnt">'+cnt+'</span>':'') + (oos?'<span class="oos">หมดชั่วคราว</span>':'') + (low?'<span class="low">'+st+'</span>':'') +
+      (cnt>0?'<span class="cnt">'+cnt+'</span>':'') + (oos?'<span class="oos">หมดชั่วคราว</span>':'') + (low?'<span class="low">'+st+'</span>':(NEW_COLORS.indexOf(n)!==-1?'<span class="new">NEW!</span>':'')) +
     '</button>';
   }
   if(!sw) sw = '<p class="muted" style="grid-column:1/-1;text-align:center;margin:12px 0">ไม่มีสีในหมวดนี้</p>';
