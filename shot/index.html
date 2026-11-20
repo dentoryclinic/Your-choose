@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="th"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#4c357c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Dentory Shot">
+<title>Dentory Shot</title>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Thai:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+/* VOICE: clinical, calm, precise — a working tool for dentists
+   IDEA: the clinic's photo-record chart: nine numbered standard views
+   PICTURE: the 9-view shot grid, each slot drawn with its alignment guide
+   COLOUR and TYPE: white + Dentory purple #4c357c, lavender support, pink accent; IBM Plex Sans Thai
+   LAYOUT: one-column app, sticky bar, full-screen dark photo editor */
+:root{color-scheme:light dark;
+--bg:light-dark(#ffffff,#15101f);--ink:light-dark(#1d1530,#efeaf8);--mute:light-dark(#6d6584,#a89fbd);
+--pu:light-dark(#4c357c,#b59cf2);--on:light-dark(#fff,#1a1228);--pu2:light-dark(#efe9fc,#261d3a);
+--line:light-dark(#e3ddf0,#352b4b);--pk:#ff8fab;--card:light-dark(#faf8ff,#1c1529);--red:light-dark(#b3261e,#ff8a80)}
+:root[data-theme=light]{color-scheme:light}:root[data-theme=dark]{color-scheme:dark}
+*{box-sizing:border-box;min-width:0}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.55 "IBM Plex Sans Thai",system-ui,sans-serif;overflow-x:clip}
+button,input,select{font:inherit;color:inherit}
+.top{position:sticky;top:0;z-index:5;display:flex;align-items:center;gap:10px;padding:calc(10px + env(safe-area-inset-top)) max(4vw,14px) 10px;background:var(--pu);color:var(--on)}
+.top svg{width:30px;height:30px;flex:none}.top b{font-size:17px;font-weight:600;flex:1}
+.top button{background:none;border:0;min-height:44px;padding:0 6px;font-weight:500;cursor:pointer}
+main{max-width:760px;margin:0 auto;padding:18px max(4vw,14px) 60px}
+h1{font-size:clamp(26px,6vw,36px);line-height:1.1;margin:0 0 6px;text-wrap:balance;font-weight:700}
+h2{font-size:18px;margin:26px 0 10px;font-weight:600}
+p{margin:0 0 10px}.mute{color:var(--mute)}small{color:var(--mute);font-size:14px;display:block}
+.hero{padding:6px 0 14px}.hero p{max-width:60ch}.note1{font-size:14px;color:var(--mute)}
+.warn{background:#fff3cd;color:#5c4400;padding:10px 12px;border-radius:10px;font-size:14px}
+.bar{display:flex;gap:10px;flex-wrap:wrap;margin:8px 0 14px}.bar input{flex:1 1 200px}
+input[type=search],input.note,input[type=text],select{min-height:46px;border:1px solid var(--line);border-radius:12px;padding:0 14px;background:var(--card);font-size:16px;width:100%}
+input:focus-visible,button:focus-visible,select:focus-visible,label.btn:focus-within{outline:3px solid var(--pk);outline-offset:2px}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:46px;padding:0 18px;border-radius:12px;border:1px solid var(--line);background:var(--card);font-weight:600;cursor:pointer;position:relative;text-align:center}
+.btn.pri{background:var(--pu);color:var(--on);border-color:var(--pu)}
+.btn.big{width:100%;min-height:54px;font-size:17px;margin-top:10px}
+.btn:disabled{opacity:.45;cursor:default}.btn.danger{color:var(--red)}
+.lnk{background:none;border:0;color:var(--mute);min-height:44px;margin-top:18px;cursor:pointer;text-decoration:underline}
+.lnk.danger{color:var(--red)}
+.acts{display:flex;gap:10px;flex-wrap:wrap;margin-top:16px}.acts .btn{flex:1 1 160px}
+.rows{list-style:none;margin:0;padding:0;display:grid;gap:8px}
+.row{width:100%;display:flex;align-items:center;gap:12px;text-align:start;padding:12px;border:1px solid var(--line);border-radius:14px;background:var(--card);cursor:pointer;min-height:64px}
+.rt{flex:1;display:grid}.rt b{font-weight:600}
+.av{width:44px;height:44px;border-radius:50%;background:var(--pu2);color:var(--pu);display:grid;place-items:center;font-weight:700;flex:none;font-size:18px}
+.av.lg{width:58px;height:58px;font-size:24px}
+.th{width:66px;height:44px;object-fit:cover;border-radius:8px;flex:none}
+.strip{display:flex;gap:4px;margin-top:6px}.strip img{width:46px;height:31px;object-fit:cover;border-radius:5px}
+.empty{color:var(--mute);text-align:center;padding:24px 0}
+.ph{display:flex;gap:14px;align-items:center}.ph h1{margin:0}
+.vh{display:flex;justify-content:space-between;align-items:end;gap:12px}.vh p{margin:0}
+.prog{font-size:15px;color:var(--mute);white-space:nowrap}.prog b{font-size:34px;color:var(--pu);font-weight:700}
+.meter{height:6px;border-radius:6px;background:var(--pu2);margin:12px 0 0;overflow:hidden}.meter i{display:block;height:100%;background:var(--pk)}
+input.note{margin-top:12px}
+.grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.slot{position:relative;padding:0;border:1px dashed var(--pu);border-radius:12px;background:var(--pu2);color:var(--pu);overflow:hidden;cursor:pointer;display:block;width:100%}
+.slot.has{border:1px solid var(--line);background:#000}
+.slot>img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.slot>svg{position:absolute;inset:12% 10% 26%;width:80%;height:62%}
+.lb{position:absolute;left:0;right:0;bottom:0;padding:5px 7px;font-size:13px;line-height:1.25;text-align:start;display:flex;gap:5px;align-items:baseline}
+.slot.has .lb{background:linear-gradient(transparent,rgba(0,0,0,.7));color:#fff}
+.lb i{font-style:normal;font-weight:700}
+.gd path,.gd ellipse,.gd circle{fill:none;stroke:currentColor;stroke-width:2;vector-effect:non-scaling-stroke;stroke-linecap:round}
+.gd .d{stroke-dasharray:5 6;opacity:.8}
+/* modal sheet */
+#md{position:fixed;inset:0;z-index:20;background:rgba(10,6,20,.55);display:flex;align-items:end;justify-content:center}
+#md[hidden]{display:none}
+.sh{background:var(--bg);width:min(560px,100%);max-height:92vh;overflow:auto;border-radius:22px 22px 0 0;padding:20px max(5vw,18px) calc(20px + env(safe-area-inset-bottom));animation:up .22s ease-out}
+@keyframes up{from{transform:translateY(40px);opacity:.4}}
+@media(prefers-reduced-motion:reduce){.sh{animation:none}}
+.sh h2{margin:0 0 10px;font-size:22px}
+.demo{position:relative;background:#1b1426;color:#fff;border-radius:14px;overflow:hidden;margin:6px auto 12px;max-height:44vh;max-width:100%}
+.demo img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:.55}
+.demo svg{position:absolute;inset:0;width:100%;height:100%;filter:drop-shadow(0 0 2px #000)}
+.vhid{position:absolute;opacity:0;width:1px;height:1px;overflow:hidden}
+form label{display:block;font-weight:500;margin-top:10px}form label input{margin-top:4px}
+.out{width:100%;border-radius:10px;border:1px solid var(--line);display:block;margin-bottom:10px}
+/* editor */
+#ed,#cam{position:fixed;inset:0;z-index:30;background:#0e0a18;color:#fff;display:flex;flex-direction:column;align-items:center;padding:env(safe-area-inset-top) 12px env(safe-area-inset-bottom)}
+#ed[hidden],#cam[hidden]{display:none}#cam{z-index:31;background:#000}
+#cam video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}#cam video.fl{transform:scaleX(-1)}
+#cov{position:absolute;inset:0;pointer-events:none;color:#fff}#cov svg{width:100%;height:100%;filter:drop-shadow(0 0 2px #000)}
+.ctip{font-size:14px;color:#d8d0ea;max-width:560px;text-align:center;margin:10px 0 0;line-height:1.45}
+.cbot{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;width:100%;max-width:560px;margin-top:auto;padding:10px 0 16px;gap:8px}
+.cbot .ic{justify-self:start;font-size:14px;border:1px solid #3a3050;border-radius:10px;padding:0 12px}.cbot .ic:last-child{justify-self:end}
+.shut{width:76px;height:76px;border-radius:50%;border:5px solid #fff;background:#ff8fab;cursor:pointer;box-shadow:0 0 0 3px #000 inset}
+.shut:active{transform:scale(.94)}.cside{display:flex;gap:6px;justify-self:end}
+#cam .stage{margin-top:4px}
+.edtop{width:100%;max-width:720px;display:flex;align-items:center;justify-content:space-between;gap:8px;min-height:54px}
+.edtop b{font-weight:600;text-align:center;flex:1}
+.ic{background:none;border:0;color:#fff;min-height:44px;padding:0 8px;cursor:pointer}.ic.on{color:var(--pk)}
+.stage{position:relative;touch-action:none;border-radius:6px;overflow:hidden;background:#000;flex:none}
+.stage canvas{display:block;width:100%;height:100%;cursor:grab}
+#ov{position:absolute;inset:0;pointer-events:none;color:#fff}#ov svg{width:100%;height:100%;filter:drop-shadow(0 0 1.5px #000)}
+.hint{font-size:13px;color:#b9b0cc;margin:8px 0 2px}
+.rotr{display:flex;align-items:center;gap:10px;width:100%;max-width:560px;font-size:14px}
+.rotr input{flex:1;accent-color:var(--pk);min-height:40px}.rotr output{width:3.5em;text-align:right;font-variant-numeric:tabular-nums}
+.tools{display:flex;gap:6px;flex-wrap:wrap;justify-content:center;max-width:560px}
+.tools button{min-height:44px;padding:0 12px;border-radius:10px;border:1px solid #3a3050;background:#1d1630;color:#fff;font-size:14px;cursor:pointer}
+.tools button.on{border-color:var(--pk);color:var(--pk)}
+.edbot{display:flex;gap:8px;width:100%;max-width:560px;margin-top:auto;padding-bottom:12px}
+.edbot .btn{flex:1;font-size:15px;padding:0 10px}.edbot .ghost{background:#1d1630;color:#fff;border-color:#3a3050}
+#ed .btn.pri{background:#b59cf2;color:#1a1228;border-color:#b59cf2}
+/* compare */
+.chips{display:flex;gap:6px;flex-wrap:wrap;margin:10px 0}
+.chip{min-height:40px;padding:0 12px;border-radius:20px;border:1px solid var(--line);background:var(--card);cursor:pointer;font-size:14px}
+.chip.on{background:var(--pu);color:var(--on);border-color:var(--pu)}.chip:disabled{opacity:.4}
+.pick{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:8px 0 12px}.pick label{font-size:14px;color:var(--mute)}
+.wipe{position:relative;border-radius:12px;overflow:hidden;background:#000;touch-action:none;cursor:ew-resize;max-height:70vh;margin:0 auto}
+.wipe img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;pointer-events:none}
+.hand{position:absolute;top:0;bottom:0;width:3px;margin-left:-1.5px;background:#fff;box-shadow:0 0 4px #000;pointer-events:none}
+.hand::after{content:"";position:absolute;top:50%;left:50%;width:30px;height:30px;margin:-15px;border-radius:50%;background:#fff;box-shadow:0 0 6px rgba(0,0,0,.5)}
+.tg{position:absolute;top:8px;padding:2px 8px;border-radius:6px;background:rgba(0,0,0,.6);color:#fff;font-size:13px;white-space:nowrap}.tg.l{left:8px}.tg.r{right:8px}
+#cwr{width:100%;accent-color:var(--pu);min-height:40px;margin-top:6px}
+#tt{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:#1d1530;color:#fff;padding:10px 18px;border-radius:24px;z-index:40;font-size:15px;opacity:0;transition:opacity .2s;pointer-events:none}
+#tt.on{opacity:1}
+</style></head><body>
+<header class="top">
+  <button id="back" hidden aria-label="กลับ">‹ กลับ</button>
+  <svg viewBox="0 0 32 32" aria-hidden="true"><path d="M7 4h8.5a12 12 0 0 1 0 24H7z" fill="none" stroke="currentColor" stroke-width="3" stroke-linejoin="round"/><path d="M11.6 11.2c2.1-1.6 4.3-1.6 6.4 0 1.5 1.1 1.3 4.2-.2 6.8-.7 1.2-1 3.6-1.9 3.6s-.9-2.1-1.4-3.1c-.5 1-.5 3.1-1.4 3.1s-1.2-2.4-1.9-3.6c-1.5-2.6-1.7-5.7.4-6.8z" fill="currentColor"/></svg>
+  <b id="ttl">Dentory Shot</b>
+</header>
+<main id="main"></main>
+<div id="md" hidden></div>
+<div id="ed" hidden>
+  <div class="edtop"><button class="ic" data-e="x">ยกเลิก</button><b id="edn"></b><button class="ic on" data-e="g" id="bg">เส้นไกด์</button></div>
+  <div class="stage" id="stage"><canvas id="cv"></canvas><div id="ov"></div></div>
+  <p class="hint">ลากเพื่อเลื่อน · ถ่างสองนิ้วเพื่อซูม · จัดให้ตรงเส้นไกด์</p>
+  <div class="rotr"><span>เอียง</span><input type="range" id="rot" min="-20" max="20" step="0.5" value="0" aria-label="เอียงภาพ"><output id="rotv">0°</output></div>
+  <div class="tools"><button data-e="r90">หมุน 90°</button><button data-e="fh" id="bfh">กลับซ้าย-ขวา</button><button data-e="fv" id="bfv">กลับบน-ล่าง</button><button data-e="zi">ซูม +</button><button data-e="zo">ซูม −</button><button data-e="rs">เริ่มใหม่</button></div>
+  <div class="edbot"><button class="btn pri" data-e="ok">บันทึก</button><button class="btn ghost" data-e="okn">บันทึก · มุมถัดไป</button></div>
+</div>
+<div id="cam" hidden>
+  <div class="edtop"><button class="ic" data-c="x">ปิดกล้อง</button><b id="cn"></b><button class="ic on" data-c="g" id="cg">เส้นไกด์</button></div>
+  <div class="stage" id="cst"><video id="vid" playsinline muted autoplay></video><div id="cov"></div></div>
+  <p class="ctip" id="ctip"></p>
+  <div class="cbot"><button class="ic" data-c="fl" id="cfl">กลับภาพกระจก</button><button class="shut" data-c="snap" aria-label="ถ่ายรูป"></button><span class="cside"><button class="ic" data-c="torch" id="ctr" hidden>ไฟฉาย</button></span></div>
+</div>
+<div id="tt" role="status"></div>
+<script>
+{
+const $=s=>document.querySelector(s);
+const VIEWS=[
+{k:'face',g:'ex',n:'หน้าตรง',r:.8,m:0,t:'ให้คนไข้มองตรง ศีรษะตั้งตรง แนวตาขนานพื้น ถือกล้องระดับเดียวกับใบหน้า'},
+{k:'smile',g:'ex',n:'ยิ้มเห็นฟัน',r:.8,m:0,t:'มุมเดียวกับหน้าตรง ให้ยิ้มกว้างตามธรรมชาติจนเห็นฟัน'},
+{k:'prof',g:'ex',n:'ด้านข้างขวา',r:.8,m:0,t:'หันด้านขวาเข้ากล้อง แนวหางตาถึงรูหูขนานพื้น (Frankfort) ริมฝีปากปิดสบาย'},
+{k:'rb',g:'in',n:'ด้านขวา',r:1.5,m:1,t:'ใช้กระจกส่องแก้มขวา กัดฟันสบ ให้ฟันกรามซี่แรกอยู่กลางภาพ แอปกลับภาพจากกระจกให้อัตโนมัติ'},
+{k:'fr',g:'in',n:'หน้าตรง กัดฟัน',r:1.5,m:0,t:'ใส่ที่ถ่างแก้ม กัดฟันสบ ให้เส้นกลางฟันอยู่กลางภาพ แนวสบฟันเป็นเส้นแนวนอน'},
+{k:'lb',g:'in',n:'ด้านซ้าย',r:1.5,m:1,t:'ใช้กระจกส่องแก้มซ้าย กัดฟันสบ ให้ฟันกรามซี่แรกอยู่กลางภาพ แอปกลับภาพจากกระจกให้อัตโนมัติ'},
+{k:'uo',g:'in',n:'บดเคี้ยวบน',r:1.5,m:1,t:'อ้าปากกว้าง วางกระจกบดเคี้ยว ให้เห็นฟันครบทั้งแถว จัดให้ฟันหน้าอยู่ด้านบนของภาพ'},
+{k:'oj',g:'in',n:'ฟันหน้ายื่น',r:1.5,m:0,t:'ถ่ายด้านข้างระดับฟันหน้า กัดฟันสบ ให้เห็นระยะฟันหน้าบนยื่นเหนือฟันล่าง (overjet)'},
+{k:'lo',g:'in',n:'บดเคี้ยวล่าง',r:1.5,m:1,t:'อ้าปากกว้าง ยกลิ้นขึ้น วางกระจกบดเคี้ยว จัดให้ฟันหน้าอยู่ด้านล่างของภาพ'}];
+const V=Object.fromEntries(VIEWS.map((w,i)=>[w.k,{...w,i}]));
+const G={
+face:'<ellipse cx="120" cy="140" rx="72" ry="98"/><path class="d" d="M36 122H204M120 26V274"/>',
+smile:'<ellipse cx="120" cy="140" rx="72" ry="98"/><path d="M82 188Q120 224 158 188Q120 200 82 188Z"/><path class="d" d="M120 26V274"/>',
+prof:'<path d="M150 34C104 34 86 70 88 104L74 140L89 146L85 166Q96 172 90 182L96 202Q104 236 142 248"/><path class="d" d="M50 106H214"/><circle cx="172" cy="108" r="6"/>',
+rb:'<path class="d" d="M14 100H286M150 24V176"/><path d="M30 72Q150 50 274 84M30 128Q150 150 274 116"/>',
+fr:'<path d="M28 100Q150 16 272 100Q150 184 28 100Z"/><path class="d" d="M150 16V184M14 100H286"/>',
+lb:'<path class="d" d="M14 100H286M150 24V176"/><path d="M270 72Q150 50 26 84M270 128Q150 150 26 116"/>',
+uo:'<path d="M78 188C72 80 108 20 150 20C192 20 228 80 222 188"/><path class="d" d="M150 10V192"/>',
+oj:'<path class="d" d="M14 100H286M150 24V176"/><path d="M128 36Q152 58 150 98M152 104Q142 142 118 172"/>',
+lo:'<path d="M78 12C72 120 108 180 150 180C192 180 228 120 222 12"/><path class="d" d="M150 8V190"/>'};
+const gsvg=w=>`<svg class="gd" viewBox="${w.r<1?'0 0 240 300':'0 0 300 200'}" preserveAspectRatio="none" aria-hidden="true">${G[w.k]}</svg>`;
+
+/* storage: IndexedDB with in-memory fallback */
+let db=null;const mem=new Map();
+const openDB=()=>new Promise(r=>{try{const q=indexedDB.open('dentory-shot',1);q.onupgradeneeded=()=>q.result.createObjectStore('kv');q.onsuccess=()=>{db=q.result;r()};q.onerror=()=>r()}catch(e){r()}});
+const get=k=>new Promise(r=>{if(mem.has(k))return r(mem.get(k));if(!db)return r(undefined);try{const q=db.transaction('kv').objectStore('kv').get(k);q.onsuccess=()=>{mem.set(k,q.result);r(q.result)};q.onerror=()=>r(undefined)}catch(e){r(undefined)}});
+const put=(k,v)=>{mem.set(k,v);if(db)try{db.transaction('kv','readwrite').objectStore('kv').put(v,k)}catch(e){}};
+const del=k=>{mem.delete(k);if(db)try{db.transaction('kv','readwrite').objectStore('kv').delete(k)}catch(e){}};
+let P=[];const save=()=>put('pts',JSON.stringify(P));
+const uid=()=>Math.random().toString(36).slice(2,10);
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const thd=d=>new Date(d).toLocaleDateString('th-TH',{day:'numeric',month:'short',year:'2-digit'});
+const S={v:'list',p:null,vi:null,q:'',ck:null,ca:null,cb:null,cw:50};
+const curP=()=>P.find(x=>x.id==S.p), cur=()=>curP()?.visits.find(x=>x.id==S.vi);
+const cnt=v=>VIEWS.filter(w=>v.shots[w.k]).length;
+let tto;const toast=m=>{const t=$('#tt');t.textContent=m;t.classList.add('on');clearTimeout(tto);tto=setTimeout(()=>t.classList.remove('on'),1800)};
+function hydrate(root=document){root.querySelectorAll('img[data-img]:not([src])').forEach(async el=>{const d=await get('i:'+el.dataset.img);if(d)el.src=d})}
+
+/* views */
+function listV(){
+  const q=S.q.toLowerCase(),f=P.filter(p=>(p.name+' '+p.hn).toLowerCase().includes(q));
+  return `<section class="hero"><h1>ถ่ายรูปในช่องปาก</h1><p>ถ่ายครบ 9 มุมมาตรฐาน มีเส้นไกด์ทุกมุม กลับภาพจากกระจกให้อัตโนมัติ แล้วเทียบก่อน/หลังได้ทันที</p>
+  <p class="note1">คุณสมใจเป็นข้อมูลตัวอย่าง · รูปทั้งหมดเก็บในเครื่องนี้เท่านั้น ไม่ส่งออกไปที่ไหน</p>${db?'':'<p class="warn">เบราว์เซอร์นี้เก็บรูปถาวรไม่ได้ รูปจะหายเมื่อปิดหน้า</p>'}</section>
+  <div class="bar"><input id="q" type="search" placeholder="ค้นหาชื่อหรือ HN" value="${esc(S.q)}" aria-label="ค้นหา"><button class="btn pri" data-a="newpt">+ คนไข้ใหม่</button></div>
+  <ul class="rows">${f.map(p=>{const last=p.visits[p.visits.length-1],fid=[...p.visits].reverse().map(v=>v.shots.fr).find(Boolean);
+    return `<li><button class="row" data-a="pt" data-id="${p.id}"><span class="av">${esc([...p.name.replace(/^(คุณ|ด\.?ช\.?|ด\.?ญ\.?|นาย|นางสาว|นาง)\s*/,'').trim()][0]||'?')}</span><span class="rt"><b>${esc(p.name)}</b><small>${p.hn?'HN '+esc(p.hn)+' · ':''}${p.visits.length} ชุด${last?' · ล่าสุด '+thd(last.date):''}</small></span>${fid?`<img class="th" data-img="${fid}" alt="">`:''}</button></li>`}).join('')}</ul>
+  ${f.length?'':`<p class="empty">${P.length?'ไม่พบคนไข้ที่ค้นหา':'ยังไม่มีคนไข้ กด “+ คนไข้ใหม่” เพื่อเริ่ม'}</p>`}`;
+}
+function ptV(p){
+  return `<section class="ph"><span class="av lg">${esc([...p.name.replace(/^คุณ\s*/,'')][0]||'?')}</span><div><h1>${esc(p.name)}</h1><p class="mute">${p.hn?'HN '+esc(p.hn)+' · ':''}${p.visits.length} ชุดรูป</p></div></section>
+  <div class="acts"><button class="btn pri" data-a="newv">+ ถ่ายชุดใหม่วันนี้</button><button class="btn" data-a="cmp" ${p.visits.length<2?'disabled':''}>เทียบก่อน/หลัง</button></div>
+  <h2>ชุดรูป</h2><ul class="rows">${[...p.visits].reverse().map(v=>`<li><button class="row" data-a="visit" data-id="${v.id}"><span class="rt"><b>${thd(v.date)}${v.note?' · '+esc(v.note):''}</b><small>${cnt(v)}/9 รูป</small>
+    <span class="strip">${VIEWS.filter(w=>v.shots[w.k]).slice(0,6).map(w=>`<img data-img="${v.shots[w.k]}" alt="">`).join('')}</span></span></button></li>`).join('')}</ul>
+  ${p.visits.length?'':'<p class="empty">ยังไม่มีชุดรูป</p>'}<button class="lnk danger" data-a="delpt">ลบคนไข้นี้</button>`;
+}
+function slots(p,v,g){return VIEWS.filter(w=>w.g==g).map(w=>{const id=v.shots[w.k];
+  return `<button class="slot ${id?'has':''}" data-a="shot" data-k="${w.k}" style="aspect-ratio:${w.r}">${id?`<img data-img="${id}" alt="${w.n}">`:gsvg(w)}<span class="lb"><i>${V[w.k].i+1}</i>${w.n}</span></button>`}).join('')}
+function visitV(p,v){const n=cnt(v);
+  return `<section class="vh"><div><p class="mute">${esc(p.name)}</p><h1>${thd(v.date)}</h1></div><div class="prog"><b>${n}</b> / 9 มุม</div></section>
+  <div class="meter"><i style="width:${n/9*100}%"></i></div>
+  <input class="note" id="note" placeholder="บันทึกสั้นๆ เช่น ติดเครื่องมือ, เปลี่ยนลวด" value="${esc(v.note)}" aria-label="บันทึก">
+  <h2>นอกช่องปาก</h2><div class="grid">${slots(p,v,'ex')}</div>
+  <h2>ในช่องปาก</h2><div class="grid">${slots(p,v,'in')}</div>
+  <div class="acts"><button class="btn pri" data-a="collage" ${n?'':'disabled'}>ทำภาพรวมชุดนี้</button><button class="btn" data-a="next" ${n==9?'disabled':''}>ถ่ายมุมที่ยังขาด</button></div>
+  <button class="lnk danger" data-a="delv">ลบชุดนี้</button>`;
+}
+function cmpV(p){
+  if(!S.ck||!p.visits.filter(v=>v.shots[S.ck]).length){const best=VIEWS.map(w=>[w.k,p.visits.filter(v=>v.shots[w.k]).length]).sort((a,b)=>b[1]-a[1]);S.ck=(best.find(b=>b[0]=='fr'&&b[1]>1)||best[0])[0]}
+  const w=V[S.ck],vis=p.visits.filter(v=>v.shots[S.ck]);
+  if(!vis.find(v=>v.id==S.ca))S.ca=vis[0]?.id;if(!vis.find(v=>v.id==S.cb))S.cb=vis[vis.length-1]?.id;
+  const A=vis.find(v=>v.id==S.ca),B=vis.find(v=>v.id==S.cb),opt=sel=>vis.map(v=>`<option value="${v.id}" ${v.id==sel?'selected':''}>${thd(v.date)}${v.note?' · '+esc(v.note):''}</option>`).join('');
+  return `<p class="mute">${esc(p.name)}</p><h1>เทียบก่อน/หลัง</h1>
+  <div class="chips">${VIEWS.map(x=>`<button class="chip ${x.k==S.ck?'on':''}" data-a="ck" data-k="${x.k}" ${p.visits.some(v=>v.shots[x.k])?'':'disabled'}>${x.n}</button>`).join('')}</div>
+  ${vis.length<2?'<p class="empty">มุมนี้มีรูปไม่ถึง 2 ชุด</p>':`
+  <div class="pick"><label>ก่อน<select id="ca">${opt(S.ca)}</select></label><label>หลัง<select id="cb">${opt(S.cb)}</select></label></div>
+  <div class="wipe" id="wipe" style="aspect-ratio:${w.r};width:min(100%,calc(70vh * ${w.r}))"><img data-img="${A.shots[S.ck]}" alt="ก่อน"><img id="wb" data-img="${B.shots[S.ck]}" alt="หลัง" style="clip-path:inset(0 0 0 ${S.cw}%)"><i class="hand" id="wh" style="left:${S.cw}%"></i><span class="tg l">${thd(A.date)}</span><span class="tg r">${thd(B.date)}</span></div>
+  <input type="range" id="cwr" min="0" max="100" value="${S.cw}" aria-label="เลื่อนเทียบภาพ">
+  <div class="acts"><button class="btn pri" data-a="cexp">ทำภาพเทียบเคียงข้าง</button></div>`}`;
+}
+function render(){const p=curP(),v=cur();
+  if((S.v=='visit'&&!v)||(S.v!='list'&&!p))S.v='list';
+  $('#main').innerHTML=S.v=='list'?listV():S.v=='pt'?ptV(p):S.v=='visit'?visitV(p,v):cmpV(p);
+  $('#back').hidden=S.v=='list';$('#ttl').textContent=S.v=='list'?'Dentory Shot':p.name;
+  hydrate($('#main'));
+}
+const go=(v,o={})=>{Object.assign(S,o,{v});render();scrollTo(0,0)};
+
+/* modal */
+const md=$('#md');let askR=null;
+const modal=h=>{md.innerHTML=h;md.hidden=false;hydrate(md)};
+const closeM=()=>{md.hidden=true;md.innerHTML='';if(askR){askR(false);askR=null}};
+const ask=(msg,yes)=>{modal(`<div class="sh" role="dialog"><h2>${msg}</h2><div class="acts"><button class="btn danger" data-a="yes">${yes}</button><button class="btn" data-a="close">ยกเลิก</button></div></div>`);return new Promise(r=>askR=r)};
+md.addEventListener('click',e=>{if(e.target==md)closeM()});
+function sheet(k){const w=V[k],id=cur().shots[k];
+  modal(`<div class="sh" role="dialog"><p class="mute">มุมที่ ${w.i+1} จาก 9${w.m?' · ถ่ายผ่านกระจก':''}</p><h2>${w.n}</h2>
+  <div class="demo" style="aspect-ratio:${w.r};width:min(100%,calc(44vh * ${w.r}))">${id?`<img data-img="${id}" alt="">`:''}${gsvg(w)}</div><p>${w.t}</p>
+  ${HASCAM?`<button class="btn pri big" data-a="cam" data-k="${k}">ถ่ายรูป (มีกรอบไกด์)</button>`:`<label class="btn pri big">ถ่ายรูป<input class="vhid" type="file" accept="image/*" capture="environment" data-k="${k}"></label>`}
+  <label class="btn big">เลือกจากคลังรูป<input class="vhid" type="file" accept="image/*" data-k="${k}"></label>
+  ${id?`<div class="acts"><button class="btn" data-a="reedit" data-k="${k}">ปรับรูปเดิม</button><button class="btn danger" data-a="delshot" data-k="${k}">ลบรูปนี้</button></div>`:''}
+  <button class="lnk" data-a="close">ปิด</button></div>`)}
+const showOut=(d,t)=>modal(`<div class="sh" role="dialog"><h2>${t}</h2><img class="out" src="${d}" alt="${t}"><p class="mute">กดค้างที่รูป แล้วเลือก “บันทึกรูปภาพ” หรือแชร์ต่อใน LINE</p><button class="lnk" data-a="close">ปิด</button></div>`);
+
+/* editor */
+const ed=$('#ed'),cv=$('#cv'),stg=$('#stage');let E=null,url=null;
+function openEd(k,src,fh,fromCam){const img=new Image();img.onload=()=>{E={k,w:V[k],img,s:1,tx:0,ty:0,rot:0,r90:0,fh:!!fh,fv:false,fromCam};closeM();ed.hidden=false;$('#edn').textContent=`${V[k].i+1}. ${V[k].n}`;$('[data-e=x]').textContent=fromCam?'ถ่ายใหม่':'ยกเลิก';$('#ov').innerHTML=gsvg(V[k]);$('#rot').value=0;syncEd();layout()};img.onerror=()=>toast('เปิดรูปนี้ไม่ได้');img.src=src}
+function layout(){if(!E)return;const r=E.w.r,mw=Math.min(innerWidth-24,720),mh=Math.max(160,innerHeight-310);let W=mw,H=W/r;if(H>mh){H=mh;W=H*r}
+  stg.style.width=W+'px';stg.style.height=H+'px';const d=devicePixelRatio||1;cv.width=Math.round(W*d);cv.height=Math.round(H*d);draw()}
+function paint(c,W,H){const x=c.getContext('2d'),im=E.img,iw=im.naturalWidth,ih=im.naturalHeight;x.fillStyle='#000';x.fillRect(0,0,W,H);x.save();
+  x.translate(W/2+E.tx*W,H/2+E.ty*H);x.scale(E.fh?-1:1,E.fv?-1:1);x.rotate((E.r90*90+E.rot)*Math.PI/180);
+  const sw=E.r90%2?ih:iw,sh=E.r90%2?iw:ih,b=Math.max(W/sw,H/sh)*E.s;x.imageSmoothingQuality='high';x.drawImage(im,-iw*b/2,-ih*b/2,iw*b,ih*b);x.restore()}
+const draw=()=>E&&paint(cv,cv.width,cv.height);
+function syncEd(){$('#bfh').classList.toggle('on',E.fh);$('#bfv').classList.toggle('on',E.fv);$('#rotv').textContent=(E.rot>0?'+':'')+E.rot+'°'}
+const clamp=(v,a,b)=>Math.min(b,Math.max(a,v));
+const ptr=new Map();let pd=0;
+cv.addEventListener('pointerdown',e=>{cv.setPointerCapture(e.pointerId);ptr.set(e.pointerId,{x:e.clientX,y:e.clientY});pd=0});
+cv.addEventListener('pointermove',e=>{if(!E||!ptr.has(e.pointerId))return;const o=ptr.get(e.pointerId),n={x:e.clientX,y:e.clientY};ptr.set(e.pointerId,n);
+  if(ptr.size==1){E.tx+=(n.x-o.x)/cv.clientWidth;E.ty+=(n.y-o.y)/cv.clientHeight}
+  else{const [a,b]=[...ptr.values()],d=Math.hypot(a.x-b.x,a.y-b.y);if(pd)E.s=clamp(E.s*d/pd,.4,6);pd=d}draw()});
+const pup=e=>{ptr.delete(e.pointerId);pd=0};cv.addEventListener('pointerup',pup);cv.addEventListener('pointercancel',pup);
+cv.addEventListener('wheel',e=>{if(!E)return;e.preventDefault();E.s=clamp(E.s*(e.deltaY<0?1.08:1/1.08),.4,6);draw()},{passive:false});
+$('#rot').addEventListener('input',e=>{E.rot=+e.target.value;syncEd();draw()});
+addEventListener('resize',layout);
+const closeEd=()=>{ed.hidden=true;E=null;if(url){URL.revokeObjectURL(url);url=null}};
+ed.addEventListener('click',e=>{const b=e.target.closest('[data-e]');if(!b||!E)return;const a=b.dataset.e;
+  if(a=='x'){const k=E.k,fc=E.fromCam;closeEd();if(fc&&stream)openCam(k);return}
+  if(a=='g'){b.classList.toggle('on');$('#ov').hidden=!b.classList.contains('on');return}
+  if(a=='r90')E.r90=(E.r90+1)%4;if(a=='fh')E.fh=!E.fh;if(a=='fv')E.fv=!E.fv;if(a=='zi')E.s=clamp(E.s*1.15,.4,6);if(a=='zo')E.s=clamp(E.s/1.15,.4,6);
+  if(a=='rs'){Object.assign(E,{s:1,tx:0,ty:0,rot:0,r90:0});$('#rot').value=0}
+  if(a=='ok'||a=='okn')return edSave(a=='okn');syncEd();draw()});
+function edSave(next){const OW=1500,OH=Math.round(OW/E.w.r),c=document.createElement('canvas');c.width=OW;c.height=OH;paint(c,OW,OH);
+  const v=cur(),old=v.shots[E.k],id=uid();put('i:'+id,c.toDataURL('image/jpeg',.88));v.shots[E.k]=id;if(old)del('i:'+old);save();closeEd();render();
+  if(next){const nk=VIEWS.find(w=>!v.shots[w.k]);if(nk){if(stream)openCam(nk.k);else sheet(nk.k)}else{stopCam();toast('ครบ 9 มุมแล้ว')}}else{stopCam();toast('บันทึกแล้ว')}}
+
+/* live camera with guide frame */
+let HASCAM=!!(navigator.mediaDevices&&navigator.mediaDevices.getUserMedia&&window.isSecureContext),stream=null,C=null;
+const cam=$('#cam'),vid=$('#vid'),cst=$('#cst');
+function camLayout(){if(!C)return;const r=C.w.r,mw=Math.min(innerWidth-24,720),mh=Math.max(160,innerHeight-250);let W=mw,H=W/r;if(H>mh){H=mh;W=H*r}cst.style.width=W+'px';cst.style.height=H+'px'}
+async function openCam(k){C={k,w:V[k],fh:!!V[k].m};closeM();
+  if(!stream){try{stream=await navigator.mediaDevices.getUserMedia({audio:false,video:{facingMode:{ideal:'environment'},width:{ideal:2560},height:{ideal:1920}}})}
+    catch(e){HASCAM=false;C=null;toast('เปิดกล้องในหน้านี้ไม่ได้ ใช้กล้องของเครื่องแทน');return sheet(k)}
+    vid.srcObject=stream;try{await vid.play()}catch(e){}
+    const tr=stream.getVideoTracks()[0],cp=tr.getCapabilities?tr.getCapabilities():{};$('#ctr').hidden=!cp.torch;$('#ctr').classList.remove('on')}
+  cam.hidden=false;$('#cn').textContent=`${C.w.i+1}. ${C.w.n}`;$('#cov').innerHTML=gsvg(C.w);$('#ctip').textContent=C.w.t;syncCam();camLayout()}
+function syncCam(){vid.classList.toggle('fl',C.fh);$('#cfl').classList.toggle('on',C.fh)}
+function stopCam(){if(stream){stream.getTracks().forEach(t=>t.stop());stream=null}vid.srcObject=null;cam.hidden=true;C=null}
+addEventListener('resize',camLayout);
+cam.addEventListener('click',async e=>{const b=e.target.closest('[data-c]');if(!b||!C)return;const a=b.dataset.c;
+  if(a=='x')return stopCam();
+  if(a=='g'){b.classList.toggle('on');$('#cov').hidden=!b.classList.contains('on');return}
+  if(a=='fl'){C.fh=!C.fh;return syncCam()}
+  if(a=='torch'){const on=!b.classList.contains('on');try{await stream.getVideoTracks()[0].applyConstraints({advanced:[{torch:on}]});b.classList.toggle('on',on)}catch(_){toast('เปิดไฟฉายไม่ได้')}return}
+  if(a=='snap'){const vw=vid.videoWidth,vh=vid.videoHeight;if(!vw)return toast('กล้องยังไม่พร้อม');const r=C.w.r;let sw=vw,sh=vh,sx=0,sy=0;
+    if(vw/vh>r){sw=vh*r;sx=(vw-sw)/2}else{sh=vw/r;sy=(vh-sh)/2}
+    const c=document.createElement('canvas');c.width=Math.round(sw);c.height=Math.round(sh);c.getContext('2d').drawImage(vid,sx,sy,sw,sh,0,0,c.width,c.height);
+    const k=C.k,fh=C.fh;cam.hidden=true;openEd(k,c.toDataURL('image/jpeg',.92),fh,true)}});
+document.addEventListener('visibilitychange',()=>{if(document.hidden&&stream&&!cam.hidden)stopCam()});
+
+/* exports */
+const loadI=src=>new Promise(r=>{const i=new Image();i.onload=()=>r(i);i.onerror=()=>r(null);i.src=src});
+const F=(w,s)=>`${w} ${s}px "IBM Plex Sans Thai",sans-serif`;
+async function collage(p,v){try{await document.fonts.ready}catch(e){}
+  const W=1800,H=150+750+800+64,c=document.createElement('canvas');c.width=W;c.height=H;const x=c.getContext('2d');
+  x.fillStyle='#fff';x.fillRect(0,0,W,H);x.fillStyle='#4c357c';x.fillRect(0,0,W,150);x.fillStyle='#fff';
+  x.font=F(600,46);x.fillText(p.name,40,70);x.font=F(400,28);x.fillText(`${p.hn?'HN '+p.hn+'  ·  ':''}${thd(v.date)}${v.note?'  ·  '+v.note:''}`,40,120);
+  x.textAlign='right';x.font=F(600,30);x.fillText('คลินิกทันตกรรมเดนท์ทอรี',W-40,70);x.font=F(400,24);x.fillText('Dentory Dental Clinic',W-40,116);
+  for(const w of VIEWS){const i=V[w.k].i,ex=i<3,h=ex?750:400,y=ex?150:900+Math.floor((i-3)/3)*400,xx=i%3*600,id=v.shots[w.k];
+    const im=id&&await loadI(await get('i:'+id));
+    if(im)x.drawImage(im,xx+4,y+4,592,h-8);else{x.fillStyle='#f2eef9';x.fillRect(xx+4,y+4,592,h-8);x.fillStyle='#9a90b3';x.textAlign='center';x.font=F(400,26);x.fillText(w.n,xx+300,y+h/2)}}
+  x.textAlign='left';x.fillStyle='#6d6584';x.font=F(400,22);x.fillText('ถ่ายด้วย Dentory Shot',40,H-24);
+  showOut(c.toDataURL('image/jpeg',.9),'ภาพรวม '+thd(v.date))}
+async function cexp(p){try{await document.fonts.ready}catch(e){}
+  const w=V[S.ck],A=p.visits.find(v=>v.id==S.ca),B=p.visits.find(v=>v.id==S.cb),cw=1000,ch=Math.round(cw/w.r),W=cw*2+12,H=ch+190,c=document.createElement('canvas');c.width=W;c.height=H;const x=c.getContext('2d');
+  x.fillStyle='#fff';x.fillRect(0,0,W,H);x.fillStyle='#4c357c';x.fillRect(0,0,W,110);x.fillStyle='#fff';x.font=F(600,40);x.fillText(`${p.name}  ·  ${w.n}`,36,68);
+  x.textAlign='right';x.font=F(500,26);x.fillText('คลินิกทันตกรรมเดนท์ทอรี',W-36,66);x.textAlign='left';
+  for(const [j,v] of [[0,A],[1,B]]){const im=await loadI(await get('i:'+v.shots[S.ck]));if(im)x.drawImage(im,j*(cw+12),110,cw,ch);
+    x.fillStyle='#1d1530';x.font=F(600,30);x.fillText(`${j?'หลัง':'ก่อน'}  ${thd(v.date)}${v.note?' · '+v.note:''}`,j*(cw+12)+20,110+ch+54)}
+  showOut(c.toDataURL('image/jpeg',.9),'ภาพเทียบ '+w.n)}
+
+/* events */
+document.addEventListener('click',async e=>{const b=e.target.closest('[data-a]');if(!b)return;const a=b.dataset.a,p=curP(),v=cur();
+  if(a=='close')return closeM();
+  if(a=='yes'){const r=askR;askR=null;closeM();return r&&r(true)}
+  if(a=='pt')return go('pt',{p:b.dataset.id});
+  if(a=='visit')return go('visit',{vi:b.dataset.id});
+  if(a=='cmp')return go('cmp',{ck:null,ca:null,cb:null,cw:50});
+  if(a=='newv'){const nv={id:uid(),date:Date.now(),note:'',shots:{}};p.visits.push(nv);save();go('visit',{vi:nv.id});return sheet(VIEWS[0].k)}
+  if(a=='shot')return sheet(b.dataset.k);
+  if(a=='next'){const nk=VIEWS.find(w=>!v.shots[w.k]);return nk&&sheet(nk.k)}
+  if(a=='reedit'){const d=await get('i:'+v.shots[b.dataset.k]);return d&&openEd(b.dataset.k,d,false)}
+  if(a=='cam')return openCam(b.dataset.k);
+  if(a=='delshot'){const k=b.dataset.k;if(await ask(`ลบรูป “${V[k].n}” ?`,'ลบรูป')){del('i:'+v.shots[k]);delete v.shots[k];save();render()}return}
+  if(a=='delv'){if(await ask('ลบชุดรูปนี้ทั้งชุด?','ลบทั้งชุด')){Object.values(v.shots).forEach(id=>del('i:'+id));p.visits=p.visits.filter(x=>x!=v);save();go('pt')}return}
+  if(a=='delpt'){if(await ask(`ลบ ${esc(p.name)} และรูปทั้งหมด?`,'ลบคนไข้')){p.visits.forEach(x=>Object.values(x.shots).forEach(id=>del('i:'+id)));P=P.filter(x=>x!=p);save();go('list')}return}
+  if(a=='collage')return collage(p,v);
+  if(a=='cexp')return cexp(p);
+  if(a=='ck'){S.ck=b.dataset.k;return render()}
+  if(a=='newpt')return modal(`<div class="sh" role="dialog"><h2>คนไข้ใหม่</h2><form id="pf"><label>ชื่อ-นามสกุล<input type="text" name="n" required autocomplete="off"></label><label>HN หรือเบอร์โทร (ไม่ใส่ก็ได้)<input type="text" name="h" autocomplete="off"></label><button class="btn pri big">เพิ่มคนไข้</button></form><button class="lnk" data-a="close">ยกเลิก</button></div>`);
+});
+document.addEventListener('submit',e=>{if(e.target.id!='pf')return;e.preventDefault();const f=new FormData(e.target),n=String(f.get('n')).trim();if(!n)return;
+  const np={id:uid(),name:n,hn:String(f.get('h')).trim(),visits:[]};P.unshift(np);save();closeM();go('pt',{p:np.id})});
+document.addEventListener('change',e=>{const t=e.target;
+  if(t.type=='file'&&t.files[0]){if(url)URL.revokeObjectURL(url);url=URL.createObjectURL(t.files[0]);openEd(t.dataset.k,url,!!V[t.dataset.k].m)}
+  if(t.id=='ca'||t.id=='cb'){S[t.id]=t.value;render()}});
+document.addEventListener('input',e=>{const t=e.target;
+  if(t.id=='q'){S.q=t.value;const pos=t.selectionStart;render();const q=$('#q');q.focus();try{q.setSelectionRange(pos,pos)}catch(_){}}
+  if(t.id=='note'){cur().note=t.value;save()}
+  if(t.id=='cwr')setW(+t.value)});
+function setW(p){S.cw=clamp(p,0,100);const wb=$('#wb'),wh=$('#wh'),r=$('#cwr');if(wb)wb.style.clipPath=`inset(0 0 0 ${S.cw}%)`;if(wh)wh.style.left=S.cw+'%';if(r&&+r.value!=S.cw)r.value=S.cw}
+let wd=false;
+document.addEventListener('pointerdown',e=>{const w=e.target.closest('#wipe');if(!w)return;wd=true;w.setPointerCapture(e.pointerId);const r=w.getBoundingClientRect();setW((e.clientX-r.left)/r.width*100)});
+document.addEventListener('pointermove',e=>{if(!wd)return;const w=$('#wipe');if(!w)return;const r=w.getBoundingClientRect();setW((e.clientX-r.left)/r.width*100)});
+document.addEventListener('pointerup',()=>wd=false);
+$('#back').addEventListener('click',()=>go(S.v=='pt'?'list':'pt'));
+
+/* sample patient (drawn, not real photos) */
+function sample(w,st){const W=900,H=Math.round(W/w.r),c=document.createElement('canvas');c.width=W;c.height=H;const x=c.getContext('2d');
+  let sd=w.k.charCodeAt(0)*977+w.k.charCodeAt(1)*31+7;const rn=()=>(sd=sd*16807%2147483647)/2147483647-.5,m=st?0:1;
+  const T=(cx,cy,tw,th,a)=>{x.save();x.translate(cx,cy);x.rotate(a);x.fillStyle='#fbf7ee';x.beginPath();x.roundRect(-tw/2,-th/2,tw,th,tw*.28);x.fill();x.restore()};
+  if(w.g=='ex'){const pr=w.k=='prof';x.fillStyle='#e6e0ee';x.fillRect(0,0,W,H);x.fillStyle='#cdc1de';
+    x.beginPath();x.ellipse(W*(pr?.56:.5),H*.42,W*.27,H*.26,0,0,7);x.fill();x.beginPath();x.ellipse(W*.5,H*1.04,W*.48,H*.3,0,0,7);x.fill();
+    if(pr){x.beginPath();x.ellipse(W*.31,H*.44,W*.07,H*.04,0,0,7);x.fill()}
+    if(w.k=='smile'){x.fillStyle='#fff';x.beginPath();x.ellipse(W*.5,H*.53,W*.1,H*.028,0,0,Math.PI);x.fill()}}
+  else{const g=x.createRadialGradient(W/2,H/2,20,W/2,H/2,W*.62);g.addColorStop(0,'#86313c');g.addColorStop(1,'#2b0b12');x.fillStyle=g;x.fillRect(0,0,W,H);
+    if(w.k=='uo'||w.k=='lo'){const up=w.k=='uo',by=up?H*.98:H*.02,s=up?-1:1;x.fillStyle='#e49aa5';x.beginPath();x.ellipse(W/2,by,W*.37,H*.87,0,0,7);x.fill();
+      x.fillStyle=g;x.beginPath();x.ellipse(W/2,by,W*.16,H*.48,0,0,7);x.fill();
+      for(let i=0;i<14;i++){const t=(i+.5)/14*Math.PI,mo=i<4||i>9,sz=W*(mo?.07:.05);T(W/2-Math.cos(t)*W*.27+rn()*m*40,by+s*Math.sin(t)*H*.69+rn()*m*34,sz,sz*(mo?1:.8),t+rn()*m*.9)}}
+    else{const n=w.k=='fr'?10:7,fl=w.k!='fr',pos=[];x.fillStyle='#e49aa5';x.fillRect(0,H*.16,W,H*.26);x.fillRect(0,H*.58,W,H*.24);
+      for(let i=0;i<n;i++){const u=(i+.5)/n,px=W*(.06+.88*u),cu=fl?0:Math.abs(u-.5),tw=W*.88/n*.9,th=H*(fl?.26:.3*(1-cu*.8)),cy=H*.5+cu*H*.1,yu=cy-th/2-2;
+        T(px+rn()*m*16,yu+rn()*m*24,tw,th,rn()*m*.4);T(px+rn()*m*16,cy+th*.42+rn()*m*16,tw*.88,th*.8,rn()*m*.3);pos.push([px,yu+th*.08])}
+      if(st){x.strokeStyle='#d9dce2';x.lineWidth=5;x.beginPath();pos.forEach(([a,b],i)=>i?x.lineTo(a,b):x.moveTo(a,b));x.stroke();x.fillStyle='#bfc3cc';pos.forEach(([a,b])=>x.fillRect(a-W*.018,b-W*.018,W*.036,W*.036))}}}
+  x.fillStyle='rgba(255,255,255,.8)';x.font='500 26px system-ui,sans-serif';x.fillText('ภาพตัวอย่าง',22,H-22);
+  return c.toDataURL('image/jpeg',.82)}
+function seed(){const day=864e5,mk=(st,keys,d,note)=>{const shots={};keys.forEach(k=>{const id=uid();put('i:'+id,sample(V[k],st));shots[k]=id});return{id:uid(),date:Date.now()-d*day,note,shots}};
+  P=[{id:uid(),name:'คุณสมใจ (ตัวอย่าง)',hn:'67-0108',visits:[mk(0,VIEWS.map(w=>w.k),182,'ก่อนจัดฟัน'),mk(1,['smile','rb','fr','lb','uo','lo'],14,'เดือนที่ 6')]},
+     {id:uid(),name:'คุณภูมิ ตัวอย่าง',hn:'67-0213',visits:[]}];save()}
+
+(async()=>{await openDB();try{const d=await get('pts');if(d)P=JSON.parse(d)}catch(e){P=[]}if(!P.length&&!(await get('seeded'))){seed();put('seeded','1')}render()})();
+}
+</script>
+</body></html>
