@@ -142,7 +142,10 @@ const $=s=>document.querySelector(s);
 const VIEWS=[
 {k:'face',g:'ex',n:'หน้าตรง',r:.8,m:0,t:'ให้คนไข้มองตรง ศีรษะตั้งตรง แนวตาขนานพื้น ถือกล้องระดับเดียวกับใบหน้า'},
 {k:'smile',g:'ex',n:'ยิ้มเห็นฟัน',r:.8,m:0,t:'มุมเดียวกับหน้าตรง ให้ยิ้มกว้างตามธรรมชาติจนเห็นฟัน'},
-{k:'prof',g:'ex',n:'ด้านข้างขวา',r:.8,m:0,t:'หันด้านขวาเข้ากล้อง แนวหางตาถึงรูหูขนานพื้น (Frankfort) ริมฝีปากปิดสบาย'},
+{k:'prof',g:'ex',n:'หันขวา',r:.8,m:0,t:'ให้คนไข้หันขวา 90° (จมูกชี้ไปทางซ้ายของจอ) แนวหางตาถึงรูหูขนานพื้น (Frankfort) ริมฝีปากปิดสบาย'},
+{k:'profs',g:'ex',n:'หันขวา ยิ้ม',r:.8,m:0,t:'ท่าเดียวกับหันขวา แล้วให้ยิ้มกว้างจนเห็นฟัน'},
+{k:'pror',g:'ex',n:'หันซ้าย',r:.8,m:0,t:'ให้คนไข้หันซ้าย 90° (จมูกชี้ไปทางขวาของจอ) แนวหางตาถึงรูหูขนานพื้น (Frankfort) ริมฝีปากปิดสบาย'},
+{k:'prors',g:'ex',n:'หันซ้าย ยิ้ม',r:.8,m:0,t:'ท่าเดียวกับหันซ้าย แล้วให้ยิ้มกว้างจนเห็นฟัน'},
 {k:'rb',g:'in',n:'ด้านขวา',r:1.5,m:1,t:'ใช้กระจกส่องแก้มขวา กัดฟันสบ ให้ฟันกรามซี่แรกอยู่กลางภาพ แอปกลับภาพจากกระจกให้อัตโนมัติ'},
 {k:'fr',g:'in',n:'หน้าตรง กัดฟัน',r:1.5,m:0,t:'ใส่ที่ถ่างแก้ม กัดฟันสบ ให้เส้นกลางฟันอยู่กลางภาพ แนวสบฟันเป็นเส้นแนวนอน'},
 {k:'lb',g:'in',n:'ด้านซ้าย',r:1.5,m:1,t:'ใช้กระจกส่องแก้มซ้าย กัดฟันสบ ให้ฟันกรามซี่แรกอยู่กลางภาพ แอปกลับภาพจากกระจกให้อัตโนมัติ'},
@@ -150,10 +153,11 @@ const VIEWS=[
 {k:'oj',g:'in',n:'ฟันหน้ายื่น',r:1.5,m:0,t:'ถ่ายด้านข้างระดับฟันหน้า กัดฟันสบ ให้เห็นระยะฟันหน้าบนยื่นเหนือฟันล่าง (overjet)'},
 {k:'lo',g:'in',n:'บดเคี้ยวล่าง',r:1.5,m:1,t:'อ้าปากกว้าง ยกลิ้นขึ้น วางกระจกบดเคี้ยว จัดให้ฟันหน้าอยู่ด้านล่างของภาพ'}];
 const V=Object.fromEntries(VIEWS.map((w,i)=>[w.k,{...w,i}]));
+const PF='<path d="M150 34C104 34 86 70 88 104L74 140L89 146L85 166Q96 172 90 182L96 202Q104 236 142 248"/><path class="d" d="M50 106H214"/><circle cx="172" cy="108" r="6"/>',SM='<path d="M88 176Q100 186 112 172"/>';
 const G={
 face:'<ellipse cx="120" cy="140" rx="72" ry="98"/><path class="d" d="M36 122H204M120 26V274"/>',
 smile:'<ellipse cx="120" cy="140" rx="72" ry="98"/><path d="M82 188Q120 224 158 188Q120 200 82 188Z"/><path class="d" d="M120 26V274"/>',
-prof:'<path d="M150 34C104 34 86 70 88 104L74 140L89 146L85 166Q96 172 90 182L96 202Q104 236 142 248"/><path class="d" d="M50 106H214"/><circle cx="172" cy="108" r="6"/>',
+prof:PF,profs:PF+SM,pror:`<g transform="matrix(-1 0 0 1 240 0)">${PF}</g>`,prors:`<g transform="matrix(-1 0 0 1 240 0)">${PF+SM}</g>`,
 rb:'<path class="d" d="M14 100H286M150 24V176"/><path d="M30 72Q150 50 274 84M30 128Q150 150 274 116"/>',
 fr:'<path d="M28 100Q150 16 272 100Q150 184 28 100Z"/><path class="d" d="M150 16V184M14 100H286"/>',
 lb:'<path class="d" d="M14 100H286M150 24V176"/><path d="M270 72Q150 50 26 84M270 128Q150 150 26 116"/>',
@@ -181,7 +185,7 @@ function hydrate(root=document){root.querySelectorAll('img[data-img]:not([src])'
 /* views */
 function listV(){
   const q=S.q.toLowerCase(),f=P.filter(p=>(p.name+' '+p.hn).toLowerCase().includes(q));
-  return `<section class="hero"><h1>ถ่ายรูปในช่องปาก</h1><p>ถ่ายครบ 9 มุมมาตรฐาน มีเส้นไกด์ทุกมุม กลับภาพจากกระจกให้อัตโนมัติ แล้วเทียบก่อน/หลังได้ทันที</p>
+  return `<section class="hero"><h1>ถ่ายรูปในช่องปาก</h1><p>ถ่ายครบทุกมุมมาตรฐาน มีเส้นไกด์ทุกมุม กลับภาพจากกระจกให้อัตโนมัติ แล้วเทียบก่อน/หลังได้ทันที</p>
   <p class="note1">คุณสมใจเป็นข้อมูลตัวอย่าง · รูปทั้งหมดเก็บในเครื่องนี้เท่านั้น ไม่ส่งออกไปที่ไหน</p>${db?'':'<p class="warn">เบราว์เซอร์นี้เก็บรูปถาวรไม่ได้ รูปจะหายเมื่อปิดหน้า</p>'}</section>
   <div class="bar"><input id="q" type="search" placeholder="ค้นหาชื่อหรือ HN" value="${esc(S.q)}" aria-label="ค้นหา"><button class="btn pri" data-a="newpt">+ คนไข้ใหม่</button></div>
   <ul class="rows">${f.map(p=>{const last=p.visits[p.visits.length-1],fid=[...p.visits].reverse().map(v=>v.shots.fr).find(Boolean);
@@ -191,19 +195,19 @@ function listV(){
 function ptV(p){
   return `<section class="ph"><span class="av lg">${esc([...p.name.replace(/^คุณ\s*/,'')][0]||'?')}</span><div><h1>${esc(p.name)}</h1><p class="mute">${p.hn?'HN '+esc(p.hn)+' · ':''}${p.visits.length} ชุดรูป</p></div></section>
   <div class="acts"><button class="btn pri" data-a="newv">+ ถ่ายชุดใหม่วันนี้</button><button class="btn" data-a="cmp" ${p.visits.length<2?'disabled':''}>เทียบก่อน/หลัง</button></div>
-  <h2>ชุดรูป</h2><ul class="rows">${[...p.visits].reverse().map(v=>`<li><button class="row" data-a="visit" data-id="${v.id}"><span class="rt"><b>${thd(v.date)}${v.note?' · '+esc(v.note):''}</b><small>${cnt(v)}/9 รูป</small>
+  <h2>ชุดรูป</h2><ul class="rows">${[...p.visits].reverse().map(v=>`<li><button class="row" data-a="visit" data-id="${v.id}"><span class="rt"><b>${thd(v.date)}${v.note?' · '+esc(v.note):''}</b><small>${cnt(v)}/${VIEWS.length} รูป</small>
     <span class="strip">${VIEWS.filter(w=>v.shots[w.k]).slice(0,6).map(w=>`<img data-img="${v.shots[w.k]}" alt="">`).join('')}</span></span></button></li>`).join('')}</ul>
   ${p.visits.length?'':'<p class="empty">ยังไม่มีชุดรูป</p>'}<button class="lnk danger" data-a="delpt">ลบคนไข้นี้</button>`;
 }
 function slots(p,v,g){return VIEWS.filter(w=>w.g==g).map(w=>{const id=v.shots[w.k];
   return `<button class="slot ${id?'has':''}" data-a="shot" data-k="${w.k}" style="aspect-ratio:${w.r}">${id?`<img data-img="${id}" alt="${w.n}">`:gsvg(w)}<span class="lb"><i>${V[w.k].i+1}</i>${w.n}</span></button>`}).join('')}
 function visitV(p,v){const n=cnt(v);
-  return `<section class="vh"><div><p class="mute">${esc(p.name)}</p><h1>${thd(v.date)}</h1></div><div class="prog"><b>${n}</b> / 9 มุม</div></section>
-  <div class="meter"><i style="width:${n/9*100}%"></i></div>
+  return `<section class="vh"><div><p class="mute">${esc(p.name)}</p><h1>${thd(v.date)}</h1></div><div class="prog"><b>${n}</b> / ${VIEWS.length} มุม</div></section>
+  <div class="meter"><i style="width:${n/VIEWS.length*100}%"></i></div>
   <input class="note" id="note" placeholder="บันทึกสั้นๆ เช่น ติดเครื่องมือ, เปลี่ยนลวด" value="${esc(v.note)}" aria-label="บันทึก">
   <h2>นอกช่องปาก</h2><div class="grid">${slots(p,v,'ex')}</div>
   <h2>ในช่องปาก</h2><div class="grid">${slots(p,v,'in')}</div>
-  <div class="acts"><button class="btn pri" data-a="collage" ${n?'':'disabled'}>ทำภาพรวมชุดนี้</button><button class="btn" data-a="next" ${n==9?'disabled':''}>ถ่ายมุมที่ยังขาด</button></div>
+  <div class="acts"><button class="btn pri" data-a="collage" ${n?'':'disabled'}>ทำภาพรวมชุดนี้</button><button class="btn" data-a="next" ${n==VIEWS.length?'disabled':''}>ถ่ายมุมที่ยังขาด</button></div>
   <button class="lnk danger" data-a="delv">ลบชุดนี้</button>`;
 }
 function cmpV(p){
@@ -234,7 +238,7 @@ const closeM=()=>{md.hidden=true;md.innerHTML='';if(askR){askR(false);askR=null}
 const ask=(msg,yes)=>{modal(`<div class="sh" role="dialog"><h2>${msg}</h2><div class="acts"><button class="btn danger" data-a="yes">${yes}</button><button class="btn" data-a="close">ยกเลิก</button></div></div>`);return new Promise(r=>askR=r)};
 md.addEventListener('click',e=>{if(e.target==md)closeM()});
 function sheet(k){const w=V[k],id=cur().shots[k];
-  modal(`<div class="sh" role="dialog"><p class="mute">มุมที่ ${w.i+1} จาก 9${w.m?' · ถ่ายผ่านกระจก':''}</p><h2>${w.n}</h2>
+  modal(`<div class="sh" role="dialog"><p class="mute">มุมที่ ${w.i+1} จาก ${VIEWS.length}${w.m?' · ถ่ายผ่านกระจก':''}</p><h2>${w.n}</h2>
   <div class="demo" style="aspect-ratio:${w.r};width:min(100%,calc(44vh * ${w.r}))">${id?`<img data-img="${id}" alt="">`:''}${gsvg(w)}</div><p>${w.t}</p>
   ${HASCAM?`<button class="btn pri big" data-a="cam" data-k="${k}">ถ่ายรูป (มีกรอบไกด์)</button>`:`<label class="btn pri big">ถ่ายรูป<input class="vhid" type="file" accept="image/*" capture="environment" data-k="${k}"></label>`}
   <label class="btn big">เลือกจากคลังรูป<input class="vhid" type="file" accept="image/*" data-k="${k}"></label>
@@ -271,7 +275,7 @@ ed.addEventListener('click',e=>{const b=e.target.closest('[data-e]');if(!b||!E)r
   if(a=='ok'||a=='okn')return edSave(a=='okn');syncEd();draw()});
 function edSave(next){const OW=1500,OH=Math.round(OW/E.w.r),c=document.createElement('canvas');c.width=OW;c.height=OH;paint(c,OW,OH);
   const v=cur(),old=v.shots[E.k],id=uid();put('i:'+id,c.toDataURL('image/jpeg',.88));v.shots[E.k]=id;if(old)del('i:'+old);save();closeEd();render();
-  if(next){const nk=VIEWS.find(w=>!v.shots[w.k]);if(nk){if(stream)openCam(nk.k);else sheet(nk.k)}else{stopCam();toast('ครบ 9 มุมแล้ว')}}else{stopCam();toast('บันทึกแล้ว')}}
+  if(next){const nk=VIEWS.find(w=>!v.shots[w.k]);if(nk){if(stream)openCam(nk.k);else sheet(nk.k)}else{stopCam();toast('ครบทุกมุมแล้ว')}}else{stopCam();toast('บันทึกแล้ว')}}
 
 /* live camera with guide frame */
 let HASCAM=!!(navigator.mediaDevices&&navigator.mediaDevices.getUserMedia&&window.isSecureContext),stream=null,C=null;
@@ -301,11 +305,11 @@ document.addEventListener('visibilitychange',()=>{if(document.hidden&&stream&&!c
 const loadI=src=>new Promise(r=>{const i=new Image();i.onload=()=>r(i);i.onerror=()=>r(null);i.src=src});
 const F=(w,s)=>`${w} ${s}px "IBM Plex Sans Thai",sans-serif`;
 async function collage(p,v){try{await document.fonts.ready}catch(e){}
-  const W=1800,H=150+750+800+64,c=document.createElement('canvas');c.width=W;c.height=H;const x=c.getContext('2d');
+  const NE=VIEWS.filter(w=>w.g=='ex').length,NI=VIEWS.length-NE,RE=Math.ceil(NE/3),RI=Math.ceil(NI/3),W=1800,H=150+RE*750+RI*400+64,c=document.createElement('canvas');c.width=W;c.height=H;const x=c.getContext('2d');
   x.fillStyle='#fff';x.fillRect(0,0,W,H);x.fillStyle='#4c357c';x.fillRect(0,0,W,150);x.fillStyle='#fff';
   x.font=F(600,46);x.fillText(p.name,40,70);x.font=F(400,28);x.fillText(`${p.hn?'HN '+p.hn+'  ·  ':''}${thd(v.date)}${v.note?'  ·  '+v.note:''}`,40,120);
   x.textAlign='right';x.font=F(600,30);x.fillText('คลินิกทันตกรรมเดนท์ทอรี',W-40,70);x.font=F(400,24);x.fillText('Dentory Dental Clinic',W-40,116);
-  for(const w of VIEWS){const i=V[w.k].i,ex=i<3,h=ex?750:400,y=ex?150:900+Math.floor((i-3)/3)*400,xx=i%3*600,id=v.shots[w.k];
+  for(const w of VIEWS){const ex=w.g=='ex',j=ex?V[w.k].i:V[w.k].i-NE,h=ex?750:400,y=ex?150+Math.floor(j/3)*750:150+RE*750+Math.floor(j/3)*400,xx=j%3*600,id=v.shots[w.k];
     const im=id&&await loadI(await get('i:'+id));
     if(im)x.drawImage(im,xx+4,y+4,592,h-8);else{x.fillStyle='#f2eef9';x.fillRect(xx+4,y+4,592,h-8);x.fillStyle='#9a90b3';x.textAlign='center';x.font=F(400,26);x.fillText(w.n,xx+300,y+h/2)}}
   x.textAlign='left';x.fillStyle='#6d6584';x.font=F(400,22);x.fillText('ถ่ายด้วย Dentory Shot',40,H-24);
@@ -358,7 +362,7 @@ $('#back').addEventListener('click',()=>go(S.v=='pt'?'list':'pt'));
 function sample(w,st){const W=900,H=Math.round(W/w.r),c=document.createElement('canvas');c.width=W;c.height=H;const x=c.getContext('2d');
   let sd=w.k.charCodeAt(0)*977+w.k.charCodeAt(1)*31+7;const rn=()=>(sd=sd*16807%2147483647)/2147483647-.5,m=st?0:1;
   const T=(cx,cy,tw,th,a)=>{x.save();x.translate(cx,cy);x.rotate(a);x.fillStyle='#fbf7ee';x.beginPath();x.roundRect(-tw/2,-th/2,tw,th,tw*.28);x.fill();x.restore()};
-  if(w.g=='ex'){const pr=w.k=='prof';x.fillStyle='#e6e0ee';x.fillRect(0,0,W,H);x.fillStyle='#cdc1de';
+  if(w.g=='ex'){const pr=w.k.startsWith('pro'),rv=w.k.startsWith('pror');if(rv){x.translate(W,0);x.scale(-1,1)}x.fillStyle='#e6e0ee';x.fillRect(0,0,W,H);x.fillStyle='#cdc1de';
     x.beginPath();x.ellipse(W*(pr?.56:.5),H*.42,W*.27,H*.26,0,0,7);x.fill();x.beginPath();x.ellipse(W*.5,H*1.04,W*.48,H*.3,0,0,7);x.fill();
     if(pr){x.beginPath();x.ellipse(W*.31,H*.44,W*.07,H*.04,0,0,7);x.fill()}
     if(w.k=='smile'){x.fillStyle='#fff';x.beginPath();x.ellipse(W*.5,H*.53,W*.1,H*.028,0,0,Math.PI);x.fill()}}
@@ -370,7 +374,7 @@ function sample(w,st){const W=900,H=Math.round(W/w.r),c=document.createElement('
       for(let i=0;i<n;i++){const u=(i+.5)/n,px=W*(.06+.88*u),cu=fl?0:Math.abs(u-.5),tw=W*.88/n*.9,th=H*(fl?.26:.3*(1-cu*.8)),cy=H*.5+cu*H*.1,yu=cy-th/2-2;
         T(px+rn()*m*16,yu+rn()*m*24,tw,th,rn()*m*.4);T(px+rn()*m*16,cy+th*.42+rn()*m*16,tw*.88,th*.8,rn()*m*.3);pos.push([px,yu+th*.08])}
       if(st){x.strokeStyle='#d9dce2';x.lineWidth=5;x.beginPath();pos.forEach(([a,b],i)=>i?x.lineTo(a,b):x.moveTo(a,b));x.stroke();x.fillStyle='#bfc3cc';pos.forEach(([a,b])=>x.fillRect(a-W*.018,b-W*.018,W*.036,W*.036))}}}
-  x.fillStyle='rgba(255,255,255,.8)';x.font='500 26px system-ui,sans-serif';x.fillText('ภาพตัวอย่าง',22,H-22);
+  x.setTransform(1,0,0,1,0,0);x.fillStyle='rgba(255,255,255,.8)';x.font='500 26px system-ui,sans-serif';x.fillText('ภาพตัวอย่าง',22,H-22);
   return c.toDataURL('image/jpeg',.82)}
 function seed(){const day=864e5,mk=(st,keys,d,note)=>{const shots={};keys.forEach(k=>{const id=uid();put('i:'+id,sample(V[k],st));shots[k]=id});return{id:uid(),date:Date.now()-d*day,note,shots}};
   P=[{id:uid(),name:'คุณสมใจ (ตัวอย่าง)',hn:'67-0108',visits:[mk(0,VIEWS.map(w=>w.k),182,'ก่อนจัดฟัน'),mk(1,['smile','rb','fr','lb','uo','lo'],14,'เดือนที่ 6')]},
