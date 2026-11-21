@@ -192,7 +192,7 @@ function hydrate(root=document){root.querySelectorAll('img[data-img]:not([src])'
 function listV(){
   const q=S.q.toLowerCase(),f=P.filter(p=>(p.name+' '+p.hn).toLowerCase().includes(q));
   return `<section class="hero"><h1>ถ่ายรูปในช่องปาก</h1><p>ถ่ายครบทุกมุมมาตรฐาน มีเส้นไกด์ทุกมุม กลับภาพจากกระจกให้อัตโนมัติ แล้วเทียบก่อน/หลังได้ทันที</p>
-  <p class="note1">คุณสมใจเป็นข้อมูลตัวอย่าง · รูปทั้งหมดเก็บในเครื่องนี้เท่านั้น ไม่ส่งออกไปที่ไหน</p>${db?'':'<p class="warn">เบราว์เซอร์นี้เก็บรูปถาวรไม่ได้ รูปจะหายเมื่อปิดหน้า</p>'}</section>
+  <p class="note1">คุณสมใจเป็นข้อมูลตัวอย่าง · รูปทั้งหมดเก็บในเครื่องนี้เท่านั้น ไม่ส่งออกไปที่ไหน</p>${db?'':'<p class="warn">เบราว์เซอร์นี้เก็บรูปถาวรไม่ได้ รูปจะหายเมื่อปิดหน้า</p>'}${INAPP?inappBox():''}</section>
   <div class="bar"><input id="q" type="search" placeholder="ค้นหาชื่อหรือ HN" value="${esc(S.q)}" aria-label="ค้นหา"><button class="btn pri" data-a="newpt">+ คนไข้ใหม่</button></div>
   <ul class="rows">${f.map(p=>{const last=p.visits[p.visits.length-1],fid=[...p.visits].reverse().map(v=>v.shots.fr).find(Boolean);
     return `<li><button class="row" data-a="pt" data-id="${p.id}"><span class="av">${esc([...p.name.replace(/^(คุณ|ด\.?ช\.?|ด\.?ญ\.?|นาย|นางสาว|นาง)\s*/,'').trim()][0]||'?')}</span><span class="rt"><b>${esc(p.name)}</b><small>${p.hn?'HN '+esc(p.hn)+' · ':''}${p.visits.length} ชุด${last?' · ล่าสุด '+thd(last.date):''}</small></span>${fid?`<img class="th" data-img="${fid}" alt="">`:''}</button></li>`}).join('')}</ul>
@@ -244,8 +244,8 @@ const modal=h=>{md.innerHTML=h;md.hidden=false;hydrate(md)};
 const closeM=()=>{md.hidden=true;md.innerHTML='';if(askR){askR(false);askR=null}};
 const ask=(msg,yes)=>{modal(`<div class="sh" role="dialog"><h2>${msg}</h2><div class="acts"><button class="btn danger" data-a="yes">${yes}</button><button class="btn" data-a="close">ยกเลิก</button></div></div>`);return new Promise(r=>askR=r)};
 md.addEventListener('click',e=>{if(e.target==md)closeM()});
-function sheet(k){const w=V[k],id=cur().shots[k];
-  modal(`<div class="sh" role="dialog"><p class="mute">มุมที่ ${w.i+1} จาก ${VIEWS.length}${w.m?' · ถ่ายผ่านกระจก':''}</p><h2>${w.n}</h2>
+function sheet(k,msg){const w=V[k],id=cur().shots[k];
+  modal(`<div class="sh" role="dialog">${msg?`<p class="warn">${msg}</p>`:''}${INAPP?inappBox():''}<p class="mute">มุมที่ ${w.i+1} จาก ${VIEWS.length}${w.m?' · ถ่ายผ่านกระจก':''}</p><h2>${w.n}</h2>
   <div class="demo" style="aspect-ratio:${w.r};width:min(100%,calc(44vh * ${w.r}))">${id?`<img data-img="${id}" alt="">`:''}${gsvg(w)}</div><p>${w.t}</p>
   ${HASCAM?`<button class="btn pri big" data-a="cam" data-k="${k}">ถ่ายรูป (มีกรอบไกด์)</button>`:`<label class="btn pri big">ถ่ายรูป<input class="vhid" type="file" accept="image/*" capture="environment" data-k="${k}"></label>`}
   <label class="btn big">เลือกจากคลังรูป<input class="vhid" type="file" accept="image/*" data-k="${k}"></label>
@@ -294,13 +294,23 @@ function edSave(next){const OW=1500,OH=Math.round(OW/E.w.r),c=document.createEle
   const v=cur(),old=v.shots[E.k],id=uid();put('i:'+id,c.toDataURL('image/jpeg',.88));v.shots[E.k]=id;if(old)del('i:'+old);save();closeEd();render();
   if(next){const nk=VIEWS.find(w=>!v.shots[w.k]);if(nk){if(stream)openCam(nk.k);else sheet(nk.k)}else{stopCam();toast('ครบทุกมุมแล้ว')}}else{stopCam();toast('บันทึกแล้ว')}}
 
+/* in-app browsers (LINE, Facebook…) block the live camera */
+const UA=navigator.userAgent,ISLINE=/\bLine\//i.test(UA),ISAND=/Android/i.test(UA),INAPP=ISLINE||/FBAN|FBAV|Instagram|; wv\)/i.test(UA);
+function extURL(){const u=location.origin+location.pathname;if(ISLINE)return u+'?openExternalBrowser=1';if(ISAND)return 'intent://'+u.replace(/^https?:\/\//,'')+'#Intent;scheme=https;package=com.android.chrome;end';return u}
+const inappBox=()=>`<div class="warn"><b>กำลังเปิดอยู่ในแอป${ISLINE?' LINE':''}</b> กล้องที่มีกรอบไกด์และปุ่มแชร์จะใช้ไม่ได้ ให้เปิดใน${ISAND?' Chrome':' Safari'}<br><a class="btn pri" style="margin-top:8px" href="${extURL()}">เปิดใน${ISAND?' Chrome':'เบราว์เซอร์'}</a></div>`;
+function camErr(e){const n=e&&e.name;
+  if(n=='NotAllowedError'||n=='SecurityError')return ISAND?'<b>ยังไม่ได้อนุญาตให้ใช้กล้อง</b> แตะไอคอนหน้าลิงก์ด้านบน (รูปปรับค่า/แม่กุญแจ) > สิทธิ์ > กล้อง > อนุญาต แล้วรีเฟรชหน้า':'<b>ยังไม่ได้อนุญาตให้ใช้กล้อง</b> แตะ “aA” ที่ช่องลิงก์ > การตั้งค่าเว็บไซต์ > กล้อง > อนุญาต แล้วรีเฟรชหน้า';
+  if(n=='NotReadableError')return '<b>กล้องถูกแอปอื่นใช้อยู่</b> ปิดแอปกล้อง/วิดีโอคอลอื่นก่อน แล้วลองใหม่';
+  if(n=='NotFoundError'||n=='OverconstrainedError')return '<b>หากล้องไม่เจอ</b> ใช้ปุ่มถ่ายรูปด้านล่างแทน';
+  return '<b>เปิดกล้องในหน้านี้ไม่ได้</b> ใช้ปุ่มถ่ายรูปด้านล่างแทน (จะไม่มีกรอบไกด์)'}
+
 /* live camera with guide frame */
-let HASCAM=!!(navigator.mediaDevices&&navigator.mediaDevices.getUserMedia&&window.isSecureContext),stream=null,C=null;
+let HASCAM=!INAPP&&!!(navigator.mediaDevices&&navigator.mediaDevices.getUserMedia&&window.isSecureContext),stream=null,C=null;
 const cam=$('#cam'),vid=$('#vid'),cst=$('#cst');
 function camLayout(){if(!C)return;const r=C.w.r,mw=Math.min(innerWidth-24,720),mh=Math.max(160,innerHeight-250);let W=mw,H=W/r;if(H>mh){H=mh;W=H*r}cst.style.width=W+'px';cst.style.height=H+'px'}
 async function openCam(k){C={k,w:V[k],fh:!!V[k].m};closeM();
   if(!stream){try{stream=await navigator.mediaDevices.getUserMedia({audio:false,video:{facingMode:{ideal:'environment'},width:{ideal:2560},height:{ideal:1920}}})}
-    catch(e){HASCAM=false;C=null;toast('เปิดกล้องในหน้านี้ไม่ได้ ใช้กล้องของเครื่องแทน');return sheet(k)}
+    catch(e){HASCAM=false;C=null;return sheet(k,camErr(e))}
     vid.srcObject=stream;try{await vid.play()}catch(e){}
     const tr=stream.getVideoTracks()[0],cp=tr.getCapabilities?tr.getCapabilities():{};$('#ctr').hidden=!cp.torch;$('#ctr').classList.remove('on')}
   cam.hidden=false;$('#cn').textContent=`${C.w.i+1}. ${C.w.n}`;$('#cov').innerHTML=gsvg(C.w);$('#ctip').textContent=C.w.t;syncCam();camLayout()}
