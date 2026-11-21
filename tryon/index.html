@@ -1,0 +1,564 @@
+<!doctype html><html lang="th"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: blob:; connect-src 'none'; object-src 'none'; base-uri 'self'; form-action 'none'"><meta name="referrer" content="no-referrer"><style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style></head><body>
+<title>ลองจัดฟันบนรูปฉัน</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Kanit:wght@500;600;700&family=Prompt:wght@400;500;600&display=swap">
+<style>
+/* Layout: one phone-width column on Dentory's pastel sky; the photo with braces drawn on is the hero, controls in cards below. Single light look by choice (matches the clinic's picker). */
+:root{
+  color-scheme:light;
+  --sky:#d6ebfc; --sky-2:#b0defc; --card:#ffffff; --ink:#0b1677; --muted:#4a5394;
+  --pink:#fc5490; --pink-deep:#d42f70; --lilac:#e2e2fc; --coral:#f86048; --field:#f4f9fe; --green:#06c755;
+  --display:Kanit,"Noto Sans Thai",system-ui,sans-serif; --body:Prompt,Kanit,"Noto Sans Thai",system-ui,sans-serif;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html{background:var(--sky)}
+body{margin:0;background:var(--sky);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.5;overflow-x:hidden}
+button,input{font:inherit;color:inherit}
+button{cursor:pointer}
+:focus-visible{outline:3px solid #7a30f8;outline-offset:2px}
+.wrap{max-width:560px;margin:0 auto;padding-block:16px 40px;padding-left:max(16px, env(safe-area-inset-left, 0px));padding-right:max(16px, env(safe-area-inset-right, 0px));display:flex;flex-direction:column;gap:16px}
+header{display:flex;align-items:center;gap:12px}
+header img{height:44px;width:auto}
+header .t{display:flex;flex-direction:column;line-height:1.2;min-width:0}
+header b{font-family:var(--display);font-weight:700;font-size:20px}
+header span{font-size:13px;color:var(--muted)}
+.proto{margin-left:auto;flex-shrink:0;font-family:var(--display);font-weight:600;font-size:12px;background:var(--lilac);color:#5b2bc4;border-radius:999px;padding:5px 12px}
+
+.photo{position:relative;border-radius:32px;overflow:hidden;background:#1d1830;box-shadow:0 10px 30px rgba(43,123,248,.16)}
+.photo canvas{display:block;width:100%;height:auto;touch-action:none}
+.badge{position:absolute;top:12px;left:12px;font-family:var(--display);font-weight:600;font-size:13px;background:rgba(255,255,255,.92);color:var(--ink);border-radius:999px;padding:5px 12px}
+.status{position:absolute;left:12px;right:12px;bottom:12px;font-size:14px;background:rgba(11,22,119,.82);color:#fff;border-radius:16px;padding:10px 14px;line-height:1.45}
+
+.actions{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.btn{display:flex;align-items:center;justify-content:center;gap:8px;min-height:54px;border:none;border-radius:999px;font-family:var(--display);font-weight:600;font-size:17px;padding:0 16px;text-align:center}
+.btn.p{background:var(--pink);color:#fff;box-shadow:0 8px 20px rgba(252,84,144,.3)}
+.btn.w{background:#fff;color:var(--ink);box-shadow:0 6px 16px rgba(43,123,248,.14)}
+.btn.s{background:var(--lilac);color:var(--ink)}
+.btn[disabled]{opacity:.5}
+.vh{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+
+.card{background:var(--card);border-radius:28px;padding:18px;box-shadow:0 8px 24px rgba(43,123,248,.12);display:flex;flex-direction:column;gap:12px}
+.card h2{margin:0;font-family:var(--display);font-weight:700;font-size:20px;line-height:1.25}
+.card p{margin:0;font-size:14px;color:var(--muted)}
+.hrow{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.used{display:flex;align-items:center;gap:6px;font-family:var(--display);font-weight:600;font-size:13px;white-space:nowrap}
+.used i{width:22px;height:22px;border-radius:50%;border:6px solid;background:#fff;box-shadow:0 0 0 2px #fff}
+.used i+i{margin-left:-10px}
+.hintbar{display:flex;align-items:center;gap:10px;font-size:14px;background:var(--field);border-radius:16px;padding:8px 12px}
+.hintbar i{flex-shrink:0;width:26px;height:26px;border-radius:50%;border:7px solid;background:#fff}
+.hintbar i.e{border:2px dashed var(--sky-2)}
+.fillall{display:flex;align-items:center;justify-content:center;gap:10px;min-height:46px;border:2px dashed #fc84b0;border-radius:999px;background:#fff5fa;color:var(--pink-deep);font-family:var(--display);font-weight:600;font-size:15px;padding:0 12px}
+.chips{display:flex;gap:8px;overflow-x:auto;margin:0 -18px;padding:4px 18px 6px;scrollbar-width:none}
+.chips::-webkit-scrollbar{display:none}
+.chip{flex-shrink:0;min-height:40px;padding:0 16px;border-radius:999px;font-family:var(--display);font-weight:600;font-size:14px;white-space:nowrap;border:2px solid var(--sky);background:#fff;color:var(--ink)}
+.chip[aria-pressed="true"]{border-color:var(--pink-deep);background:var(--pink-deep);color:#fff;box-shadow:0 6px 14px rgba(212,47,112,.3)}
+.err{margin:0;font-size:14px;color:var(--pink-deep);font-weight:600}
+.grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px 2px;max-height:420px;overflow-y:auto;padding:12px 2px 4px;border-top:1px solid #d9d4f4}
+.sw{position:relative;display:flex;flex-direction:column;align-items:center;gap:5px;min-width:0;padding:10px 2px 8px;border:none;border-radius:16px;background:transparent}
+.sw .no{font-size:11px;letter-spacing:.14em;color:#7d84b5;line-height:1;font-variant-numeric:tabular-nums}
+.sw svg{display:block;overflow:visible;max-width:100%;height:auto}
+.sw .nm{max-width:100%;font-family:var(--display);font-weight:600;font-size:11px;letter-spacing:.06em;line-height:1.3;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sw[aria-pressed="true"]{background:#fff0f6;box-shadow:0 0 0 2px var(--pink),0 8px 20px rgba(252,84,144,.25)}
+.sw .cnt{position:absolute;top:2px;right:4px;min-width:20px;height:20px;padding:0 4px;border-radius:999px;background:var(--pink-deep);color:#fff;font-family:var(--display);font-size:11px;font-weight:700;line-height:20px;text-align:center;box-shadow:0 0 0 2px #fff}
+.sw .nw{position:absolute;top:-8px;left:50%;transform:translateX(-50%);z-index:2;white-space:nowrap;height:18px;padding:0 6px;border-radius:999px;background:var(--coral);color:#fff;font-family:var(--display);font-size:10px;font-weight:700;line-height:18px}
+.sliders{display:flex;flex-direction:column;gap:12px}
+.sl{display:grid;grid-template-columns:96px 1fr;align-items:center;gap:10px;font-size:14px}
+.sl label{font-weight:500}
+.sl input{width:100%;accent-color:var(--pink)}
+.toggle{display:flex;align-items:center;gap:10px;font-size:14px}
+.toggle input{width:22px;height:22px;accent-color:var(--pink)}
+
+.saved{display:flex;flex-direction:column;gap:8px;align-items:center;text-align:center}
+.saved img{width:100%;border-radius:20px;box-shadow:0 6px 16px rgba(11,22,119,.15)}
+.privacy{font-size:13px;color:var(--muted);text-align:center;margin:0}
+.card.align{border:2px solid var(--pink)}
+.viewbtn{position:absolute;top:12px;right:12px;min-height:36px;border:none;border-radius:999px;background:var(--pink);color:#fff;font-family:var(--display);font-weight:600;font-size:14px;padding:0 14px;box-shadow:0 4px 12px rgba(0,0,0,.25)}
+</style>
+
+<div class="wrap">
+  <header>
+    <img src="../logo.png" alt="Dentory Dental Clinic">
+    <div class="t"><b>ลองจัดฟันบนรูปฉัน</b><span>Dentory Dental Clinic</span></div>
+    <span class="proto">ใหม่</span>
+  </header>
+
+  <section class="photo" aria-label="รูปพร้อมเหล็กจัดฟัน">
+    <canvas id="cv" width="900" height="600"></canvas>
+    <span class="badge" id="badge">ภาพตัวอย่าง</span>
+    <div class="status" id="status" hidden></div>
+    <button type="button" class="viewbtn" id="bView" hidden>ดูใกล้ๆ</button>
+  </section>
+
+  <div class="actions">
+    <label class="btn p" for="fCam">ถ่ายรูปยิ้ม</label>
+    <label class="btn w" for="fPick">เลือกรูปจากเครื่อง</label>
+    <input class="vh" id="fCam" type="file" accept="image/*" capture="user">
+    <input class="vh" id="fPick" type="file" accept="image/*">
+  </div>
+  <p class="privacy">รูปถูกประมวลผลในเครื่องของคุณเท่านั้น ไม่มีการส่งรูปไปที่ไหน · ยิ้มกัดฟัน หน้าตรง ถ่ายใกล้ๆ แสงสว่างพอ</p>
+
+  <section class="card align" id="alignCard" aria-labelledby="hAlign" hidden>
+    <h2 id="hAlign">จัดฟันให้ตรงกรอบ</h2>
+    <p>ใช้นิ้วเลื่อนรูป และใช้สองนิ้วถ่างเพื่อซูม จนฟันหน้าในรูปตรงกับเส้นกรอบสีขาว แล้วกดปุ่มด้านล่าง</p>
+    <div class="sliders">
+      <div class="sl"><label for="aZoom">ซูม</label><input id="aZoom" type="range" min="0" max="1000" value="500"></div>
+      <div class="sl"><label for="aRot">หมุนรูป</label><input id="aRot" type="range" min="-20" max="20" value="0" step="0.5"></div>
+    </div>
+    <button type="button" class="btn p" id="bPlace">ตรงแล้ว ใส่เหล็กเลย</button>
+  </section>
+
+  <section class="card" aria-labelledby="hTheme">
+    <div class="hrow"><h2 id="hTheme">เลือกสียาง</h2><span class="used" id="used"></span></div>
+    <div class="hintbar" id="hint" aria-live="polite"></div>
+    <button type="button" class="fillall" id="bFill" hidden></button>
+    <div class="chips" id="chips" role="toolbar" aria-label="หมวดสี"></div>
+    <p class="err" id="perr" role="alert" hidden></p>
+    <div class="grid" id="palette"></div>
+  </section>
+
+  <section class="card" aria-labelledby="hFit">
+    <h2 id="hFit">ปรับให้พอดีฟัน</h2>
+    <p>ถ้าบางตัวยังไม่ตรง แตะค้างที่เหล็กตัวนั้นแล้วลากไปวางกลางฟัน หรือเลื่อนแถบด้านล่างเพื่อขยับทั้งแถว</p>
+    <div class="sliders">
+      <div class="sl"><label for="sUp">แถวบน ขึ้น-ลง</label><input id="sUp" type="range" min="-40" max="40" value="0"></div>
+      <div class="sl"><label for="sLo">แถวล่าง ขึ้น-ลง</label><input id="sLo" type="range" min="-40" max="40" value="0"></div>
+      <div class="actions"><button type="button" class="btn s" id="bReset" style="min-height:44px;font-size:15px">วางเหล็กใหม่</button>
+      <button type="button" class="btn s" id="bRealign" style="min-height:44px;font-size:15px">จัดรูปให้ตรงกรอบใหม่</button></div>
+      <div class="sl"><label for="sSize">ขนาดเหล็ก</label><input id="sSize" type="range" min="60" max="200" value="100"></div>
+      <div class="sl"><label for="sWide">ความกว้าง</label><input id="sWide" type="range" min="70" max="120" value="100"></div>
+      <label class="toggle" for="sLower"><input id="sLower" type="checkbox" checked> แสดงเหล็กฟันล่าง</label>
+    </div>
+  </section>
+
+  <button type="button" class="btn p" id="bSave">ทำรูปไว้บันทึก</button>
+  <button type="button" class="btn w" id="bBack" hidden>กลับไปหน้าเลือกสี (สีที่เลือกตามไปด้วย)</button>
+  <div class="saved" id="saved" hidden>
+    <img id="savedImg" alt="รูปพร้อมเหล็กจัดฟันและสียางที่เลือก">
+    <p class="privacy">กดค้างที่รูปแล้วเลือก "บันทึกรูปภาพ" เพื่อเก็บไว้ หรือส่งให้คลินิกทาง LINE @dentory</p>
+  </div>
+</div>
+
+<script>
+var BAND={"1":["#c3dfb0","","เขียวอ่อน","เขียว"],"2":["#9dc070","","เขียว","เขียว"],"3":["#8fa988","","เขียว","เขียว"],"4":["#427760","","เขียว","เขียว"],"5":["#275337","","เขียวเข้ม","เขียว"],"6":["#25583c","","เขียวเข้ม","เขียว"],"7":["#327536","","เขียว","เขียว"],"8":["#4b6e3a","","เขียว","เขียว"],"9":["#6b8933","","เขียว","เขียว"],"10":["#5dc5b2","","ฟ้าอมเขียว","เขียว"],"11":["#4aa98a","","ฟ้าอมเขียว","เขียว"],"12":["#84d48f","","เขียว","เขียว"],"13":["#5dc03c","","เขียว","เขียว"],"14":["#70be4c","","เขียว","เขียว"],"15":["#a8e159","","เขียว","เขียว"],"16":["#c9f5a2","","เขียวอ่อน","พาสเทล"],"17":["#d3ec49","","เหลือง","เขียว"],"18":["#c7df48","","เหลือง","เขียว"],"19":["#3c919f","","ฟ้าอมเขียว","ฟ้า"],"20":["#215b7b","","ฟ้าเข้ม","ฟ้า"],"21":["#3771a3","","ฟ้า","ฟ้า"],"22":["#2668a7","","ฟ้า","ฟ้า"],"23":["#4eadcd","","ฟ้า","ฟ้าอมเขียว"],"24":["#60bccb","","ฟ้าอมเขียว","ฟ้าอมเขียว"],"25":["#8cd3d9","","ฟ้าอมเขียวอ่อน","พาสเทล"],"26":["#a6eadc","","ฟ้าอมเขียวอ่อน","พาสเทล"],"27":["#9bd2dd","","ฟ้าอมเขียวอ่อน","ฟ้าพาสเทล"],"28":["#20468f","","ฟ้า","น้ำเงิน"],"29":["#031963","","ฟ้าเข้ม","น้ำเงิน"],"30":["#050b4b","","ฟ้าเข้ม","น้ำเงิน"],"31":["#0c2450","","ฟ้าเข้ม","น้ำเงิน"],"32":["#476a89","","ฟ้า","ฟ้า"],"33":["#6aa4b6","","ฟ้าอมเขียว","ฟ้าอมเขียว"],"34":["#6eb2df","","ฟ้า","ฟ้า"],"35":["#81c2e7","","ฟ้าอ่อน","พาสเทล"],"36":["#87c5dc","","ฟ้าอ่อน","ฟ้า"],"37":["#356bd2","","ฟ้า","ฟ้า"],"38":["#6f88cd","","ฟ้า","ฟ้า"],"39":["#324389","","ฟ้า","ฟ้า"],"40":["#8b7097","","ม่วง","ม่วง"],"41":["#a689c3","","น้ำเงิน","น้ำเงิน"],"42":["#b790d0","","ม่วงอ่อน","พาสเทล"],"43":["#fa65b7","","ชมพูอ่อน","ชมพู"],"44":["#c45aa4","","ม่วง","ม่วง"],"45":["#c76bc9","","ม่วง","ม่วง"],"46":["#c63454","","แดง","แดง"],"47":["#b72e24","","แดง","แดง"],"48":["#b3251f","","แดง","แดง"],"49":["#8a1b16","","แดงเข้ม","แดง"],"50":["#952040","","ชมพู","ชมพู"],"51":["#622129","","แดงเข้ม","แดง"],"52":["#482140","","ม่วงเข้ม","ม่วง"],"53":["#3b3980","","ม่วง","ม่วง"],"54":["#6b65ba","","ม่วงอ่อน","ม่วง"],"55":["#e9587d","","ชมพู","ชมพู"],"56":["#f677ad","","ชมพูอ่อน","ชมพู"],"57":["#c78191","","ชมพูอ่อน","ชมพู"],"58":["#d3b1b2","","แดงอ่อน","แดง"],"59":["#ef8dc3","","ชมพูอ่อน","ชมพู"],"60":["#f495b5","","ชมพูอ่อน","พาสเทล"],"61":["#efa9b4","","โอรส","ส้ม"],"62":["#f7bdb4","","ส้มพาสเทล","พาสเทล"],"63":["#efb3b2","","แดงพาสเทล","แดง"],"64":["#7e8384","","เทา","เทา"],"65":["#9a9897","","เทาอ่อน","เทา"],"66":["#ead5a9","","สีไข่","เหลือง"],"67":["#fcfe97","","เหลืองอ่อน","พาสเทล"],"68":["#faac6d","","ส้มอ่อน","ส้ม"],"69":["#fda235","","ส้ม","ส้ม"],"70":["#ff6f44","","ส้ม","ส้ม"],"71":["#df5b5e","","ส้ม","ส้ม"],"72":["#efa9ac","","แดงอ่อน","แดง"],"73":["#010104","","ดำ","ดำ"],"74":["#02095e","","ฟ้าเข้ม","น้ำเงิน"],"75":["#3f93d1","","ฟ้า","ฟ้า"],"76":["#82fb49","","เขียวเรืองแสง","เขียว"],"77":["#fee148","","เหลือง","เหลือง"],"78":["#ffb34a","","ส้ม","ส้ม"],"79":["#fe7663","","แดงอ่อน","แดง"],"80":["#ff5883","","ชมพูเรืองแสง","ชมพู"],"81":["#e95896","","ชมพู","ชมพู"],"82":["#eef1e6","","ขาว","ขาว"],"83":["#1d030f","","ม่วงเข้มใส","สีใส"],"84":["#0f3462","","ฟ้าเข้มใส","สีใส"],"85":["#1b41dc","","ฟ้า","สีใส"],"86":["#071b16","","ฟ้าอมเขียวเข้ม","สีใส"],"87":["#53b732","","เขียว","สีใส"],"88":["#ff6a34","","ส้ม","สีใส"],"89":["#ac252b","","แดง","สีใส"],"90":["#ff48aa","","ชมพู","สีใส"],"91":["#31305d","","ฟ้าเข้ม","กลิตเตอร์"],"92":["#45296b","","น้ำเงินเข้ม","กลิตเตอร์"],"93":["#87376f","","ม่วง","กลิตเตอร์"],"94":["#4b5b8e","","ฟ้า","กลิตเตอร์"],"95":["#123682","","ฟ้าเข้ม","กลิตเตอร์"],"96":["#3d77a5","","ฟ้า","กลิตเตอร์"],"97":["#81b9e0","","ฟ้าอ่อน","กลิตเตอร์"],"98":["#3c7980","","ฟ้าอมเขียว","กลิตเตอร์"],"99":["#69b5a7","","ฟ้าอมเขียว","กลิตเตอร์"],"100":["#e266a0","","ชมพู","กลิตเตอร์"],"101":["#d55983","","ชมพู","กลิตเตอร์"],"102":["#8b424f","","แดง","กลิตเตอร์"],"103":["#692134","","ชมพูเข้ม","กลิตเตอร์"],"104":["#ba2e38","","แดง","กลิตเตอร์"],"105":["#9a2517","","แดง","กลิตเตอร์"],"106":["#fea180","","ส้มอ่อน","กลิตเตอร์"],"107":["#9ae1cd","","ฟ้าอมเขียวอ่อน","กลิตเตอร์"],"108":["#668a48","","เขียว","กลิตเตอร์"],"109":["#3b2a9e","#f2a6d6","ม่วงเข้ม/ชมพู","ทูโทน"],"110":["#35209a","#b56ee0","น้ำเงิน/ม่วงอ่อน","ทูโทน"],"111":["#1b1420","#d24fc6","ดำ/ชมพูม่วง","ทูโทน"],"112":["#f27cc8","#8e90ef","ชมพู/ม่วงคราม","ทูโทน"],"113":["#f5a8d5","#5db7ec","ชมพู/ฟ้า","ทูโทน"],"114":["#f1ea98","#b98ae2","เหลือง/ม่วงอ่อน","ทูโทน"],"115":["#e2352f","#2050c8","แดง/น้ำเงิน","ทูโทน"],"116":["#ffc61c","#f0781e","เหลือง/ส้ม","ทูโทน"],"117":["#e8642c","#2e9a5a","ส้ม/เขียว","ทูโทน"],"118":["#c9ee32","#1d8fb5","เขียวมะนาว/ฟ้าเข้ม","ทูโทน"],"119":["#6cc840","#1c6fc4","เขียว/น้ำเงิน","ทูโทน"],"120":["#6fd46b","#cdb57e","เขียว/ใส","ทูโทน"],"121":["#cfdde3","","ใส","สีใส"]};
+var CATS=["เขียว","ฟ้าอมเขียว","ฟ้า","ฟ้าพาสเทล","น้ำเงิน","ม่วง","ชมพู","แดง","ส้ม","เหลือง","พาสเทล","สีใส","กลิตเตอร์","ทูโทน","เทา","ดำ","ขาว"];
+(function(){
+"use strict";
+var TEETH=8;
+var S={upper:[],lower:[],theme:0,armed:null,img:null,mouth:null,demo:true,mode:"demo",tf:null,base:1,up:0,lo:0,size:1,wide:1,showLower:true};
+function fill(c){ var a=[]; for(var k=0;k<TEETH;k++) a.push(c[k%c.length]); return a; }
+var MAX_COLORS=3, NEW_COLORS=[121], HAND="dentory-tryon", BACK="dentory-tryon-back";
+S.upper=fill([60,67,1]); S.lower=fill([60,67,1]); S.filter="all"; S.fromSite=false;
+/* colours chosen on the clinic's picker come along (same site, this browser tab only) */
+try{ var hd=JSON.parse(sessionStorage.getItem(HAND)||"null");
+  var okv=function(v){ return v==null || BAND[v]!=null; };
+  if(hd && Array.isArray(hd.upper) && Array.isArray(hd.lower) && hd.upper.length===TEETH && hd.lower.length===TEETH && hd.upper.every(okv) && hd.lower.every(okv)){
+    S.upper=hd.upper.map(function(v){return v==null?null:+v;}); S.lower=hd.lower.map(function(v){return v==null?null:+v;}); S.fromSite=true; }
+}catch(e){}
+
+function esc(s){return String(s).replace(/[&<>"]/g,function(c){return{"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c];});}
+function bc(n){ var b=BAND[n]; return b[1] ? b[0]+" "+b[1]+" "+b[1]+" "+b[0] : b[0]; }
+
+var cv=document.getElementById("cv"), ctx=cv.getContext("2d");
+var statusEl=document.getElementById("status"), badge=document.getElementById("badge");
+function status(t){ statusEl.textContent=t||""; statusEl.hidden=!t; }
+
+/* ---------- colour pickers ---------- */
+function pad(n){ return n<10?"0"+n:String(n); }
+function usedCols(){ var o=[]; S.upper.concat(S.lower).forEach(function(v){ if(v!=null && o.indexOf(v)<0) o.push(v); }); return o; }
+function countOf(n){ return S.upper.concat(S.lower).filter(function(v){return v===n;}).length; }
+function bandSvg(n){
+  var hex=BAND[n][0], h2=BAND[n][1];
+  var base='<path d="M15 20 L59 9" stroke="#0b1677" stroke-opacity="0.08" stroke-width="9" stroke-linecap="round"/>';
+  var tail='<circle cx="15" cy="20" r="2.6" fill="#d0d1d8"/><path d="M5 30.5 H61" stroke="#c9cbd6" stroke-width="0.8"/></svg>';
+  if(h2) return '<svg width="66" height="32" viewBox="0 0 66 32" aria-hidden="true">'+base+
+    '<path d="M14.6 18.3 L58.6 7.3" stroke="'+hex+'" stroke-opacity="0.8" stroke-width="3.6" stroke-linecap="round"/><path d="M15.4 21.7 L59.4 10.7" stroke="'+h2+'" stroke-opacity="0.8" stroke-width="3.6" stroke-linecap="round"/>'+
+    '<circle cx="31" cy="21.5" r="1.7" fill="'+hex+'" fill-opacity="0.5"/><circle cx="37" cy="20" r="1.7" fill="'+h2+'" fill-opacity="0.5"/><circle cx="43" cy="18.5" r="1.7" fill="'+hex+'" fill-opacity="0.5"/>'+
+    '<circle cx="15" cy="20" r="8" fill="none" stroke="#0b1677" stroke-opacity="0.1" stroke-width="8"/><path d="M7 20 A8 8 0 0 1 23 20" fill="none" stroke="'+hex+'" stroke-width="6"/><path d="M23 20 A8 8 0 0 1 7 20" fill="none" stroke="'+h2+'" stroke-width="6"/>'+tail;
+  return '<svg width="66" height="32" viewBox="0 0 66 32" aria-hidden="true">'+base+
+    '<path d="M15 20 L59 9" stroke="'+hex+'" stroke-opacity="0.75" stroke-width="7" stroke-linecap="round"/>'+
+    '<circle cx="31" cy="21.5" r="1.7" fill="'+hex+'" fill-opacity="0.45"/><circle cx="37" cy="20" r="1.7" fill="'+hex+'" fill-opacity="0.45"/><circle cx="43" cy="18.5" r="1.7" fill="'+hex+'" fill-opacity="0.45"/>'+
+    '<circle cx="15" cy="20" r="8" fill="none" stroke="#0b1677" stroke-opacity="0.1" stroke-width="8"/><circle cx="15" cy="20" r="8" fill="none" stroke="'+hex+'" stroke-width="6"/>'+tail;
+}
+var elPal=document.getElementById("palette"), elChips=document.getElementById("chips"), elHint=document.getElementById("hint"),
+    elUsed=document.getElementById("used"), elFill=document.getElementById("bFill"), elErr=document.getElementById("perr");
+function perr(t){ elErr.textContent=t||""; elErr.hidden=!t; }
+function renderPick(){
+  elChips.innerHTML=["all"].concat(CATS).map(function(c){ return '<button type="button" class="chip" data-v="'+esc(c)+'" aria-pressed="'+(S.filter===c)+'">'+(c==="all"?"ทั้งหมด":esc(c))+'</button>'; }).join("");
+  var h=""; for(var n=1;n<=121;n++){ if(S.filter!=="all" && BAND[n][3]!==S.filter) continue; var c=countOf(n);
+    h+='<button type="button" class="sw" data-n="'+n+'" aria-pressed="'+(S.armed===n)+'" aria-label="สียางเบอร์ '+n+' '+esc(BAND[n][2])+'"><span class="no">'+pad(n)+'</span>'+bandSvg(n)+'<span class="nm">'+esc(BAND[n][2])+'</span>'+(c?'<span class="cnt">'+c+'</span>':'')+(NEW_COLORS.indexOf(n)>=0?'<span class="nw">NEW!</span>':'')+'</button>'; }
+  elPal.innerHTML=h;
+  var u=usedCols(); elUsed.innerHTML=u.slice(0,4).map(function(n){ return '<i style="border-color:'+bc(n)+'"></i>'; }).join("")+'<span>'+u.length+'/'+MAX_COLORS+' สี</span>';
+  elHint.innerHTML=S.armed!=null ? '<i style="border-color:'+bc(S.armed)+'"></i><span>ถือสีเบอร์ '+S.armed+' ('+esc(BAND[S.armed][2])+') อยู่ แตะเหล็กในรูปตัวที่อยากใส่ได้เลย</span>'
+    : '<i class="e"></i><span>แตะสีเพื่อหยิบ แล้วแตะเหล็กในรูป · หรือกดใส่ทั้งปาก</span>';
+  elFill.hidden=S.armed==null; if(S.armed!=null) elFill.innerHTML='<i style="width:24px;height:24px;border-radius:50%;border:6px solid;border-color:'+bc(S.armed)+';background:#fff"></i>ใส่สีเบอร์ '+S.armed+' ทั้งปากเลย (16 ซี่)';
+}
+function canAdd(n){ var u=usedCols(); return u.indexOf(n)>=0 || u.length<MAX_COLORS; }
+function paint(arch,i){
+  if(S.armed==null){ status("แตะสีด้านล่างก่อน แล้วค่อยแตะเหล็กที่อยากเปลี่ยนสีค่ะ"); setTimeout(function(){ status(""); },2500); return; }
+  if(S[arch][i]===S.armed){ S[arch][i]=null; }
+  else { var before=S[arch][i]; S[arch][i]=null;
+    if(!canAdd(S.armed)){ S[arch][i]=before; perr("เลือกได้สูงสุด "+MAX_COLORS+" สีนะคะ แตะเหล็กสีเดิมเพื่อเอาออกก่อน"); return; }
+    S[arch][i]=S.armed; }
+  perr(""); renderPick(); draw();
+}
+elChips.addEventListener("click",function(e){ var b=e.target.closest(".chip"); if(!b) return; S.filter=b.dataset.v; renderPick(); });
+elPal.addEventListener("click",function(e){ var b=e.target.closest(".sw"); if(!b) return; var n=+b.dataset.n; S.armed=S.armed===n?null:n; perr(""); renderPick(); });
+elFill.addEventListener("click",function(){ if(S.armed==null) return; S.upper=fill([S.armed]); S.lower=fill([S.armed]); perr(""); renderPick(); draw(); });
+var bBack=document.getElementById("bBack"); bBack.hidden=!S.fromSite;
+bBack.addEventListener("click",function(){
+  try{ sessionStorage.setItem(BACK,JSON.stringify({upper:S.upper,lower:S.lower})); }catch(e){}
+  location.href="../";
+});
+renderPick();
+
+[["sUp","up",1],["sLo","lo",1],["sSize","size",0.01],["sWide","wide",0.01]].forEach(function(d){
+  var el=document.getElementById(d[0]); el.addEventListener("input",function(){ S[d[1]]=+el.value*d[2]; draw(); });
+});
+document.getElementById("sLower").addEventListener("change",function(e){ S.showLower=e.target.checked; draw(); });
+
+/* ---------- geometry helpers ---------- */
+function lerp(a,b,t){ return {x:a.x+(b.x-a.x)*t, y:a.y+(b.y-a.y)*t}; }
+function along(pts,s){
+  var L=[0]; for(var i=1;i<pts.length;i++) L.push(L[i-1]+Math.hypot(pts[i].x-pts[i-1].x,pts[i].y-pts[i-1].y));
+  var tgt=s*L[L.length-1], k=1; while(k<pts.length-1 && L[k]<tgt) k++;
+  var f=(tgt-L[k-1])/Math.max(1e-6,L[k]-L[k-1]), p=lerp(pts[k-1],pts[k],f);
+  p.a=Math.atan2(pts[k].y-pts[k-1].y,pts[k].x-pts[k-1].x); return p;
+}
+function smooth(pts,n){
+  var out=[]; for(var i=0;i<pts.length-1;i++){
+    var p0=pts[Math.max(0,i-1)],p1=pts[i],p2=pts[i+1],p3=pts[Math.min(pts.length-1,i+2)];
+    for(var t=0;t<n;t++){ var u=t/n,u2=u*u,u3=u2*u;
+      out.push({x:0.5*((2*p1.x)+(-p0.x+p2.x)*u+(2*p0.x-5*p1.x+4*p2.x-p3.x)*u2+(-p0.x+3*p1.x-3*p2.x+p3.x)*u3),
+                y:0.5*((2*p1.y)+(-p0.y+p2.y)*u+(2*p0.y-5*p1.y+4*p2.y-p3.y)*u2+(-p0.y+3*p1.y-3*p2.y+p3.y)*u3)}); } }
+  out.push(pts[pts.length-1]); return out;
+}
+function rr(c,x,y,w,h,r){ c.beginPath(); c.moveTo(x+r,y); c.arcTo(x+w,y,x+w,y+h,r); c.arcTo(x+w,y+h,x,y+h,r); c.arcTo(x,y+h,x,y,r); c.arcTo(x,y,x+w,y,r); c.closePath(); }
+
+/* A fit describes where the teeth are, in canvas pixels:
+   up / lo  = curves through the middle of the upper / lower crowns (left to right)
+   top / bot = upper edge of the upper teeth and lower edge of the lower teeth (the drawing is clipped between them)
+   hUp / hLo = visible crown heights, used to size the brackets; showLo = whether lower teeth are visible */
+S.adj={upper:[],lower:[]}; S.last={upper:[],lower:[]};
+function resetAdj(){ S.adj={upper:[],lower:[]}; for(var i=0;i<TEETH;i++){ S.adj.upper.push({x:0,y:0}); S.adj.lower.push({x:0,y:0}); } }
+resetAdj();
+
+function bracketPts(line,arch,off){
+  var pts=[], an=S.fit && S.fit.anchors && S.fit.anchors[arch];
+  if(an){ var cx=S.fit.cx;
+    return an.map(function(q,i){ var d=S.adj[arch][i];
+      return {x:cx+(q.x-cx)*S.wide+d.x, y:q.y+off+d.y, a:q.a||0, f:q.f}; }); }
+  for(var i=0;i<TEETH;i++){
+    var tt=-0.95+1.9*i/(TEETH-1);
+    var s=0.5+0.5*S.wide*0.86*Math.sin(tt)/Math.sin(0.95);
+    s=Math.min(0.98,Math.max(0.02,s));
+    var a=along(line,s), d=S.adj[arch][i];
+    pts.push({x:a.x+d.x, y:a.y+off+d.y, a:a.a, f:Math.pow(Math.cos(tt),0.55)});
+  }
+  return pts;
+}
+function drawBraces(c,fit){
+  var mw=Math.hypot(fit.up[fit.up.length-1].x-fit.up[0].x, fit.up[fit.up.length-1].y-fit.up[0].y);
+  c.save();
+  var rows=[{arch:"upper",line:fit.up,cols:S.upper,off:S.up*mw/250,h:fit.hUp}];
+  if(S.showLower && fit.showLo) rows.push({arch:"lower",line:fit.lo,cols:S.lower,off:S.lo*mw/250,h:Math.max(fit.hLo,fit.hUp*0.75)});
+  S.last={upper:[],lower:[]};
+  rows.forEach(function(row){
+    var pts=bracketPts(row.line,row.arch,row.off); S.last[row.arch]=pts;
+    var bh=(fit.anchors?40:Math.max(mw*0.07, Math.min(mw*0.1, row.h*0.6)))*S.size, bw=bh*1.12;
+    var wire=[{x:pts[0].x-(pts[1].x-pts[0].x)*0.9,y:pts[0].y-(pts[1].y-pts[0].y)*0.9}].concat(pts,[{x:pts[7].x+(pts[7].x-pts[6].x)*0.9,y:pts[7].y+(pts[7].y-pts[6].y)*0.9}]);
+    var ws=smooth(wire,10);
+    function strokePath(w,col){ c.beginPath(); ws.forEach(function(p,i){ i?c.lineTo(p.x,p.y):c.moveTo(p.x,p.y); }); c.lineWidth=w; c.strokeStyle=col; c.lineCap="round"; c.stroke(); }
+    strokePath(bh*0.16,"rgba(40,44,56,.5)"); strokePath(bh*0.11,"#a9aeb8"); strokePath(bh*0.035,"rgba(255,255,255,.85)");
+    pts.forEach(function(p,i){
+      var w=bw*p.f, h=bh, n=row.cols[i], ang=(i>0&&i<7)?Math.atan2(pts[i+1].y-pts[i-1].y,pts[i+1].x-pts[i-1].x):p.a;
+      c.save(); c.translate(p.x,p.y); c.rotate(ang);
+      c.fillStyle="rgba(30,20,30,.25)"; rr(c,-w/2+1.5,-h/2+2.5,w,h,h*0.18); c.fill();
+      var g=c.createLinearGradient(0,-h/2,0,h/2); g.addColorStop(0,"#f4f6f9"); g.addColorStop(0.45,"#c3c8d1"); g.addColorStop(1,"#8d939e");
+      c.fillStyle=g; rr(c,-w/2,-h/2,w,h,h*0.18); c.fill();
+      var ww=w*0.3, wh=h*0.3;
+      [[-1,-1],[1,-1],[-1,1],[1,1]].forEach(function(q){
+        var gx=q[0]*w*0.24, gy=q[1]*h*0.25;
+        var g2=c.createLinearGradient(0,gy-wh/2,0,gy+wh/2); g2.addColorStop(0,"#ffffff"); g2.addColorStop(1,"#a3a9b4");
+        c.fillStyle=g2; rr(c,gx-ww/2,gy-wh/2,ww,wh,wh*0.25); c.fill();
+      });
+      c.fillStyle="#9ea4ae"; c.fillRect(-w/2,-h*0.06,w,h*0.12);
+      c.fillStyle="rgba(255,255,255,.8)"; c.fillRect(-w/2,-h*0.05,w,h*0.03);
+      if(n!=null && BAND[n]){
+        var b=BAND[n], lw=Math.max(2,h*0.17), rx=w*0.36, ry=h*0.37, clear=b[3]==="สีใส";
+        c.globalAlpha=clear?0.6:1;
+        [[b[0],-1],[b[1]||b[0],1]].forEach(function(half){
+          c.save(); c.beginPath(); c.rect(half[1]<0?-w:0,-h,w,h*2); c.clip();
+          c.strokeStyle=half[0]; c.lineWidth=lw; rr(c,-rx,-ry,rx*2,ry*2,Math.min(rx,ry)*0.55); c.stroke(); c.restore();
+        });
+        c.globalAlpha=0.4; c.strokeStyle="#fff"; c.lineWidth=lw*0.28;
+        c.beginPath(); c.moveTo(-rx*0.5,-ry-lw*0.15); c.lineTo(rx*0.4,-ry-lw*0.15); c.stroke(); c.globalAlpha=1;
+      }
+      c.restore();
+      p.r=Math.max(w,h);
+    });
+  });
+  c.restore();
+}
+
+/* ---------- demo mouth (illustration, used until a photo is chosen) ---------- */
+function demoScene(){
+  var W=900,H=600; cv.width=W; cv.height=H;
+  var g=ctx.createLinearGradient(0,0,0,H); g.addColorStop(0,"#f6d7c3"); g.addColorStop(1,"#eec2a9");
+  ctx.fillStyle=g; ctx.fillRect(0,0,W,H);
+  var up=[{x:190,y:300},{x:290,y:262},{x:450,y:250},{x:610,y:262},{x:710,y:300}];
+  var lo=[{x:190,y:300},{x:290,y:372},{x:450,y:392},{x:610,y:372},{x:710,y:300}];
+  ctx.fillStyle="#d77a86"; ctx.beginPath(); ctx.moveTo(150,300); ctx.bezierCurveTo(260,190,380,195,450,215); ctx.bezierCurveTo(520,195,640,190,750,300);
+  ctx.bezierCurveTo(640,470,260,470,150,300); ctx.fill();
+  var U=smooth(up,8), L=smooth(lo,8);
+  ctx.save(); ctx.beginPath(); U.forEach(function(p,i){ i?ctx.lineTo(p.x,p.y):ctx.moveTo(p.x,p.y); }); L.slice().reverse().forEach(function(p){ ctx.lineTo(p.x,p.y); }); ctx.closePath();
+  ctx.fillStyle="#5a2230"; ctx.fill(); ctx.clip();
+  function teeth(y0,y1){ for(var i=0;i<10;i++){ var t=-1+2*(i+0.5)/10, x=450+Math.sin(t*1.1)*270, w=58*Math.pow(Math.cos(t*1.1),0.7);
+      var tg=ctx.createLinearGradient(0,y0,0,y1); tg.addColorStop(0,"#fbf8f2"); tg.addColorStop(1,"#e4ddd0");
+      ctx.fillStyle=tg; rr(ctx,x-w/2,Math.min(y0,y1),w-3,Math.abs(y1-y0),12); ctx.fill(); } }
+  teeth(240,322); teeth(326,400);
+  ctx.restore();
+  return {top:up, bot:lo,
+    up:[{x:215,y:296},{x:300,y:286},{x:450,y:282},{x:600,y:286},{x:685,y:296}],
+    lo:[{x:225,y:312},{x:300,y:352},{x:450,y:362},{x:600,y:352},{x:675,y:312}], hUp:80, hLo:70, showLo:true};
+}
+
+function draw(){
+  if(S.demo){ S.fit=demoScene(); drawBraces(ctx,S.fit); return; }
+  if(!S.img) return;
+  var t=S.tf;
+  if(S.mode==="braces" && S.view==="full"){
+    var W=S.img.naturalWidth, H=S.img.naturalHeight, f=FW/W, fh=Math.round(H*f);
+    if(cv.width!==FW||cv.height!==fh){ cv.width=FW; cv.height=fh; }
+    ctx.drawImage(S.img,0,0,FW,fh);
+    ctx.save(); ctx.scale(f,f); ctx.translate(W/2,H/2); ctx.scale(1/t.s,1/t.s); ctx.rotate(-t.r); ctx.translate(-t.x,-t.y);
+    drawBraces(ctx,S.fit); ctx.restore(); return;
+  }
+  if(cv.width!==CW||cv.height!==CH){ cv.width=CW; cv.height=CH; } ctx.fillStyle="#1d1830"; ctx.fillRect(0,0,CW,CH);
+  ctx.save(); ctx.translate(t.x,t.y); ctx.rotate(t.r); ctx.scale(t.s,t.s);
+  ctx.drawImage(S.img,-S.img.naturalWidth/2,-S.img.naturalHeight/2); ctx.restore();
+  if(S.mode==="align") drawTemplate(ctx); else drawBraces(ctx,S.fit);
+}
+
+/* ---------- teeth template (front view, biting together) ----------
+   Canvas 900x675. Apparent crown widths shrink toward the back of the arch; the upper
+   incisal line rises slightly at the sides (smile arc). Brackets sit at each crown's middle. */
+var CW=900, CH=675, MID=450, FW=1080;
+var UP=[ // half-arch from the midline: apparent width, crown height, incisal y
+  {w:80,h:122,e:352},{w:62,h:104,e:346},{w:50,h:112,e:336},{w:40,h:92,e:322}];
+var LO=[ // lower crowns visible below the upper edge
+  {w:52,h:84},{w:54,h:86},{w:50,h:90},{w:42,h:82}];
+function buildTemplate(){
+  var up=[],lo=[],x=MID;
+  for(var i=0;i<4;i++){ var u=UP[i]; up.push({side:1,x0:x,x1:x+u.w,e:u.e,h:u.h}); x+=u.w; }
+  x=MID; for(i=0;i<4;i++){ u=UP[i]; up.unshift({side:-1,x0:x-u.w,x1:x,e:u.e,h:u.h}); x-=u.w; }
+  var lowTop=function(i){ return UP[Math.min(i,3)].e-14; };
+  x=MID; var L=[]; for(i=0;i<4;i++){ var l=LO[i]; L.push({x0:x,x1:x+l.w,t:lowTop(i)+i*2,h:l.h}); x+=l.w; }
+  x=MID; var Lm=[]; for(i=0;i<4;i++){ l=LO[i]; Lm.unshift({x0:x-l.w,x1:x,t:lowTop(i)+i*2,h:l.h}); x-=l.w; }
+  lo=Lm.concat(L);
+  return {up:up,lo:lo};
+}
+var TPL=buildTemplate();
+function toothPath(c,x0,x1,top,bot,upper){
+  var w=x1-x0, r=Math.min(w*0.32,(bot-top)*0.3), g=Math.min(w*0.22,14);
+  c.beginPath();
+  if(upper){ // gum scallop on top, rounded incisal corners at the bottom
+    c.moveTo(x0+2,top+g); c.quadraticCurveTo((x0+x1)/2,top-g*0.6,x1-2,top+g);
+    c.lineTo(x1-1,bot-r); c.quadraticCurveTo(x1-1,bot,x1-r,bot); c.lineTo(x0+r,bot); c.quadraticCurveTo(x0+1,bot,x0+1,bot-r); c.closePath();
+  }else{
+    c.moveTo(x0+1,top+r); c.quadraticCurveTo(x0+1,top,x0+r,top); c.lineTo(x1-r,top); c.quadraticCurveTo(x1-1,top,x1-1,top+r);
+    c.lineTo(x1-2,bot-g); c.quadraticCurveTo((x0+x1)/2,bot+g*0.6,x0+2,bot-g); c.closePath();
+  }
+}
+function drawTemplate(c){
+  c.save(); c.fillStyle="rgba(10,8,30,.28)"; c.fillRect(0,0,CW,CH);
+  c.lineJoin="round";
+  [[TPL.up,true],[TPL.lo,false]].forEach(function(set){
+    set[0].forEach(function(t){
+      var top=set[1]?t.e-t.h:t.t, bot=set[1]?t.e:t.t+t.h;
+      toothPath(c,t.x0,t.x1,top,bot,set[1]);
+      c.strokeStyle="rgba(0,0,0,.35)"; c.lineWidth=7; c.stroke();
+      c.strokeStyle="#ffffff"; c.lineWidth=3.5; c.stroke();
+    });
+  });
+  c.setLineDash([10,10]); c.strokeStyle="rgba(255,255,255,.7)"; c.lineWidth=2;
+  c.beginPath(); c.moveTo(MID,150); c.lineTo(MID,520); c.stroke(); c.restore();
+}
+function templateFit(){
+  var mk=function(set,upper){ return set.map(function(t){ var w=t.x1-t.x0, cx=(t.x0+t.x1)/2;
+    return {x:cx, y:upper? t.e-t.h*0.47 : t.t+t.h*0.42, f:Math.min(1,Math.pow(w/80,0.6)), a:0}; }); };
+  var au=mk(TPL.up,true), al=mk(TPL.lo,false);
+  return {anchors:{upper:au,lower:al}, cx:MID, up:au, lo:al, top:[], bot:[], hUp:110, hLo:84, showLo:true};
+}
+draw();
+
+/* ---------- drag a bracket onto its tooth ---------- */
+var dragging=null;
+function canvasPt(e){ var r=cv.getBoundingClientRect(), p={x:(e.clientX-r.left)*cv.width/r.width, y:(e.clientY-r.top)*cv.height/r.height};
+  if(S.mode==="braces" && S.view==="full" && S.img){ // full photo -> template space
+    var t=S.tf, W=S.img.naturalWidth, H=S.img.naturalHeight, f=FW/W, ix=p.x/f-W/2, iy=p.y/f-H/2, c=Math.cos(t.r), sn=Math.sin(t.r);
+    p={x:t.x+t.s*(ix*c-iy*sn), y:t.y+t.s*(ix*sn+iy*c)}; }
+  return p; }
+var ptrs={}, gest=null;
+function gestStart(){
+  var ids=Object.keys(ptrs), a=ptrs[ids[0]], b=ptrs[ids[1]];
+  gest={tf:{x:S.tf.x,y:S.tf.y,s:S.tf.s,r:S.tf.r}, a:{x:a.x,y:a.y}, b:b?{x:b.x,y:b.y}:null};
+}
+function gestMove(){
+  var ids=Object.keys(ptrs), a=ptrs[ids[0]], b=ptrs[ids[1]], g=gest, t=g.tf;
+  if(b && g.b){
+    var m0={x:(g.a.x+g.b.x)/2,y:(g.a.y+g.b.y)/2}, m1={x:(a.x+b.x)/2,y:(a.y+b.y)/2};
+    var k=Math.hypot(a.x-b.x,a.y-b.y)/Math.max(10,Math.hypot(g.a.x-g.b.x,g.a.y-g.b.y));
+    var ns=clampS(t.s*k); k=ns/t.s;
+    S.tf.s=ns; S.tf.x=m1.x+(t.x-m0.x)*k; S.tf.y=m1.y+(t.y-m0.y)*k;
+  }else{ S.tf.x=t.x+a.x-g.a.x; S.tf.y=t.y+a.y-g.a.y; }
+  syncZoom(); draw();
+}
+cv.addEventListener("pointerdown",function(e){
+  if(S.mode==="align"){ ptrs[e.pointerId]=canvasPt(e); cv.setPointerCapture(e.pointerId); gestStart(); e.preventDefault(); return; }
+  var p=canvasPt(e), best=null, bd=1e9;
+  ["upper","lower"].forEach(function(arch){ (S.last[arch]||[]).forEach(function(q,i){ var d=Math.hypot(q.x-p.x,q.y-p.y); if(d<bd && d<Math.max(28,(q.r||20)*1.1)){ bd=d; best={arch:arch,i:i,sx:p.x,sy:p.y,ox:S.adj[arch][i].x,oy:S.adj[arch][i].y}; } }); });
+  if(!best) return;
+  dragging=best; cv.setPointerCapture(e.pointerId); e.preventDefault();
+});
+cv.addEventListener("pointermove",function(e){
+  if(dragging && !dragging.moved){ var q=canvasPt(e); if(Math.hypot(q.x-dragging.sx,q.y-dragging.sy)>cv.width*0.012) dragging.moved=true; else return; }
+  if(S.mode==="align"){ if(ptrs[e.pointerId]){ ptrs[e.pointerId]=canvasPt(e); gestMove(); } return; }
+  if(!dragging) return; var p=canvasPt(e);
+  S.adj[dragging.arch][dragging.i]={x:dragging.ox+p.x-dragging.sx, y:dragging.oy+p.y-dragging.sy}; draw();
+});
+function endDrag(e){ if(dragging && !dragging.moved && e && e.type==="pointerup") paint(dragging.arch,dragging.i); dragging=null; if(e && ptrs[e.pointerId]){ delete ptrs[e.pointerId]; if(Object.keys(ptrs).length) gestStart(); } }
+cv.addEventListener("wheel",function(e){ if(S.mode!=="align") return; e.preventDefault();
+  var p=canvasPt(e), t=S.tf, ns=clampS(t.s*Math.exp(-e.deltaY*0.0015)), k=ns/t.s;
+  t.x=p.x+(t.x-p.x)*k; t.y=p.y+(t.y-p.y)*k; t.s=ns; syncZoom(); draw(); },{passive:false});
+cv.addEventListener("pointerup",endDrag); cv.addEventListener("pointercancel",endDrag);
+
+/* ---------- photo: rough first guess, then the patient lines their teeth up with the template ---------- */
+var elAlign=document.getElementById("alignCard"), zEl=document.getElementById("aZoom"), rEl=document.getElementById("aRot");
+function sRange(){ var b=S.base; return [b*0.35,b*4]; }
+function clampS(v){ var r=sRange(); return Math.max(r[0],Math.min(r[1],v)); }
+function syncZoom(){ var r=sRange(); zEl.value=Math.round(1000*Math.log(S.tf.s/r[0])/Math.log(r[1]/r[0])); }
+zEl.addEventListener("input",function(){ var r=sRange(), t=S.tf, ns=r[0]*Math.pow(r[1]/r[0],zEl.value/1000), k=ns/t.s;
+  t.x=MID+(t.x-MID)*k; t.y=CH/2+(t.y-CH/2)*k; t.s=ns; draw(); });
+rEl.addEventListener("input",function(){ S.tf.r=rEl.value*Math.PI/180; draw(); });
+var bView=document.getElementById("bView");
+bView.addEventListener("click",function(){ S.view=S.view==="full"?"close":"full"; bView.textContent=S.view==="full"?"ดูใกล้ๆ":"ดูทั้งหน้า"; draw(); });
+function setMode(m){
+  S.mode=m; elAlign.hidden=m!=="align"; bView.hidden=m!=="braces";
+  if(m==="braces"){ S.view="full"; bView.textContent="ดูใกล้ๆ"; }
+  if(m==="align"){ badge.textContent="เลื่อน/ซูมรูปให้ฟันตรงกรอบ"; status(""); }
+  else { badge.textContent="ลากเหล็กแต่ละตัวได้"; }
+  draw();
+}
+function onFile(e){
+  var f=e.target.files && e.target.files[0]; e.target.value=""; if(!f) return;
+  var url=URL.createObjectURL(f), img=new Image();
+  img.onload=function(){ loadPhoto(img); };
+  img.onerror=function(){ status("เปิดรูปนี้ไม่ได้ ลองรูปอื่นนะคะ"); };
+  img.src=url;
+}
+document.getElementById("fCam").addEventListener("change",onFile);
+document.getElementById("fPick").addEventListener("change",onFile);
+document.getElementById("bPlace").addEventListener("click",function(){
+  resetAdj(); S.fit=templateFit(); setMode("braces");
+  document.querySelector(".photo").scrollIntoView({behavior:"smooth",block:"start"});
+});
+document.getElementById("bRealign").addEventListener("click",function(){ if(S.img){ setMode("align"); document.querySelector(".photo").scrollIntoView({behavior:"smooth",block:"start"}); } });
+
+function loadPhoto(img){
+  S.demo=false; S.img=img; resetAdj(); rEl.value=0;
+  var W=img.naturalWidth, H=img.naturalHeight;
+  S.base=Math.max(CW/W,CH/H); // photo covers the frame
+  S.tf={x:MID,y:CH/2,s:S.base,r:0};
+  // first guess: if the teeth can be found, scale them to the template's width (canine to canine)
+  var fit=null; try{ fit=findTeeth(img,null); }catch(err){}
+  if(fit && fit.x1-fit.x0>W*0.15){
+    var tw=TPL.up[6].x1-TPL.up[1].x0, s=clampS(tw/(fit.x1-fit.x0)), mi=fit.up.length>>1;
+    var gy=(fit.up[mi].y+fit.lo[mi].y)/2, mx=(fit.x0+fit.x1)/2;
+    S.tf.s=s; S.tf.x=MID-(mx-W/2)*s; S.tf.y=UP[0].e-(gy-H/2)*s;
+  }
+  syncZoom(); setMode("align");
+}
+
+/* Teeth are the bright, low-saturation pixels inside the lips. Scan each column for the
+   top of the upper teeth, the dark line where upper meets lower, and the bottom of the lower teeth. */
+function findTeeth(img,outer){
+  var W=img.naturalWidth, H=img.naturalHeight, bx0,by0,bx1,by1;
+  if(outer){
+    bx0=Math.min.apply(null,outer.map(function(p){return p.x;})); bx1=Math.max.apply(null,outer.map(function(p){return p.x;}));
+    by0=Math.min.apply(null,outer.map(function(p){return p.y;})); by1=Math.max.apply(null,outer.map(function(p){return p.y;}));
+    var ph=(by1-by0)*0.25, pw=(bx1-bx0)*0.06; bx0-=pw; bx1+=pw; by0-=ph; by1+=ph;
+  }else{ bx0=W*0.15; bx1=W*0.85; by0=H*0.35; by1=H*0.85; }
+  bx0=Math.max(0,bx0); by0=Math.max(0,by0); bx1=Math.min(W,bx1); by1=Math.min(H,by1);
+  var SW=260, k=SW/(bx1-bx0), SH=Math.max(20,Math.round((by1-by0)*k));
+  var cc=document.createElement("canvas"); cc.width=SW; cc.height=SH; var x2=cc.getContext("2d");
+  if(outer){ x2.beginPath(); outer.forEach(function(p,i){ var X=(p.x-bx0)*k, Y=(p.y-by0)*k; i?x2.lineTo(X,Y):x2.moveTo(X,Y); }); x2.closePath(); x2.clip(); }
+  x2.drawImage(img,bx0,by0,bx1-bx0,by1-by0,0,0,SW,SH);
+  // teeth: bright, not too saturated, and much less red than lips, gums and skin (green/red ratio holds up under warm light)
+  var d=x2.getImageData(0,0,SW,SH).data, Y=new Float32Array(SW*SH), C=new Uint8Array(SW*SH), lum=[];
+  for(var i=0;i<SW*SH;i++){ var r=d[i*4],g=d[i*4+1],b=d[i*4+2],a=d[i*4+3];
+    var mx=Math.max(r,g,b), mn=Math.min(r,g,b); Y[i]=0.299*r+0.587*g+0.114*b;
+    C[i]=(a>200 && g/Math.max(r,1)>=0.66 && (mx?(mx-mn)/mx:0)<0.58)?1:0;
+    if(C[i]) lum.push(Y[i]); }
+  if(lum.length<SW*4) return null;
+  lum.sort(function(a,b){return a-b;});
+  var thr=Math.max(100, 0.7*lum[Math.floor(lum.length*0.85)]);
+  function isT(x,y){ var j=y*SW+x; return C[j] && Y[j]>=thr; }
+  var cols=[];
+  for(var x=0;x<SW;x++){
+    var top=-1,bot=-1,n=0;
+    for(var y=1;y<SH-1;y++){ if(isT(x,y)&&isT(x,y+1)){ if(top<0) top=y; bot=y+1; n++; } }
+    cols.push(top>=0 && n>SH*0.08 ? {top:top,bot:bot} : null);
+  }
+  // keep the widest run of tooth columns (small gaps allowed), dropping stray highlights on the skin
+  var L=-1,R=-1,st=-1,la=-1;
+  for(x=0;x<=SW;x++){ var v=x<SW && cols[x];
+    if(v){ if(st<0) st=x; else if(x-la>5){ if(la-st>R-L){ L=st; R=la; } st=x; } la=x; } }
+  if(st>=0 && la-st>R-L){ L=st; R=la; }
+  // the lip corners are reliable; if the tooth run is too narrow (dim side teeth), use most of the mouth width instead
+  if(outer){ var cL=(outer[0].x-bx0)*k, cR=(outer[6].x-bx0)*k, mwid=cR-cL, mid=(cL+cR)/2;
+    if(L<0 || R-L<mwid*0.62){ L=Math.max(0,Math.round(mid-mwid*0.4)); R=Math.min(SW-1,Math.round(mid+mwid*0.4)); } }
+  else if(L<0 || R-L<SW*0.25) return null;
+  // per column: top of the upper teeth, gap between upper and lower teeth, bottom of the lower teeth
+  var smp=[];
+  for(x=L;x<=R;x++){ var c=cols[x]; if(!c) continue; var h=c.bot-c.top, best=-1, bv=1e9;
+    for(var y2=Math.round(c.top+h*0.3); y2<=Math.round(c.bot-h*0.08); y2++){ var v=(Y[(y2-1)*SW+x]+Y[y2*SW+x]+Y[(y2+1)*SW+x])/3; if(v<bv){ bv=v; best=y2; } }
+    var gap=(best>0 && bv<thr*0.85) ? best : c.top+h*0.7;
+    smp.push({x:x,t:c.top,g:gap,b:c.bot}); }
+  if(smp.length<8) return null;
+  function med(a){ a=a.slice().sort(function(p,q){return p-q;}); return a[a.length>>1]; }
+  var hUp=med(smp.map(function(o){return o.g-o.t;})), hLo=med(smp.map(function(o){return o.b-o.g;}));
+  if(hUp<3) return null;
+  // the bite line is drawn as one smooth curve (tilt + gentle smile arc) fitted to the gap, so brackets never zig-zag
+  var mx=(L+R)/2, hw=Math.max(1,(R-L)/2);
+  function fitQ(pts){ var A=[[0,0,0],[0,0,0],[0,0,0]], B=[0,0,0];
+    pts.forEach(function(o){ var u=(o.x-mx)/hw, f=[1,u,u*u]; for(var i=0;i<3;i++){ B[i]+=f[i]*o.g; for(var j=0;j<3;j++) A[i][j]+=f[i]*f[j]; } });
+    for(var i=0;i<3;i++) A[i][i]+=1e-6;
+    for(i=0;i<3;i++){ for(var r=i+1;r<3;r++){ var m=A[r][i]/A[i][i]; for(var j=i;j<3;j++) A[r][j]-=m*A[i][j]; B[r]-=m*B[i]; } }
+    var X=[0,0,0]; for(i=2;i>=0;i--){ var sum=B[i]; for(j=i+1;j<3;j++) sum-=A[i][j]*X[j]; X[i]=sum/A[i][i]; } return X; }
+  var q=fitQ(smp);
+  var res=smp.map(function(o){ var u=(o.x-mx)/hw; return Math.abs(o.g-(q[0]+q[1]*u+q[2]*u*u)); }), mad=med(res)*2.5+1;
+  var keep=smp.filter(function(o,i){ return res[i]<=mad; }); if(keep.length>=8) q=fitQ(keep);
+  q[1]=Math.max(-hUp*0.5,Math.min(hUp*0.5,q[1])); q[2]=Math.max(-hUp*0.8,Math.min(hUp*0.25,q[2]));
+  function img2(px,py){ return {x:bx0+px/k, y:by0+py/k}; }
+  var N=24, up=[],lo=[],tp=[],bt=[];
+  for(var n=0;n<N;n++){ var u=-1+2*n/(N-1), X=mx+u*hw, gY=q[0]+q[1]*u+q[2]*u*u;
+    up.push(img2(X,gY-hUp*0.55)); lo.push(img2(X,gY+hLo*0.5)); tp.push(img2(X,gY-hUp*1.15)); bt.push(img2(X,gY+Math.max(hLo,hUp*0.4)*1.15)); }
+  return {up:up,lo:lo,top:tp,bot:bt,hUp:hUp/k,hLo:hLo/k,showLo:hLo>hUp*0.35, x0:bx0+L/k, x1:bx0+R/k};
+}
+document.getElementById("bReset").addEventListener("click",function(){ resetAdj(); draw(); });
+/* ---------- save ---------- */
+document.getElementById("bSave").addEventListener("click",function(){
+  var out=document.createElement("canvas"); out.width=cv.width; out.height=cv.height+70;
+  var o=out.getContext("2d"); o.fillStyle="#ffffff"; o.fillRect(0,0,out.width,out.height); o.drawImage(cv,0,0);
+  o.fillStyle="#0b1677"; o.font="600 26px Kanit, sans-serif"; o.textBaseline="middle";
+  var cols=[]; S.upper.concat(S.showLower?S.lower:[]).forEach(function(n){ if(n!=null && cols.indexOf(n)<0) cols.push(n); });
+  o.fillText("Dentory · สียาง "+cols.map(function(n){return "#"+n;}).join(" "),24,cv.height+35);
+  try{ document.getElementById("savedImg").src=out.toDataURL("image/jpeg",0.9); document.getElementById("saved").hidden=false;
+    document.getElementById("saved").scrollIntoView({behavior:"smooth",block:"center"}); }
+  catch(err){ status("ทำรูปไม่สำเร็จ ลองใหม่อีกครั้งค่ะ"); }
+});
+})();
+</script>
+
+</body></html>

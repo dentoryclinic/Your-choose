@@ -101,6 +101,8 @@ h1,h2,h3{text-wrap:balance}
 .mouth .head{display:flex;align-items:center;justify-content:space-between;gap:8px}
 .mouth .head b{font-family:var(--font-display);font-weight:600;font-size:18px}
 .btn-soft{min-height:36px;padding:0 12px;border:none;border-radius:9999px;background:var(--pink-100);color:var(--pink-600);font-weight:600;font-size:13px}
+.tryon{display:flex;align-items:center;justify-content:center;gap:8px;min-height:48px;border:none;border-radius:9999px;background:var(--ink);color:#fff;font-family:var(--font-display);font-weight:600;font-size:15px;padding:0 14px;box-shadow:0 6px 16px rgba(11,22,119,.22)}
+.tryon .nw{background:var(--coral);border-radius:9999px;padding:0 7px;font-size:10px;line-height:18px}
 .fillall{display:flex;align-items:center;justify-content:center;gap:10px;min-height:48px;border:2px dashed var(--pink-400);border-radius:9999px;background:#fff5fa;color:var(--pink-600);font-family:var(--font-display);font-weight:600;font-size:15px;padding:0 12px}
 .archlbl{font-size:13px;color:var(--ink-muted);padding-left:6px}
 .arch{display:flex;justify-content:center;gap:2px;padding:12px 6px 18px}
@@ -627,6 +629,7 @@ function renderMouth(){
     (pick && S.armed!=null ? '<button type="button" class="fillall" data-act="fillAll"><span style="'+dot(bc(S.armed),28,false)+'"></span>ใส่สีเบอร์ '+S.armed+' ทั้งปากเลย (16 ซี่)</button>' : '') +
     '<span class="archlbl">ฟันบน</span><div class="arch up">'+renderTeeth("upper")+'</div>' +
     '<span class="archlbl">ฟันล่าง</span><div class="arch lo">'+renderTeeth("lower")+'</div>' +
+    (pick && filled ? '<button type="button" class="tryon" data-act="tryon">'+I.img+'ลองใส่บนรูปหน้าฉัน <span class="nw">NEW!</span></button>' : '') +
     (pick ? '<p class="hint">แตะสียางด้านล่าง แล้วแตะซี่ฟันที่อยากวาง · หรือกดปุ่ม "ทั้งปากเลย" เพื่อใส่สีเดียวกันครบทุกซี่ในคลิกเดียว · แตะซี่ที่มีสีอีกครั้งเพื่อลบ</p>' : '') +
   '</section>';
 }
@@ -1141,6 +1144,7 @@ app.addEventListener("click", function(e){
   var a = el.getAttribute("data-act");
   switch(a){
     case "start": startPick(); break;
+    case "tryon": try{ sessionStorage.setItem("dentory-tryon", JSON.stringify({upper:S.upper, lower:S.lower})); }catch(e){} location.href="tryon/"; break;
     case "login": doLogin(); break;
     case "tooth": tapTooth(el.getAttribute("data-arch"), parseInt(el.getAttribute("data-idx"),10)); break;
     case "clearAll": S.upper=emptyArch(); S.lower=emptyArch(); S.paletteError=""; render(); break;
@@ -1218,6 +1222,15 @@ function resetIdle(){
 }
 ["pointerdown","keydown","input","scroll"].forEach(function(t){ document.addEventListener(t, resetIdle, {passive:true}); });
 
+/* back from the photo try-on page: keep the colours the patient placed there */
+try{
+  var back = JSON.parse(sessionStorage.getItem("dentory-tryon-back")||"null");
+  sessionStorage.removeItem("dentory-tryon-back");
+  var okv = function(v){ return v==null || (typeof v==="number" && v>=1 && v<=TOTAL); };
+  if(back && Array.isArray(back.upper) && Array.isArray(back.lower) && back.upper.length===TEETH && back.lower.length===TEETH && back.upper.every(okv) && back.lower.every(okv)){
+    S.upper = back.upper.slice(); S.lower = back.lower.slice(); startPick();
+  }
+}catch(e){}
 render();
 if(window.liff){
   liff.init({liffId:LIFF_ID}).then(function(){
