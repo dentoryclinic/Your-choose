@@ -111,6 +111,12 @@ form label{display:block;font-weight:500;margin-top:10px}form label input{margin
 .hand::after{content:"";position:absolute;top:50%;left:50%;width:30px;height:30px;margin:-15px;border-radius:50%;background:#fff;box-shadow:0 0 6px rgba(0,0,0,.5)}
 .tg{position:absolute;top:8px;padding:2px 8px;border-radius:6px;background:rgba(0,0,0,.6);color:#fff;font-size:13px;white-space:nowrap}.tg.l{left:8px}.tg.r{right:8px}
 #cwr{width:100%;accent-color:var(--pu);min-height:40px;margin-top:6px}
+.ck{position:absolute;top:6px;right:6px;width:28px;height:28px;border-radius:50%;border:2px solid #fff;background:rgba(0,0,0,.35);display:grid;place-items:center;color:#fff;font-size:16px;font-weight:700;line-height:1}
+.slot.on{outline:4px solid var(--pk);outline-offset:-4px}.slot.on .ck{background:var(--pk);border-color:var(--pk)}.slot.on .ck::after{content:"✓"}
+.slot:disabled{opacity:.35;cursor:default}
+.selbar{position:sticky;bottom:0;z-index:4;display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin:18px calc(-1*max(4vw,14px)) -60px;padding:12px max(4vw,14px) calc(12px + env(safe-area-inset-bottom));background:var(--bg);border-top:1px solid var(--line)}
+.selbar b{flex:1 1 100%;font-weight:600}.selbar .btn{flex:1 1 auto;white-space:nowrap;padding:0 12px}
+.outs{display:grid;gap:10px}
 #tt{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:#1d1530;color:#fff;padding:10px 18px;border-radius:24px;z-index:40;font-size:15px;opacity:0;transition:opacity .2s;pointer-events:none}
 #tt.on{opacity:1}
 </style></head><body>
@@ -199,16 +205,17 @@ function ptV(p){
     <span class="strip">${VIEWS.filter(w=>v.shots[w.k]).slice(0,6).map(w=>`<img data-img="${v.shots[w.k]}" alt="">`).join('')}</span></span></button></li>`).join('')}</ul>
   ${p.visits.length?'':'<p class="empty">ยังไม่มีชุดรูป</p>'}<button class="lnk danger" data-a="delpt">ลบคนไข้นี้</button>`;
 }
-function slots(p,v,g){return VIEWS.filter(w=>w.g==g).map(w=>{const id=v.shots[w.k];
-  return `<button class="slot ${id?'has':''}" data-a="shot" data-k="${w.k}" style="aspect-ratio:${w.r}">${id?`<img data-img="${id}" alt="${w.n}">`:gsvg(w)}<span class="lb"><i>${V[w.k].i+1}</i>${w.n}</span></button>`}).join('')}
+function slots(p,v,g){const sel=S.sel;return VIEWS.filter(w=>w.g==g).map(w=>{const id=v.shots[w.k],on=sel&&sel.has(w.k);
+  return `<button class="slot ${id?'has':''} ${on?'on':''}" data-a="${sel?'tog':'shot'}" data-k="${w.k}" style="aspect-ratio:${w.r}" ${sel&&!id?'disabled':''} ${sel?`aria-pressed="${!!on}"`:''}>${id?`<img data-img="${id}" alt="${w.n}">`:gsvg(w)}${sel&&id?'<span class="ck"></span>':''}<span class="lb"><i>${V[w.k].i+1}</i>${w.n}</span></button>`}).join('')}
 function visitV(p,v){const n=cnt(v);
   return `<section class="vh"><div><p class="mute">${esc(p.name)}</p><h1>${thd(v.date)}</h1></div><div class="prog"><b>${n}</b> / ${VIEWS.length} มุม</div></section>
   <div class="meter"><i style="width:${n/VIEWS.length*100}%"></i></div>
   <input class="note" id="note" placeholder="บันทึกสั้นๆ เช่น ติดเครื่องมือ, เปลี่ยนลวด" value="${esc(v.note)}" aria-label="บันทึก">
   <h2>นอกช่องปาก</h2><div class="grid">${slots(p,v,'ex')}</div>
   <h2>ในช่องปาก</h2><div class="grid">${slots(p,v,'in')}</div>
-  <div class="acts"><button class="btn pri" data-a="collage" ${n?'':'disabled'}>ทำภาพรวมชุดนี้</button><button class="btn" data-a="next" ${n==VIEWS.length?'disabled':''}>ถ่ายมุมที่ยังขาด</button></div>
-  <button class="lnk danger" data-a="delv">ลบชุดนี้</button>`;
+  ${S.sel?`<div class="selbar"><b>เลือกแล้ว ${S.sel.size} รูป</b><button class="btn" data-a="selall">${S.sel.size==n?'ไม่เลือกเลย':'เลือกทั้งหมด'}</button><button class="btn" data-a="selx">ยกเลิก</button><button class="btn pri" data-a="share" ${S.sel.size?'':'disabled'}>แชร์</button></div>`:`
+  <div class="acts"><button class="btn pri" data-a="sel" ${n?'':'disabled'}>เลือกรูปเพื่อแชร์</button><button class="btn" data-a="collage" ${n?'':'disabled'}>ทำภาพรวมชุดนี้</button><button class="btn" data-a="next" ${n==VIEWS.length?'disabled':''}>ถ่ายมุมที่ยังขาด</button></div>
+  <button class="lnk danger" data-a="delv">ลบชุดนี้</button>`}`;
 }
 function cmpV(p){
   if(!S.ck||!p.visits.filter(v=>v.shots[S.ck]).length){const best=VIEWS.map(w=>[w.k,p.visits.filter(v=>v.shots[w.k]).length]).sort((a,b)=>b[1]-a[1]);S.ck=(best.find(b=>b[0]=='fr'&&b[1]>1)||best[0])[0]}
@@ -229,7 +236,7 @@ function render(){const p=curP(),v=cur();
   $('#back').hidden=S.v=='list';$('#ttl').textContent=S.v=='list'?'Dentory Shot':p.name;
   hydrate($('#main'));
 }
-const go=(v,o={})=>{Object.assign(S,o,{v});render();scrollTo(0,0)};
+const go=(v,o={})=>{Object.assign(S,{sel:null},o,{v});render();scrollTo(0,0)};
 
 /* modal */
 const md=$('#md');let askR=null;
@@ -244,7 +251,17 @@ function sheet(k){const w=V[k],id=cur().shots[k];
   <label class="btn big">เลือกจากคลังรูป<input class="vhid" type="file" accept="image/*" data-k="${k}"></label>
   ${id?`<div class="acts"><button class="btn" data-a="reedit" data-k="${k}">ปรับรูปเดิม</button><button class="btn danger" data-a="delshot" data-k="${k}">ลบรูปนี้</button></div>`:''}
   <button class="lnk" data-a="close">ปิด</button></div>`)}
-const showOut=(d,t)=>modal(`<div class="sh" role="dialog"><h2>${t}</h2><img class="out" src="${d}" alt="${t}"><p class="mute">กดค้างที่รูป แล้วเลือก “บันทึกรูปภาพ” หรือแชร์ต่อใน LINE</p><button class="lnk" data-a="close">ปิด</button></div>`);
+let OUT=null;
+const showOut=(d,t)=>{OUT={d,t};modal(`<div class="sh" role="dialog"><h2>${t}</h2><img class="out" src="${d}" alt="${t}">${CANSHARE?'<button class="btn pri big" data-a="shareout">แชร์</button>':''}<p class="mute">หรือกดค้างที่รูป แล้วเลือก “บันทึกรูปภาพ”</p><button class="lnk" data-a="close">ปิด</button></div>`)};
+const CANSHARE=(()=>{try{return !!(navigator.canShare&&navigator.canShare({files:[new File([new Uint8Array(1)],'a.jpg',{type:'image/jpeg'})]}))}catch(e){return false}})();
+const fname=s=>String(s).replace(/[\\/:*?"<>|]+/g,'').replace(/\s+/g,'_');
+function d2f(d,name){const bin=atob(d.split(',')[1]),u=new Uint8Array(bin.length);for(let i=0;i<bin.length;i++)u[i]=bin.charCodeAt(i);return new File([u],name,{type:'image/jpeg'})}
+function shareFiles(list){/* list: [{d,name}] — files are built synchronously so share() stays inside the tap */
+  const fb=()=>modal(`<div class="sh" role="dialog"><h2>บันทึกรูป ${list.length} รูป</h2><p class="mute">เครื่องนี้แชร์ตรงไม่ได้ กดค้างที่แต่ละรูป แล้วเลือก “บันทึกรูปภาพ” หรือ “แชร์”</p><div class="outs">${list.map(x=>`<img class="out" src="${x.d}" alt="${esc(x.name)}">`).join('')}</div><button class="lnk" data-a="close">ปิด</button></div>`);
+  if(!CANSHARE)return fb();
+  let files;try{files=list.map(x=>d2f(x.d,x.name))}catch(e){return fb()}
+  if(!navigator.canShare({files}))return fb();
+  navigator.share({files}).catch(e=>{if(e&&e.name!='AbortError')fb()})}
 
 /* editor */
 const ed=$('#ed'),cv=$('#cv'),stg=$('#stage');let E=null,url=null;
@@ -337,6 +354,14 @@ document.addEventListener('click',async e=>{const b=e.target.closest('[data-a]')
   if(a=='delshot'){const k=b.dataset.k;if(await ask(`ลบรูป “${V[k].n}” ?`,'ลบรูป')){del('i:'+v.shots[k]);delete v.shots[k];save();render()}return}
   if(a=='delv'){if(await ask('ลบชุดรูปนี้ทั้งชุด?','ลบทั้งชุด')){Object.values(v.shots).forEach(id=>del('i:'+id));p.visits=p.visits.filter(x=>x!=v);save();go('pt')}return}
   if(a=='delpt'){if(await ask(`ลบ ${esc(p.name)} และรูปทั้งหมด?`,'ลบคนไข้')){p.visits.forEach(x=>Object.values(x.shots).forEach(id=>del('i:'+id)));P=P.filter(x=>x!=p);save();go('list')}return}
+  if(a=='sel'){S.sel=new Set();render();return toast('แตะรูปที่ต้องการแชร์')}
+  if(a=='selx'){S.sel=null;return render()}
+  if(a=='selall'){const all=VIEWS.filter(w=>v.shots[w.k]).map(w=>w.k);S.sel=new Set(S.sel.size==all.length?[]:all);return render()}
+  if(a=='tog'){const k=b.dataset.k;S.sel.has(k)?S.sel.delete(k):S.sel.add(k);return render()}
+  if(a=='share'){const ds=fname(new Date(v.date).toLocaleDateString('th-TH',{day:'numeric',month:'short',year:'2-digit'}));
+    const list=VIEWS.filter(w=>S.sel.has(w.k)).map(w=>({d:mem.get('i:'+v.shots[w.k]),name:`${fname(p.name)}_${ds}_${String(V[w.k].i+1).padStart(2,'0')}_${fname(w.n)}.jpg`})).filter(x=>x.d);
+    return shareFiles(list)}
+  if(a=='shareout'&&OUT)return shareFiles([{d:OUT.d,name:fname(OUT.t)+'.jpg'}]);
   if(a=='collage')return collage(p,v);
   if(a=='cexp')return cexp(p);
   if(a=='ck'){S.ck=b.dataset.k;return render()}
