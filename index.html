@@ -629,7 +629,7 @@ function renderMouth(){
     (pick && S.armed!=null ? '<button type="button" class="fillall" data-act="fillAll"><span style="'+dot(bc(S.armed),28,false)+'"></span>ใส่สีเบอร์ '+S.armed+' ทั้งปากเลย (16 ซี่)</button>' : '') +
     '<span class="archlbl">ฟันบน</span><div class="arch up">'+renderTeeth("upper")+'</div>' +
     '<span class="archlbl">ฟันล่าง</span><div class="arch lo">'+renderTeeth("lower")+'</div>' +
-    (pick && filled ? '<button type="button" class="tryon" data-act="tryon">'+I.img+'ลองใส่บนรูปหน้าฉัน <span class="nw">NEW!</span></button>' : '') +
+    (pick ? '<button type="button" class="tryon" data-act="tryon">'+I.img+'ลองใส่บนรูปหน้าฉัน <span class="nw">NEW!</span></button>' : '') +
     (pick ? '<p class="hint">แตะสียางด้านล่าง แล้วแตะซี่ฟันที่อยากวาง · หรือกดปุ่ม "ทั้งปากเลย" เพื่อใส่สีเดียวกันครบทุกซี่ในคลิกเดียว · แตะซี่ที่มีสีอีกครั้งเพื่อลบ</p>' : '') +
   '</section>';
 }

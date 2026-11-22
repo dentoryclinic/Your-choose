@@ -153,7 +153,9 @@ S.upper=fill([60,67,1]); S.lower=fill([60,67,1]); S.filter="all"; S.fromSite=fal
 try{ var hd=JSON.parse(sessionStorage.getItem(HAND)||"null");
   var okv=function(v){ return v==null || BAND[v]!=null; };
   if(hd && Array.isArray(hd.upper) && Array.isArray(hd.lower) && hd.upper.length===TEETH && hd.lower.length===TEETH && hd.upper.every(okv) && hd.lower.every(okv)){
-    S.upper=hd.upper.map(function(v){return v==null?null:+v;}); S.lower=hd.lower.map(function(v){return v==null?null:+v;}); S.fromSite=true; }
+    S.fromSite=true; S.siteOrig={upper:hd.upper,lower:hd.lower};
+    // nothing placed yet on the picker: keep the sample colours here, and hand back an empty mouth unless the patient changes something
+    if(hd.upper.concat(hd.lower).some(function(v){return v!=null;})){ S.upper=hd.upper.map(function(v){return v==null?null:+v;}); S.lower=hd.lower.map(function(v){return v==null?null:+v;}); } }
 }catch(e){}
 
 function esc(s){return String(s).replace(/[&<>"]/g,function(c){return{"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c];});}
@@ -200,14 +202,14 @@ function paint(arch,i){
   else { var before=S[arch][i]; S[arch][i]=null;
     if(!canAdd(S.armed)){ S[arch][i]=before; perr("เลือกได้สูงสุด "+MAX_COLORS+" สีนะคะ แตะเหล็กสีเดิมเพื่อเอาออกก่อน"); return; }
     S[arch][i]=S.armed; }
-  perr(""); renderPick(); draw();
+  S.changed=true; perr(""); renderPick(); draw();
 }
 elChips.addEventListener("click",function(e){ var b=e.target.closest(".chip"); if(!b) return; S.filter=b.dataset.v; renderPick(); });
 elPal.addEventListener("click",function(e){ var b=e.target.closest(".sw"); if(!b) return; var n=+b.dataset.n; S.armed=S.armed===n?null:n; perr(""); renderPick(); });
-elFill.addEventListener("click",function(){ if(S.armed==null) return; S.upper=fill([S.armed]); S.lower=fill([S.armed]); perr(""); renderPick(); draw(); });
+elFill.addEventListener("click",function(){ if(S.armed==null) return; S.upper=fill([S.armed]); S.lower=fill([S.armed]); S.changed=true; perr(""); renderPick(); draw(); });
 var bBack=document.getElementById("bBack"); bBack.hidden=!S.fromSite;
 bBack.addEventListener("click",function(){
-  try{ sessionStorage.setItem(BACK,JSON.stringify({upper:S.upper,lower:S.lower})); }catch(e){}
+  try{ sessionStorage.setItem(BACK,JSON.stringify(S.changed||!S.siteOrig?{upper:S.upper,lower:S.lower}:S.siteOrig)); }catch(e){}
   location.href="../";
 });
 renderPick();
