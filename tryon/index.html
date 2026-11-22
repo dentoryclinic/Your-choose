@@ -387,51 +387,71 @@ function draw(){
    Canvas 900x675. Apparent crown widths shrink toward the back of the arch; the upper
    incisal line rises slightly at the sides (smile arc). Brackets sit at each crown's middle. */
 var CW=900, CH=675, MID=450, FW=1080;
-var UP=[ // half-arch from the midline: apparent width, crown height, incisal y
-  {w:80,h:122,e:352},{w:62,h:104,e:346},{w:50,h:112,e:336},{w:40,h:92,e:322}];
-var LO=[ // lower crowns visible below the upper edge
-  {w:52,h:84},{w:54,h:86},{w:50,h:90},{w:42,h:82}];
+var UP=[ // half-arch from the midline: central, lateral, canine, 1st and 2nd premolar (apparent width, crown height, incisal y)
+  {w:84,h:102,e:352},{w:64,h:88,e:348},{w:53,h:96,e:340},{w:44,h:82,e:331},{w:36,h:72,e:323}];
+var LO=[ // lower crowns, only the part that shows below the upper edge
+  {w:51,h:62},{w:55,h:64},{w:53,h:68},{w:46,h:62},{w:39,h:56}];
+var NT=UP.length; // teeth per side drawn in the template; brackets go on the inner 4 (to the 1st premolar)
 function buildTemplate(){
-  var up=[],lo=[],x=MID;
-  for(var i=0;i<4;i++){ var u=UP[i]; up.push({side:1,x0:x,x1:x+u.w,e:u.e,h:u.h}); x+=u.w; }
-  x=MID; for(i=0;i<4;i++){ u=UP[i]; up.unshift({side:-1,x0:x-u.w,x1:x,e:u.e,h:u.h}); x-=u.w; }
-  var lowTop=function(i){ return UP[Math.min(i,3)].e-14; };
-  x=MID; var L=[]; for(i=0;i<4;i++){ var l=LO[i]; L.push({x0:x,x1:x+l.w,t:lowTop(i)+i*2,h:l.h}); x+=l.w; }
-  x=MID; var Lm=[]; for(i=0;i<4;i++){ l=LO[i]; Lm.unshift({x0:x-l.w,x1:x,t:lowTop(i)+i*2,h:l.h}); x-=l.w; }
-  lo=Lm.concat(L);
+  function side(arr,mk){ var r=[],l=[],x=MID;
+    for(var i=0;i<NT;i++){ r.push(mk(i,x,x+arr[i].w)); x+=arr[i].w; }
+    x=MID; for(i=0;i<NT;i++){ l.unshift(mk(i,x-arr[i].w,x)); x-=arr[i].w; }
+    return l.concat(r); }
+  var up=side(UP,function(i,x0,x1){ return {k:i,x0:x0+1.5,x1:x1-1.5,e:UP[i].e,h:UP[i].h}; });
+  var lo=side(LO,function(i,x0,x1){ var t=UP[i].e-16; return {k:i,x0:x0+1.5,x1:x1-1.5,t:t,h:LO[i].h}; });
   return {up:up,lo:lo};
 }
 var TPL=buildTemplate();
-function toothPath(c,x0,x1,top,bot,upper){
-  var w=x1-x0, r=Math.min(w*0.32,(bot-top)*0.3), g=Math.min(w*0.22,14);
-  c.beginPath();
-  if(upper){ // gum scallop on top, rounded incisal corners at the bottom
-    c.moveTo(x0+2,top+g); c.quadraticCurveTo((x0+x1)/2,top-g*0.6,x1-2,top+g);
-    c.lineTo(x1-1,bot-r); c.quadraticCurveTo(x1-1,bot,x1-r,bot); c.lineTo(x0+r,bot); c.quadraticCurveTo(x0+1,bot,x0+1,bot-r); c.closePath();
+/* tooth outlines that read as teeth: rounded gum scallop, sides narrowing toward the gum,
+   a softly curved biting edge; canines and premolars get a cusp tip */
+function toothPath(c,t,upper,cont){
+  var x0=t.x0, x1=t.x1, w=x1-x0, cx=(x0+x1)/2, cusp=t.k>=2;
+  if(upper){
+    var top=t.e-t.h, bot=t.e, nk=w*0.1;
+    if(!cont) c.beginPath();
+    c.moveTo(x0+nk,top+t.h*0.16);
+    c.bezierCurveTo(x0+nk,top-t.h*0.02, x1-nk,top-t.h*0.02, x1-nk,top+t.h*0.16);   // gum scallop
+    c.bezierCurveTo(x1+w*0.02,top+t.h*0.5, x1,bot-t.h*0.12, x1-w*0.12,bot-t.h*0.03); // distal side
+    if(cusp){ c.quadraticCurveTo(cx+w*0.18,bot,cx,bot+t.h*0.03); c.quadraticCurveTo(cx-w*0.18,bot,x0+w*0.12,bot-t.h*0.03); }
+    else c.quadraticCurveTo(cx,bot+t.h*0.035,x0+w*0.12,bot-t.h*0.03);               // incisal edge
+    c.bezierCurveTo(x0,bot-t.h*0.12, x0-w*0.02,top+t.h*0.5, x0+nk,top+t.h*0.16);
+    c.closePath();
   }else{
-    c.moveTo(x0+1,top+r); c.quadraticCurveTo(x0+1,top,x0+r,top); c.lineTo(x1-r,top); c.quadraticCurveTo(x1-1,top,x1-1,top+r);
-    c.lineTo(x1-2,bot-g); c.quadraticCurveTo((x0+x1)/2,bot+g*0.6,x0+2,bot-g); c.closePath();
+    var tp=t.t, bt=t.t+t.h, nk2=w*0.12;
+    c.beginPath();
+    c.moveTo(x0+w*0.1,tp+t.h*0.06);
+    if(cusp){ c.quadraticCurveTo(cx-w*0.2,tp,cx,tp-t.h*0.05); c.quadraticCurveTo(cx+w*0.2,tp,x1-w*0.1,tp+t.h*0.06); }
+    else c.quadraticCurveTo(cx,tp-t.h*0.03,x1-w*0.1,tp+t.h*0.06);
+    c.bezierCurveTo(x1,tp+t.h*0.3, x1-nk2*0.3,bt-t.h*0.25, x1-nk2,bt-t.h*0.12);
+    c.bezierCurveTo(x1-nk2,bt+t.h*0.02, x0+nk2,bt+t.h*0.02, x0+nk2,bt-t.h*0.12);       // gum scallop
+    c.bezierCurveTo(x0+nk2*0.3,bt-t.h*0.25, x0,tp+t.h*0.3, x0+w*0.1,tp+t.h*0.06);
+    c.closePath();
   }
 }
 function drawTemplate(c){
   c.save(); c.fillStyle="rgba(10,8,30,.28)"; c.fillRect(0,0,CW,CH);
-  c.lineJoin="round";
-  [[TPL.up,true],[TPL.lo,false]].forEach(function(set){
+  c.lineJoin="round"; c.lineCap="round";
+  // lower teeth sit behind the upper ones: hide their lines inside the upper outlines
+  c.save(); c.beginPath(); c.rect(0,0,CW,CH); TPL.up.forEach(function(t){ toothPath(c,t,true,true); }); c.clip("evenodd");
+  drawSet(TPL.lo,false); c.restore(); drawSet(TPL.up,true);
+  function drawSet(arr,isUp){ [[arr,isUp]].forEach(function(set){
     set[0].forEach(function(t){
-      var top=set[1]?t.e-t.h:t.t, bot=set[1]?t.e:t.t+t.h;
-      toothPath(c,t.x0,t.x1,top,bot,set[1]);
-      c.strokeStyle="rgba(0,0,0,.35)"; c.lineWidth=7; c.stroke();
-      c.strokeStyle="#ffffff"; c.lineWidth=3.5; c.stroke();
+      var outer=t.k>=NT-1; c.globalAlpha=outer?0.55:1;
+      toothPath(c,t,set[1]);
+      if(set[1]){ c.fillStyle="rgba(255,255,255,.08)"; c.fill(); }
+      c.strokeStyle="rgba(0,0,0,.35)"; c.lineWidth=6; c.stroke();
+      c.strokeStyle="#ffffff"; c.lineWidth=set[1]?3.2:2.4; c.stroke();
     });
-  });
-  c.setLineDash([10,10]); c.strokeStyle="rgba(255,255,255,.7)"; c.lineWidth=2;
-  c.beginPath(); c.moveTo(MID,150); c.lineTo(MID,520); c.stroke(); c.restore();
+  }); }
+  c.globalAlpha=1; c.setLineDash([10,10]); c.strokeStyle="rgba(255,255,255,.7)"; c.lineWidth=2;
+  c.beginPath(); c.moveTo(MID,170); c.lineTo(MID,500); c.stroke(); c.restore();
 }
 function templateFit(){
-  var mk=function(set,upper){ return set.map(function(t){ var w=t.x1-t.x0, cx=(t.x0+t.x1)/2;
-    return {x:cx, y:upper? t.e-t.h*0.47 : t.t+t.h*0.42, f:Math.min(1,Math.pow(w/80,0.6)), a:0}; }); };
+  var inner=function(set){ return set.filter(function(t){ return t.k<NT-1; }); };
+  var mk=function(set,upper){ return inner(set).map(function(t){ var w=t.x1-t.x0, cx=(t.x0+t.x1)/2;
+    return {x:cx, y:upper? t.e-t.h*0.45 : t.t+t.h*0.5, f:Math.min(1,Math.pow(w/80,0.6)), a:0}; }); };
   var au=mk(TPL.up,true), al=mk(TPL.lo,false);
-  return {anchors:{upper:au,lower:al}, cx:MID, up:au, lo:al, top:[], bot:[], hUp:110, hLo:84, showLo:true};
+  return {anchors:{upper:au,lower:al}, cx:MID, up:au, lo:al, top:[], bot:[], hUp:96, hLo:64, showLo:true};
 }
 draw();
 
@@ -516,7 +536,7 @@ function loadPhoto(img){
   // first guess: if the teeth can be found, scale them to the template's width (canine to canine)
   var fit=null; try{ fit=findTeeth(img,null); }catch(err){}
   if(fit && fit.x1-fit.x0>W*0.15){
-    var tw=TPL.up[6].x1-TPL.up[1].x0, s=clampS(tw/(fit.x1-fit.x0)), mi=fit.up.length>>1;
+    var tw=TPL.up[NT+2].x1-TPL.up[NT-3].x0, s=clampS(tw/(fit.x1-fit.x0)), mi=fit.up.length>>1;
     var gy=(fit.up[mi].y+fit.lo[mi].y)/2, mx=(fit.x0+fit.x1)/2;
     S.tf.s=s; S.tf.x=MID-(mx-W/2)*s; S.tf.y=UP[0].e-(gy-H/2)*s;
   }
